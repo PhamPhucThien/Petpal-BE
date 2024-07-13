@@ -1,7 +1,7 @@
 ﻿namespace CapstoneProject.Database
 {
-    public class Class1
+    public class PetpalDbContext
     {
-
+        public D
     }
 }
