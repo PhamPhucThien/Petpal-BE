@@ -1,6 +1,6 @@
 ﻿using CapstoneProject.Business.Interface;
+using CapstoneProject.DTO.Request.Account;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CapstoneProject.Controllers

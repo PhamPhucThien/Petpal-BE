@@ -1,4 +1,8 @@
+using CapstoneProject.Database;
+using CapstoneProject.Database.Model;
+using CapstoneProject.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -7,6 +11,8 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 ConfigurationBuilder configurationBuilder = new();
+
+configurationBuilder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
 
 // Add services to the container.
@@ -18,8 +24,10 @@ IConfiguration configuration = configurationBuilder.Build();
 
 /*builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.ConfigureServiceManager();*/
-configurationBuilder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
+builder.Services.ConfigureSqlContext(builder.Configuration);
+
+builder.Services.ConfigureServiceManager();
 
 builder.Services.AddAuthentication(x =>
 {

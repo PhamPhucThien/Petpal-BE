@@ -1,5 +1,10 @@
 ﻿using CapstoneProject.Business.Interface;
 using CapstoneProject.Business.Service;
+using CapstoneProject.Database;
+using CapstoneProject.Repository.Interface;
+using CapstoneProject.Repository.Repository;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -30,6 +35,34 @@ namespace CapstoneProject.Infrastructure
             _ = services.AddScoped<IPackageService, PackageService>();
             _ = services.AddScoped<IOrderDetailService, OrderDetailService>();
 
+            _ = services.AddScoped<IUserRepository, UserRepository>();
+            _ = services.AddScoped<IBlogRepository, BlogRepository>();
+            _ = services.AddScoped<ICalendarRepository, CalendarRepository>();
+            _ = services.AddScoped<ICareCenterRepository, CareCenterRepository>();
+            _ = services.AddScoped<ICommentRepository, CommentRepository>();
+            _ = services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+            _ = services.AddScoped<INotificationRepository, NotificationRepository>();
+            _ = services.AddScoped<IOrderRepository, OrderRepository>();
+            _ = services.AddScoped<IPackageItemRepository, PackageItemRepository>();
+            _ = services.AddScoped<IPetRepository, PetRepository>();
+            _ = services.AddScoped<IServiceRepository, ServiceRepository>();
+            _ = services.AddScoped<IPetTypeRepository, PetTypeRepository>();
+            _ = services.AddScoped<IPackageRepository, PackageRepository>();
+            _ = services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
+
+        }
+
+        public static void ConfigureSqlContext(this IServiceCollection services, IConfiguration configuration)
+        {
+            if (configuration == null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
+            var connectionString = configuration.GetConnectionString("DefaultConnection");
+
+            _ = services.AddDbContext<PetpalDbContext>(opts =>
+                opts.UseSqlServer(connectionString), ServiceLifetime.Transient);
         }
     }
 }
