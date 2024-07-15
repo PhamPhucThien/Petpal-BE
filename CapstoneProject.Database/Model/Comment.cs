@@ -1,4 +1,5 @@
 ﻿using CapstoneProject.Database.Model.Base;
+using CapstoneProject.Database.Model.Meta;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 namespace CapstoneProject.Database.Model
 {
     [Table("Comment")]
-    public class Comment : BaseModel
+    public class Comment : BaseModel<UserStatus>
     {
         [Column("related_id")]
         public Guid? RelatedId { get; set; }
