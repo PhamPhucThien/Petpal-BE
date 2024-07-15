@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace CapstoneProject.Database.Model.Base
 {
-    public class BaseModel
+    public class BaseModel<T>
     {
         [Key]
         [Column("id")]
         public Guid Id { get; set; }
         [Column("status")]
-        public string? Status { get; set; }
+        public T? Status { get; set; }
         [Column("created_at")]
         public DateTimeOffset CreatedAt { get; set; }
         [Column("created_by")]
