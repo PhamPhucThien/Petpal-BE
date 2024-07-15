@@ -1,4 +1,5 @@
 ﻿using CapstoneProject.Database.Model.Base;
+using CapstoneProject.Database.Model.Meta;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 namespace CapstoneProject.Database.Model
 {
     [Table("CareCenter")]
-    public class CareCenter : BaseModel
+    public class CareCenter : BaseModel<UserStatus>
     {
         [Column("partner_id")]
         public Guid? PartnerId { get; set; }
