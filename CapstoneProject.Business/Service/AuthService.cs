@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 
 namespace CapstoneProject.Business.Service
 {
-    public class AuthService(IUserRepository userRepository) : IAuthService
+    public class AuthService(IAuthRepository authRepository) : IAuthService
     {
-        public IUserRepository userRepository = userRepository;
+        public IAuthRepository authRepository = authRepository;
 
-        public async Task<List<User>> Login(LoginRequest request)
+        public async Task<User> Login(LoginRequest request)
         {
-            List<User> user = (List<User>)await userRepository.GetAll();
-            return user;
+            User? user = await authRepository.GetByUsernameAndPassword(request.Username, request.Password);
+            return user != null ? user : new User();
         }
     }
 }

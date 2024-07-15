@@ -1,15 +1,14 @@
 ﻿using CapstoneProject.Database.Model;
-using CapstoneProject.DTO.Request.Account;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CapstoneProject.Business.Interface
+namespace CapstoneProject.Repository.Interface
 {
-    public interface IAuthService
+    public interface IAuthRepository
     {
-        Task<User?> Login(LoginRequest request);
+        Task<User?> GetByUsernameAndPassword(string username, string password);
     }
 }
