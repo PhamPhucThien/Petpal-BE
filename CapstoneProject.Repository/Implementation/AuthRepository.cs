@@ -14,11 +14,16 @@ namespace CapstoneProject.Repository.Repository
     public class AuthRepository : IAuthRepository
     {
         private readonly DbContextOptions<PetpalDbContext> _contextOptions;
-        
+
+        public AuthRepository(DbContextOptions<PetpalDbContext> contextOptions)
+        {
+            _contextOptions = contextOptions;
+        }
+
         public async Task<User?> GetByUsernameAndPassword(string username, string password)
         {
             using PetpalDbContext context = new(_contextOptions);
-            User? user = await context.Set<User>().FirstOrDefaultAsync(x => x.Username == username && x.Password == password && x.Status == UserStatus.ACTIVE);
+            User? user = await context.Set<User>().FirstOrDefaultAsync(x => x.Username == username && x.Password == password && x.Status == BaseStatus.ACTIVE);
             return user;
         }
     }

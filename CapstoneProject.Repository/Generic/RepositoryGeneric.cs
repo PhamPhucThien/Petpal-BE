@@ -1,4 +1,5 @@
 ﻿using CapstoneProject.Database;
+using CapstoneProject.DTO.Request;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -60,20 +61,20 @@ namespace CapstoneProject.Repository.Generic
             return entity;
         }
 
-        /*public IEnumerable<T> GetWithPaging(IPagingRequest pagingRequest)
+        public async Task<List<T>> GetWithPaging(Paging pagingRequest)
         {
             if (pagingRequest == null)
             {
                 throw new ArgumentNullException(nameof(pagingRequest));
             }
 
-            using FooDrinkDbContext context = new(_contextOptions);
+            using PetpalDbContext context = new(_contextOptions);
             IQueryable<T> query = context.Set<T>().AsQueryable();
 
-            query = query.Skip(pagingRequest.PageSize * (pagingRequest.PageIndex - 1))
-                         .Take(pagingRequest.PageSize);
+            query = query.Skip(pagingRequest.Size * (pagingRequest.Page - 1))
+                         .Take(pagingRequest.Size);
 
-            return query.ToList();
-        }*/
+            return await query.ToListAsync();
+        }
     }
 }

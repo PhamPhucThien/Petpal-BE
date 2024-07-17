@@ -10,6 +10,5 @@ namespace CapstoneProject.Repository.Interface
 {
     public interface IUserRepository : IRepository<User>
     {
-        Task<List<User>> GetByUsernameAndPassword(string username, string password);
     }
 }

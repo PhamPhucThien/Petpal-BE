@@ -8,5 +8,6 @@ namespace CapstoneProject.Business.Interface
 {
     public interface IUserService
     {
-    }
+/*        Task<bool> UploadProfile(FileStream file);
+*/    }
 }

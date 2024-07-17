@@ -1,4 +1,8 @@
-﻿using CapstoneProject.Repository.Interface;
+﻿using CapstoneProject.Database;
+using CapstoneProject.Database.Model;
+using CapstoneProject.Repository.Generic;
+using CapstoneProject.Repository.Interface;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +11,10 @@ using System.Threading.Tasks;
 
 namespace CapstoneProject.Repository.Repository
 {
-    public class PackageRepository : IPackageRepository
+    public class PackageRepository : RepositoryGeneric<Package>, IPackageRepository
     {
+        public PackageRepository(DbContextOptions<PetpalDbContext> contextOptions) : base(contextOptions)
+        {
+        }
     }
 }

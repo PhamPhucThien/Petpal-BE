@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace CapstoneProject.Database.Model
 {
     [Table("Blog")]
-    public class Blog : BaseModel<UserStatus>
+    public class Blog : BaseModel<BaseStatus>
     {
         [Column("user_id")]
         public Guid? UserId { get; set; }

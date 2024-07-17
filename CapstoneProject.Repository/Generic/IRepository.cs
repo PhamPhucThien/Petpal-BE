@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CapstoneProject.DTO.Request;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,6 @@ namespace CapstoneProject.Repository.Generic
         Task<T> AddAsync(T entity);
         Task<bool> EditAsync(T entity);
         Task<bool> DeleteByIdAsync(Guid id);
-/*        IEnumerable<T> GetWithPaging(IPagingRequest pagingRequest);
-*/    }
+        Task<List<T>> GetWithPaging(Paging pagingRequest);
+    }
 }
