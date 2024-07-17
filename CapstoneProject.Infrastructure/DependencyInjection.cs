@@ -49,6 +49,7 @@ namespace CapstoneProject.Infrastructure
             _ = services.AddScoped<IPetTypeRepository, PetTypeRepository>();
             _ = services.AddScoped<IPackageRepository, PackageRepository>();
             _ = services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
+            _ = services.AddScoped<IAuthRepository, AuthRepository>();
 
         }
 

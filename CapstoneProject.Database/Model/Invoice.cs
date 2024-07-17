@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace CapstoneProject.Database.Model
 {
     [Table("Invoice")]
-    public class Invoice : BaseModel<UserStatus>
+    public class Invoice : BaseModel<BaseStatus>
     {
         [Column("order_id")]
         public Guid? OrderId { get; set; }

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace CapstoneProject.Database.Model
 {
     [Table("PetType")]
-    public class PetType : BaseModel<UserStatus>
+    public class PetType : BaseModel<BaseStatus>
     {
         [Column("type")]
         public string? Type { get; set; }

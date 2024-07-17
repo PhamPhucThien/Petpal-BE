@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace CapstoneProject.Database.Model
 {
     [Table("Calendar")]
-    public class Calendar : BaseModel<UserStatus>
+    public class Calendar : BaseModel<BaseStatus>
     {
         [Column("carecenter_id")]   
         public Guid? CareCenterId { get; set; }

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace CapstoneProject.Database.Model.Base
 {
@@ -13,15 +9,16 @@ namespace CapstoneProject.Database.Model.Base
         [Key]
         [Column("id")]
         public Guid Id { get; set; }
-        [Column("status")]
+        [Column("status", TypeName = "nvarchar(30)")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public T? Status { get; set; }
         [Column("created_at")]
         public DateTimeOffset CreatedAt { get; set; }
         [Column("created_by")]
-        public DateTimeOffset CreatedBy { get; set; }
+        public string? CreatedBy { get; set; }
         [Column("updated_at")]
         public DateTimeOffset? UpdatedAt { get; set; }
         [Column("updated_by")]
-        public DateTimeOffset? UpdatedBy { get; set; }
+        public string? UpdatedBy { get; set; }
     }
 }

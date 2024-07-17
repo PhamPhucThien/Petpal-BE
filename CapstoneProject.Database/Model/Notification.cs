@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace CapstoneProject.Database.Model
 {
     [Table("Notification")]
-    public class Notification : BaseModel<UserStatus>
+    public class Notification : BaseModel<BaseStatus>
     {
         [Column("user_id")]
         public Guid? UserId { get; set; }
