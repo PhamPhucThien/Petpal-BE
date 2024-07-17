@@ -13,8 +13,16 @@ namespace CapstoneProject.Repository.Repository
 {
     public class UserRepository : RepositoryGeneric<User>, IUserRepository
     {
+        private PetpalDbContext _dbContext;
         public UserRepository(DbContextOptions<PetpalDbContext> contextOptions) : base(contextOptions)
         {
+            _dbContext = new PetpalDbContext(contextOptions);
+        }
+
+        public User GetUserByUsername(string username)
+        {
+            return _dbContext.Users.Where(o => o.Username.Equals(username))
+                .FirstOrDefault();
         }
     }
 }
