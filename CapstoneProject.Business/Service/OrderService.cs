@@ -8,14 +8,13 @@ using CapstoneProject.Database.Model.Meta;
 
 namespace CapstoneProject.Business.Service
 {
-    public class OrderService : IOrderService
+    public class OrderService(IOrderRepository orderRepository, IUserRepository userRepository, IPetRepository petRepository, IPackageRepository packageRepository, IOrderDetailRepository orderDetailRepository) : IOrderService
     {
-        private readonly IOrderRepository _orderRepository;
-
-        public OrderService(IOrderRepository orderRepository)
-        {
-            _orderRepository = orderRepository;
-        }
+        private readonly IOrderRepository _orderRepository = orderRepository;
+        private readonly IUserRepository _userRepository = userRepository;
+        private readonly IPetRepository _petRepository = petRepository;
+        private readonly IPackageRepository _packageRepository = packageRepository;
+        private readonly IOrderDetailRepository _orderDetailRepository = orderDetailRepository;
 
         public async Task<bool> ApproveRequest(Guid orderId)
         {
@@ -30,8 +29,54 @@ namespace CapstoneProject.Business.Service
 
         public async Task<CreateOrderResponse> CreateOrderRequest(CreateOrderRequest request)
         {
-            CreateOrderResponse response = new CreateOrderResponse();
-            return null;
+            CreateOrderResponse response = new() { 
+                IsSucceed = false
+            };
+
+            User? user = await _userRepository.GetByIdAsync(request.UserId);
+            Pet? pet = await _petRepository.GetByIdAsync(request.PetId);
+            Package? package = await _packageRepository.GetByIdAsync(request.PackageId);
+
+            if (user == null) return response;
+            if (pet == null) return response;   
+            if (package == null) return response;
+
+            Order order = new Order {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                CurrentPrice = package.TotalPrice,
+                Detail = request.Detail,
+                CreatedAt = DateTime.UtcNow,
+                CreatedBy = user.Username
+            };
+
+            Order? existedOrder = await _orderRepository.AddAsync(order);
+
+            if (existedOrder != null)
+            {
+                OrderDetail detail = new OrderDetail
+                {
+                    Id = Guid.NewGuid(),
+                    OrderId = existedOrder.Id,
+                    PetId = request.PetId,
+                    FromDate = request.FromDate,
+                    ToDate = request.ToDate,
+                    ReceiveTime = request.ReceiveTime,
+                    ReturnTime = request.ReturnTime,
+                    PackageId = request.PackageId,
+                    CreatedAt = DateTime.UtcNow,
+                    CreatedBy = user.Username
+                };
+
+                OrderDetail? existedOrderDetail = await _orderDetailRepository.AddAsync(detail);
+
+                if (existedOrderDetail != null)
+                {
+                    response.IsSucceed = true;
+                }
+            }
+
+            return response;
         }
 
         public Task<string> GetTransactionStatusVNPay()

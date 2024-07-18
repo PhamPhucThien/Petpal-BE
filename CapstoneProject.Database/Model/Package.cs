@@ -20,6 +20,8 @@ namespace CapstoneProject.Database.Model
         public string? Duration { get; set; }
         [Column("type")]
         public string? Type { get; set; }
+        [Column("total_price")]
+        public double TotalPrice { get; set; }
 
         [ForeignKey("CareCenterId")]
         public CareCenter? CareCenter { get; set; }
