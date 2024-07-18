@@ -28,5 +28,7 @@ namespace CapstoneProject.Database.Model
         public string? ProfileImage { get; set; }
         [Column("email")]
         public string? Email { get; set; }
+        [Column("role", TypeName = "nvarchar(30)")]
+        public UserRole? Role { get; set; }
     }
 }
