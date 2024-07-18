@@ -15,5 +15,10 @@ namespace CapstoneProject.Business.Service
             User? user = await _authRepository.GetByUsernameAndPassword(request.Username, request.Password);
             return user != null ? user : new User();
         }
+
+        public Task<bool> Register(LoginRequest request)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
