@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace CapstoneProject.DTO.Request.Order
 {
-    internal class CreateOrderRequest
+    public class CreateOrderRequest
     {
+        public Guid PetId;
+        public Guid PackageId;
     }
 }

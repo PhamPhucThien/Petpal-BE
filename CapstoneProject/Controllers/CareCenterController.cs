@@ -17,7 +17,7 @@ namespace CapstoneProject.Controllers
             _careCenterService = careCenterService;
         }
 
-        [HttpPost("GetList")]
+        [HttpPost("get-list")]
         public async Task<IActionResult> GetList(GetCareCenterListRequest request)
         {
             try
