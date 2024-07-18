@@ -9,8 +9,10 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using CapstoneProject.Infrastructure.Profile;
 
 namespace CapstoneProject.Infrastructure
 {
@@ -50,7 +52,9 @@ namespace CapstoneProject.Infrastructure
             _ = services.AddScoped<IPackageRepository, PackageRepository>();
             _ = services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
             _ = services.AddScoped<IAuthRepository, AuthRepository>();
-
+            
+            //add auto mapper
+            _ = services.AddAutoMapper(typeof(UserProfle));
         }
 
         public static void ConfigureSqlContext(this IServiceCollection services, IConfiguration configuration)
