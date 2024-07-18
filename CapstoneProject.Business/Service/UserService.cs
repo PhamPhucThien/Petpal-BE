@@ -28,6 +28,7 @@ namespace CapstoneProject.Business.Service
             _userRepository = userRepository;
             _mapper = mapper;
         }
+
        /* public Task<bool> UploadProfile(FileStream file)
         {
             *//*try
@@ -39,6 +40,7 @@ namespace CapstoneProject.Business.Service
             }
             *//*
         }*/
+        
        public async Task<UserListResponse> GetList(UserListRequest request)
        {
            Paging paging = new()
