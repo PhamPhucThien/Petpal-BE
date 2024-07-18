@@ -30,5 +30,19 @@ namespace CapstoneProject.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(LoginRequest request)
+        {
+            try
+            {
+                var response = await _authService.Login(request);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
     }
 }

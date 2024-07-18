@@ -1,5 +1,5 @@
 ﻿using CapstoneProject.DTO.Request.Order;
-using CapstoneProject.DTO.Response.Order;
+using CapstoneProject.DTO.Response.Orders;
 using System;
 using System.Collections.Generic;
 using System.Linq;

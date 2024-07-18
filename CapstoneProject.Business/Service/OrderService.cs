@@ -1,6 +1,6 @@
 ﻿using CapstoneProject.Business.Interface;
 using CapstoneProject.DTO.Request.Order;
-using CapstoneProject.DTO.Response.Order;
+using CapstoneProject.DTO.Response.Orders;
 using CapstoneProject.Repository.Interface;
 using System;
 using System.Collections.Generic;
@@ -18,8 +18,9 @@ namespace CapstoneProject.Business.Service
         {
             _orderRepository = orderRepository;
         }
-        public Task<CreateOrderResponse> CreateOrderRequest(CreateOrderRequest request)
+        public async Task<CreateOrderResponse> CreateOrderRequest(CreateOrderRequest request)
         {
+            CreateOrderResponse response = new CreateOrderResponse();
             return null;
         }
     }
