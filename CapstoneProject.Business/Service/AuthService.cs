@@ -16,9 +16,11 @@ namespace CapstoneProject.Business.Service
             return user != null ? user : new User();
         }
 
-        public Task<bool> Register(LoginRequest request)
+        public Task<bool> Register(RegisterRequest request)
         {
-            throw new NotImplementedException();
+            /*User? user = await _authRepository.GetByUsernameAndPassword(request.Username, request.Password);
+            return user != null ? user : new User();*/
+            return null;
         }
     }
 }
