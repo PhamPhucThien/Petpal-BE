@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CapstoneProject.DTO.Response.Order
+namespace CapstoneProject.DTO.Response.Orders
 {
-    internal class OrderResponse
+    public class CreateOrderResponse
     {
+        public bool IsSucceed {  get; set; }
     }
 }
