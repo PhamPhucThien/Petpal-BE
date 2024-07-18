@@ -1,4 +1,6 @@
-﻿namespace CapstoneProject.DTO.Response.User;
+﻿using CapstoneProject.Database.Model.Meta;
+
+namespace CapstoneProject.DTO.Response.User;
 
 public class UserResponse
 {
@@ -15,4 +17,5 @@ public class UserResponse
     public string CreatedBy { get; set; }
     public string UpdatedAt { get; set; }
     public string UpdatedBy { get; set; }
+    public string Role { get; set; }
 }

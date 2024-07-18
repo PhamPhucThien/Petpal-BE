@@ -80,8 +80,9 @@ namespace CapstoneProject.Business.Service
            }
            var userCreate = _mapper.Map<User>(request);
            userCreate.Status = BaseStatus.ACTIVE;
-           userCreate.CreatedBy = "Admin";
+           userCreate.CreatedBy = request.CreateBy;
            userCreate.CreatedAt = DateTimeOffset.Now;
+           userCreate.Role = UserRole.CUSTOMER;
            var user = await _userRepository.AddAsync(userCreate);
            return _mapper.Map<UserResponse>(user);
        }
@@ -99,7 +100,7 @@ namespace CapstoneProject.Business.Service
            userUpdate.CreatedAt = userCheck.CreatedAt;
            userUpdate.CreatedBy = userCheck.CreatedBy;
            userUpdate.UpdatedAt = DateTimeOffset.Now;
-           userUpdate.UpdatedBy = "Admin";
+           userUpdate.UpdatedBy = request.UpdateBy;
            var updateStatus = await _userRepository.EditAsync(userUpdate);
            return updateStatus ? _mapper.Map<UserResponse>(userUpdate) : null;
        }

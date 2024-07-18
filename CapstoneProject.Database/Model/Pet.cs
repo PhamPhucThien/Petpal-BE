@@ -14,7 +14,7 @@ namespace CapstoneProject.Database.Model
     {
         [Column("user_id")]
         public Guid? UserId { get; set; }
-        [Column("user_id")]
+        [Column("pet_type_id")]
         public Guid? PetTypeId { get; set; }
         [Column("full_name")]
         public string? FullName { get; set; }
