@@ -36,7 +36,7 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var response = await _authService.Login(request);
+                var response = await _authService.Register(request);
                 return Ok(response);
             }
             catch (Exception ex)

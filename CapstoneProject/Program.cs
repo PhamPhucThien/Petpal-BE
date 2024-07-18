@@ -111,6 +111,9 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 
 app.UseHttpsRedirection();
 
+// Allow zerossl to read static file
+app.UseStaticFiles();
+
 app.UseAuthorization();
 
 app.MapControllers();
