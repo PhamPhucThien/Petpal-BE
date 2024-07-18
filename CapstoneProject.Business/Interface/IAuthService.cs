@@ -6,5 +6,6 @@ namespace CapstoneProject.Business.Interface
     public interface IAuthService
     {
         Task<User?> Login(LoginRequest request);
+        Task<bool> Register(LoginRequest request);
     }
 }

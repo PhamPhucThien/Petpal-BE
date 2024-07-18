@@ -30,5 +30,61 @@ namespace CapstoneProject.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+
+        [HttpPost("approve-request")]
+        public async Task<IActionResult> ApproveRequest(Guid orderId)
+        {
+            try
+            {
+                var response = await _orderService.ApproveRequest(orderId);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost("reject-request")]
+        public async Task<IActionResult> RejectRequest(Guid orderId)
+        {
+            try
+            {
+                var response = await _orderService.RejectRequest(orderId);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost("perform-transaction")]
+        public async Task<IActionResult> PerformTransaction(Guid orderId)
+        {
+            try
+            {
+                var response = await _orderService.PerformTransaction(orderId);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpGet("get-transaction-status-vnpay")]
+        public async Task<IActionResult> GetTransactionStatusVNPay()
+        {
+            try
+            {
+                var response = await _orderService.GetTransactionStatusVNPay();
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
     }
 }
