@@ -32,7 +32,7 @@ namespace CapstoneProject.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(LoginRequest request)
+        public async Task<IActionResult> Register(RegisterRequest request)
         {
             try
             {
