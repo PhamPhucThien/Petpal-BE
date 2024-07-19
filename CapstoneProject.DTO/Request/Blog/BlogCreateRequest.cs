@@ -17,5 +17,5 @@ public class BlogCreateRequest
     [Required(ErrorMessage = "LikeNumber is required")]
     public int LikeNumber { get; set; }
     [Required(ErrorMessage = "createBy is required")]
-    public string CreateBy { get; set; }
+    public string CreatedBy { get; set; }
 }

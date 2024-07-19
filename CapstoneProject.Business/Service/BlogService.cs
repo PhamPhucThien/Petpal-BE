@@ -69,7 +69,7 @@ namespace CapstoneProject.Business.Service
             
             var blogCreate = _mapper.Map<Blog>(request);
             blogCreate.CreatedAt = DateTimeOffset.Now;
-            blogCreate.CreatedBy = request.CreateBy;
+            blogCreate.CreatedBy = request.CreatedBy;
             var result = await _blogRepository.AddAsync(blogCreate);
             var blog = await _blogRepository.GetByIdAsync(result.Id);
             return _mapper.Map<BlogResponse>(blog);
@@ -88,7 +88,7 @@ namespace CapstoneProject.Business.Service
             blogUpdate.CreatedAt = blogCheck.CreatedAt;
             blogUpdate.CreatedBy = blogCheck.CreatedBy;
             blogUpdate.UpdatedAt = DateTimeOffset.Now;
-            blogUpdate.UpdatedBy = request.UpdateBy;
+            blogUpdate.UpdatedBy = request.UpdatedBy;
             var result = await _blogRepository.EditAsync(blogUpdate);
             blogUpdate.User = blogCheck.User;
             return result ? _mapper.Map<BlogResponse>(blogUpdate) : null;

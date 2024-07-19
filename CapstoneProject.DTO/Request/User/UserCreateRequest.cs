@@ -16,5 +16,5 @@ public class UserCreateRequest
     [RegularExpression(@"^\d{10}$", ErrorMessage = "Invalid phone number. Please enter a 10-digit number.")]
     public string PhoneNumber { get; set; }
     [Required(ErrorMessage = "CreateBy is required")]
-    public string CreateBy { get; set; }
+    public string CreatedBy { get; set; }
 }

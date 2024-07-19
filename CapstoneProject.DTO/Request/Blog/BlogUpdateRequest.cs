@@ -19,5 +19,5 @@ public class BlogUpdateRequest
     [Required(ErrorMessage = "Status is required")]
     public string Status { get; set; }
     [Required(ErrorMessage = "createBy is required")]
-    public string UpdateBy { get; set; }
+    public string UpdatedBy { get; set; }
 }

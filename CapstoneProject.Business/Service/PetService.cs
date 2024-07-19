@@ -77,7 +77,7 @@ namespace CapstoneProject.Business.Service
             }
             var petCreate = _mapper.Map<Pet>(request);
             petCreate.CreatedAt = DateTimeOffset.Now;
-            petCreate.CreatedBy = request.CreateBy;
+            petCreate.CreatedBy = request.CreatedBy;
             var result = await _petRepository.AddAsync(petCreate);
             var pet = await _petRepository.GetByIdAsync(result.Id);
             return _mapper.Map<PetResponse>(pet);
@@ -107,7 +107,7 @@ namespace CapstoneProject.Business.Service
             petUpdate.CreatedAt = petCheck.CreatedAt;
             petUpdate.CreatedBy = petCheck.CreatedBy;
             petUpdate.UpdatedAt = DateTimeOffset.Now;
-            petUpdate.UpdatedBy = request.UpdateBy;
+            petUpdate.UpdatedBy = request.UpdatedBy;
             var result = await _petRepository.EditAsync(petUpdate);
             petUpdate.User = petCheck.User;
             petUpdate.PetType = petCheck.PetType;
