@@ -1,4 +1,5 @@
 ﻿using CapstoneProject.Business.Interface;
+using CapstoneProject.DTO.Request.Base;
 using CapstoneProject.DTO.Request.Pet;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,8 +19,8 @@ namespace CapstoneProject.Controllers
         
         
         
-        [HttpPost("GetList")]
-        public async Task<IActionResult> GetList(PetListRequest request)
+        [HttpPost("get-list")]
+        public async Task<IActionResult> GetList(ListRequest request)
         {
             try
             {
@@ -32,7 +33,7 @@ namespace CapstoneProject.Controllers
             }
         }
         
-        [HttpGet("{petId}")]
+        [HttpGet("get-user{petId}")]
         public async Task<IActionResult> GetPetById(string petId)
         {
             try
@@ -46,7 +47,7 @@ namespace CapstoneProject.Controllers
             }
         }
         
-        [HttpPost("Create")]
+        [HttpPost("create-user")]
         public async Task<IActionResult> CreatePet(PetCreateRequest request)
         {
             try
@@ -60,7 +61,7 @@ namespace CapstoneProject.Controllers
             }
         }
         
-        [HttpPut("Update")]
+        [HttpPut("update-user")]
         public async Task<IActionResult> UpdatePet(PetUpdateRequest request)
         {
             try

@@ -9,7 +9,9 @@ using AutoMapper;
 using CapstoneProject.Database.Model;
 using CapstoneProject.Database.Model.Meta;
 using CapstoneProject.DTO.Request;
+using CapstoneProject.DTO.Request.Base;
 using CapstoneProject.DTO.Request.User;
+using CapstoneProject.DTO.Response.Base;
 using CapstoneProject.DTO.Response.User;
 using CapstoneProject.Repository.Interface;
 using User = CapstoneProject.Database.Model.User;
@@ -28,6 +30,7 @@ namespace CapstoneProject.Business.Service
             _userRepository = userRepository;
             _mapper = mapper;
         }
+
        /* public Task<bool> UploadProfile(FileStream file)
         {
             *//*try
@@ -39,7 +42,8 @@ namespace CapstoneProject.Business.Service
             }
             *//*
         }*/
-       public async Task<UserListResponse> GetList(UserListRequest request)
+        
+       public async Task<BaseListResponse<UserDetailResponse>> GetList(ListRequest request)
        {
            Paging paging = new()
            {
@@ -48,9 +52,9 @@ namespace CapstoneProject.Business.Service
                MaxPage = 1
            };
            var listUser = await _userRepository.GetWithPaging(paging);
-           var listUserResponse = _mapper.Map<List<UserResponse>>(listUser);
+           var listUserResponse = _mapper.Map<List<UserDetailResponse>>(listUser);
            paging.Total = listUserResponse.Count;
-           UserListResponse response = new()
+           BaseListResponse<UserDetailResponse> response = new()
            {
                List = listUserResponse,
                Paging = paging,
@@ -58,7 +62,7 @@ namespace CapstoneProject.Business.Service
            return response;
        }
 
-       public async Task<UserResponse> GetUserById(string userID)
+       public async Task<UserDetailResponse> GetUserById(string userID)
        {
            var user = await _userRepository.GetByIdAsync(Guid.Parse(userID));
            if (user == null)
@@ -66,12 +70,12 @@ namespace CapstoneProject.Business.Service
                throw new Exception("Not found User with this id");
                
            }
-           var userResponse = _mapper.Map<UserResponse>(user);
+           var userResponse = _mapper.Map<UserDetailResponse>(user);
            return userResponse;
            
        }
 
-       public async Task<UserResponse> CreateUser(UserCreateRequest request)
+       public async Task<UserDetailResponse> CreateUser(UserCreateRequest request)
        {
            var userCheck = _userRepository.GetUserByUsername(request.Username);
            if (userCheck != null)
@@ -84,10 +88,10 @@ namespace CapstoneProject.Business.Service
            userCreate.CreatedAt = DateTimeOffset.Now;
            userCreate.Role = UserRole.CUSTOMER;
            var user = await _userRepository.AddAsync(userCreate);
-           return _mapper.Map<UserResponse>(user);
+           return _mapper.Map<UserDetailResponse>(user);
        }
 
-       public async Task<UserResponse> UpdateUser(UserUpdateRequest request)
+       public async Task<UserDetailResponse> UpdateUser(UserUpdateRequest request)
        {
            var userCheck = await _userRepository.GetByIdAsync(Guid.Parse(request.Id));
            if (userCheck == null)
@@ -102,7 +106,7 @@ namespace CapstoneProject.Business.Service
            userUpdate.UpdatedAt = DateTimeOffset.Now;
            userUpdate.UpdatedBy = request.UpdateBy;
            var updateStatus = await _userRepository.EditAsync(userUpdate);
-           return updateStatus ? _mapper.Map<UserResponse>(userUpdate) : null;
+           return updateStatus ? _mapper.Map<UserDetailResponse>(userUpdate) : null;
        }
     }
 }

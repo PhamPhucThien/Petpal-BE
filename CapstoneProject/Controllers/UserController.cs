@@ -1,4 +1,5 @@
 ﻿using CapstoneProject.Business.Interface;
+using CapstoneProject.DTO.Request.Base;
 using CapstoneProject.DTO.Request.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -30,8 +31,8 @@ namespace CapstoneProject.Controllers
             }
         }*/
         
-        [HttpPost("GetList")]
-        public async Task<IActionResult> GetList(UserListRequest request)
+        [HttpPost("get-list")]
+        public async Task<IActionResult> GetList(ListRequest request)
         {
             try
             {
@@ -44,12 +45,12 @@ namespace CapstoneProject.Controllers
             }
         }
         
-        [HttpGet("{UserId}")]
-        public async Task<IActionResult> GetUserById(string UserId)
+        [HttpGet("get-user{userId}")]
+        public async Task<IActionResult> GetUserById(string userId)
         {
             try
             {
-                var response = await _userService.GetUserById(UserId);
+                var response = await _userService.GetUserById(userId);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -58,7 +59,7 @@ namespace CapstoneProject.Controllers
             }
         }
         
-        [HttpPost("Create")]
+        [HttpPost("create-user")]
         public async Task<IActionResult> CreateUser(UserCreateRequest request)
         {
             try
@@ -72,7 +73,7 @@ namespace CapstoneProject.Controllers
             }
         }
         
-        [HttpPut("Update")]
+        [HttpPut("update-user")]
         public async Task<IActionResult> UpdateUser(UserUpdateRequest request)
         {
             try
