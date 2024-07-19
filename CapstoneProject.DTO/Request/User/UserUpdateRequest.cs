@@ -23,5 +23,5 @@ public class UserUpdateRequest
     [Required(ErrorMessage = "Status is required")]
     public string Status { get; set; }
     [Required(ErrorMessage = "UpdateBy is required")]
-    public string UpdateBy { get; set; }
+    public string UpdatedBy { get; set; }
 }

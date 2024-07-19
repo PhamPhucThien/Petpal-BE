@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using AutoMapper;
 using CapstoneProject.Database.Model;
 using CapstoneProject.DTO.Request;
+using CapstoneProject.DTO.Request.Base;
 using CapstoneProject.DTO.Request.Pet;
+using CapstoneProject.DTO.Response.Base;
 using CapstoneProject.DTO.Response.Pet;
 using CapstoneProject.DTO.Response.User;
 using CapstoneProject.Repository.Interface;
@@ -29,7 +31,7 @@ namespace CapstoneProject.Business.Service
             _petTypeRepository = petTypeRepository;
         }
 
-        public async Task<PetListResponse> GetList(PetListRequest request)
+        public async Task<BaseListResponse<PetResponse>> GetList(ListRequest request)
         {
             Paging paging = new()
             {
@@ -40,7 +42,7 @@ namespace CapstoneProject.Business.Service
             var listPet = await _petRepository.GetWithPaging(paging);
             var listPetResponse = _mapper.Map<List<PetResponse>>(listPet);
             paging.Total = listPetResponse.Count;
-            PetListResponse response = new()
+            BaseListResponse<PetResponse> response = new()
             {
                 List = listPetResponse,
                 Paging = paging,
@@ -75,7 +77,7 @@ namespace CapstoneProject.Business.Service
             }
             var petCreate = _mapper.Map<Pet>(request);
             petCreate.CreatedAt = DateTimeOffset.Now;
-            petCreate.CreatedBy = request.CreateBy;
+            petCreate.CreatedBy = request.CreatedBy;
             var result = await _petRepository.AddAsync(petCreate);
             var pet = await _petRepository.GetByIdAsync(result.Id);
             return _mapper.Map<PetResponse>(pet);
@@ -105,7 +107,7 @@ namespace CapstoneProject.Business.Service
             petUpdate.CreatedAt = petCheck.CreatedAt;
             petUpdate.CreatedBy = petCheck.CreatedBy;
             petUpdate.UpdatedAt = DateTimeOffset.Now;
-            petUpdate.UpdatedBy = request.UpdateBy;
+            petUpdate.UpdatedBy = request.UpdatedBy;
             var result = await _petRepository.EditAsync(petUpdate);
             petUpdate.User = petCheck.User;
             petUpdate.PetType = petCheck.PetType;
