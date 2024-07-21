@@ -15,7 +15,7 @@ namespace CapstoneProject.Database.Model
         [Column("carecenter_id")]
         public Guid? CareCenterId { get; set; }
         [Column("description")]
-        public Guid? Description { get; set; }
+        public string? Description { get; set; }
         [Column("duration")]
         public string? Duration { get; set; }
         [Column("type")]
