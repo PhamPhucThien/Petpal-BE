@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CapstoneProject.DTO.Request.User;
+namespace CapstoneProject.DTO.Request.Base;
 
-public class UserListRequest
+public class ListRequest
 {
     [Range(1, Int64.MaxValue)]
     public int Page { get; set; }

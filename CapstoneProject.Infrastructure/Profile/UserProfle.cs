@@ -16,7 +16,7 @@ namespace CapstoneProject.Infrastructure.Profile
     {
         public UserProfle()
         {
-            CreateMap<User, UserResponse>();
+            CreateMap<User, UserDetailResponse>();
             CreateMap<UserCreateRequest, User>();
             CreateMap<UserUpdateRequest, User>();
         }

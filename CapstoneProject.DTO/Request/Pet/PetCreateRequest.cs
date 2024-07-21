@@ -18,7 +18,7 @@ namespace CapstoneProject.DTO.Request.Pet
         [Required(ErrorMessage = "Description is required")]
         public string Description { get; set; }
         [Required(ErrorMessage = "CreateBy is required")]
-        public string CreateBy { get; set; }
+        public string CreatedBy { get; set; }
         
         
     }

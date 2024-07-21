@@ -7,19 +7,17 @@ using System.Threading.Tasks;
 
 namespace CapstoneProject.DTO.Request.Service
 {
-    public class CreateServiceRequest
+    public class ServiceCreateRequest
     {
-
-        [Required(ErrorMessage = "Service ID is required")]
-        public int Id { get; set; }
         [Required(ErrorMessage = "Service Name is required")]
         public string Name { get; set; }
-
         [Required(ErrorMessage = "Description is required")]
         public string Description { get; set; }
         [Required(ErrorMessage = "Base Price is required")]
         public double BasePrice { get; set; }
-        //[Required(ErrorMessage = "Is Required")]
+        [Required(ErrorMessage = "Is Required")]
         public bool IsRequired { get; set; }
+        [Required(ErrorMessage = "CreateBy is Required")]
+        public string CreatedBy { get; set; }
     }
 }
