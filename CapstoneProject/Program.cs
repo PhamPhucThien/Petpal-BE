@@ -1,21 +1,17 @@
-using CapstoneProject.Database;
-using CapstoneProject.Database.Model;
 using CapstoneProject.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 ConfigurationBuilder configurationBuilder = new();
 
 configurationBuilder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
-
+IConfiguration configuration = configurationBuilder.Build();
 // Add services to the container.
 
 builder.Services.AddControllers().AddJsonOptions(x =>
@@ -23,8 +19,6 @@ builder.Services.AddControllers().AddJsonOptions(x =>
     x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 builder.Services.AddEndpointsApiExplorer();
-
-IConfiguration configuration = configurationBuilder.Build();
 
 /*builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.ConfigureServiceManager();*/
@@ -83,6 +77,15 @@ builder.Services.AddSwaggerGen(x =>
     });
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
 WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -96,23 +99,27 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     });
 }
 
-/*builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowSpecificOrigin",
-        builder => builder
-            .WithOrigins("http://localhost:4321")
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials());
-});*/
-
-
 // Configure the HTTP request pipeline.
+/*
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.StartsWithSegments("/.well-known/pki-validation"))
+    {
+        // Allow the request to bypass authentication
+        await next();
+        return; // Exit middleware chain
+    }
+    await next(); // Continue to the next middleware
+});*/
 
 app.UseHttpsRedirection();
 
+app.UseCors("AllowSpecificOrigin");
+
 // Allow zerossl to read static file
 app.UseStaticFiles();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
