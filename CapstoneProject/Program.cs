@@ -1,4 +1,3 @@
-using CapstoneProject.Configuration;
 using CapstoneProject.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -14,8 +13,6 @@ configurationBuilder.AddJsonFile("appsettings.json", optional: true, reloadOnCha
 
 IConfiguration configuration = configurationBuilder.Build();
 // Add services to the container.
-AppSettingConfig appSettingConfig = builder.Configuration.Get<AppSettingConfig>();
-builder.Services.AddSingleton(appSettingConfig);
 
 builder.Services.AddControllers().AddJsonOptions(x =>
 {
@@ -30,7 +27,7 @@ builder.Services.ConfigureSqlContext(builder.Configuration);
 
 builder.Services.ConfigureServiceManager();
 
-builder.Services.AddAuthentication(/*x =>
+builder.Services.AddAuthentication(x =>
 {
     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -45,7 +42,7 @@ builder.Services.AddAuthentication(/*x =>
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true
     };
-}*/);
+});
 
 builder.Services.AddAuthorization();
 builder.Services.AddSwaggerGen(x =>
