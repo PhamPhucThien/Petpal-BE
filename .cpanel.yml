@@ -1,4 +1,4 @@
 ﻿deployment:
   tasks:
     - export DEPLOYPATH=/home/xgiwgbro/repositories/Petpal-BE/
-    - /bin/cp -R images $DEPLOYPATH
+    - /bin/cp -R * $DEPLOYPATH
