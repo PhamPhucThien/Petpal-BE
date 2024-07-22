@@ -1,0 +1,4 @@
+﻿deployment:
+  tasks:
+    - export DEPLOYPATH=/home/example/repositories/Petpal-BE/CapstoneProject
+    - /bin/cp -R images $DEPLOYPATH
