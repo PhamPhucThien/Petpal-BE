@@ -1,4 +1,4 @@
 ﻿deployment:
   tasks:
-    - export DEPLOYPATH=/home/example/repositories/Petpal-BE/
+    - export DEPLOYPATH=/home/xgiwgbro/repositories/Petpal-BE/
     - /bin/cp -R images $DEPLOYPATH
