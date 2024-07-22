@@ -14,6 +14,7 @@ configurationBuilder.AddJsonFile("appsettings.json", optional: true, reloadOnCha
 IConfiguration configuration = configurationBuilder.Build();
 // Add services to the container.
 
+
 builder.Services.AddControllers().AddJsonOptions(x =>
 {
     x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
