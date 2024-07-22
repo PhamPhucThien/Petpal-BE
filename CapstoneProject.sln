@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34701.34
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CapstoneProject", "CapstoneProject\CapstoneProject.csproj", "{910AF926-7E1A-47F1-96A6-69376E634B66}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CapstoneProject", "CapstoneProject\CapstoneProject.csproj", "{910AF926-7E1A-47F1-96A6-69376E634B66}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CapstoneProject.Business", "CapstoneProject.Business\CapstoneProject.Business.csproj", "{25FD0977-1704-422B-993B-887D57C31033}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CapstoneProject.Business", "CapstoneProject.Business\CapstoneProject.Business.csproj", "{25FD0977-1704-422B-993B-887D57C31033}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CapstoneProject.Database", "CapstoneProject.Database\CapstoneProject.Database.csproj", "{A83BA822-F4DB-4369-8619-44E7446C4636}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CapstoneProject.Database", "CapstoneProject.Database\CapstoneProject.Database.csproj", "{A83BA822-F4DB-4369-8619-44E7446C4636}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CapstoneProject.DTO", "CapstoneProject.DTO\CapstoneProject.DTO.csproj", "{2E8CD063-0406-4EB8-8FB2-D2BDCDF268DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CapstoneProject.DTO", "CapstoneProject.DTO\CapstoneProject.DTO.csproj", "{2E8CD063-0406-4EB8-8FB2-D2BDCDF268DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CapstoneProject.Infrastructure", "CapstoneProject.Infrastructure\CapstoneProject.Infrastructure.csproj", "{E0DAA922-8EFC-4223-8910-11C5E2881D6D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CapstoneProject.Infrastructure", "CapstoneProject.Infrastructure\CapstoneProject.Infrastructure.csproj", "{E0DAA922-8EFC-4223-8910-11C5E2881D6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CapstoneProject.Repository", "CapstoneProject.Repository\CapstoneProject.Repository.csproj", "{B5345B3E-E61F-4FB1-8F8B-2C0E5D9ADE5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CapstoneProject.Repository", "CapstoneProject.Repository\CapstoneProject.Repository.csproj", "{B5345B3E-E61F-4FB1-8F8B-2C0E5D9ADE5F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
