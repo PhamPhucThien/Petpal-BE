@@ -117,8 +117,8 @@ app.UseHttpsRedirection();
 app.UseCors("AllowSpecificOrigin");
 
 // Allow zerossl to read static file
-app.UseStaticFiles();
-
+/*app.UseStaticFiles();
+*/
 app.UseAuthentication();
 
 app.UseAuthorization();
