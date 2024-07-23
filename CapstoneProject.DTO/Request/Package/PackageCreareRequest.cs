@@ -7,21 +7,19 @@ using System.Threading.Tasks;
 
 namespace CapstoneProject.DTO.Request.Package
 {
-    public class CreatePackageRequest
+    public class PackageCreareRequest
     {
-        [Required(ErrorMessage = "Package ID is required")]
-        public int Id { get; set; }
-
         [Required(ErrorMessage = "Care Center ID is required")]
-        public int CareCenterId { get; set; }
-
+        public string CareCenterId { get; set; }
         [Required(ErrorMessage = "Type is required")]
         public string Type { get; set; }
-
         [Required(ErrorMessage = "Duration is required")]
         public string Duration { get; set; }
-
-        [Required(ErrorMessage = "Detail is required")]
-        public string Detail { get; set; }
+        [Required(ErrorMessage = "Description is required")]
+        public string Description { get; set; }
+        [Required(ErrorMessage = "TotalPrice is required")]
+        public double TotalPrice { get; set; }
+        [Required(ErrorMessage = "CreatedBy is required")]
+        public string CreatedBy { get; set; }
     }
 }

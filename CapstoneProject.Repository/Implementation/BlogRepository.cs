@@ -22,7 +22,7 @@ namespace CapstoneProject.Repository.Repository
         
         public async Task<Blog?> GetByIdAsync(Guid id)
         {
-            return _dbContext.Blogs.Where(o => o.Id.Equals(id))
+            return _dbContext.Blogs.AsNoTracking().Where(o => o.Id.Equals(id))
                 .Include(o => o.User)
                 .FirstOrDefault();
         }
