@@ -113,7 +113,7 @@ app.Use(async (context, next) =>
 });*/
 
 app.UseHttpsRedirection();
-
+    
 app.UseCors("AllowSpecificOrigin");
 
 // Allow zerossl to read static file

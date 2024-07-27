@@ -26,5 +26,13 @@ namespace CapstoneProject.Repository.Repository
             User? user = await context.Set<User>().FirstOrDefaultAsync(x => x.Username == username && x.Password == password && x.Status == BaseStatus.ACTIVE);
             return user;
         }
+
+        public async Task<User?> GetByUsername(string username)
+        {
+            using PetpalDbContext context = new(_contextOptions);
+            User? user = await context.Set<User>().FirstOrDefaultAsync(x => x.Username == username);
+            return user;
+
+        }
     }
 }

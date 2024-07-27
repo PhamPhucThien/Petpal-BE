@@ -13,6 +13,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using CapstoneProject.Infrastructure.Profile;
+using CapstoneProject.Infrastructure.Jwt;
 
 namespace CapstoneProject.Infrastructure
 {
@@ -52,6 +53,7 @@ namespace CapstoneProject.Infrastructure
             _ = services.AddScoped<IPackageRepository, PackageRepository>();
             _ = services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
             _ = services.AddScoped<IAuthRepository, AuthRepository>();
+            _ = services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
             
             //add auto mapper
             _ = services.AddAutoMapper(typeof(UserProfle));
