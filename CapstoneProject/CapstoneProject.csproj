@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CapstoneProject.Business\CapstoneProject.Business.csproj" />
-    <ProjectReference Include="..\CapstoneProject.Infrastructure\CapstoneProject.Infrastructure.csproj" />
+	<ProjectReference Include="..\CapstoneProject.Infrastructure\CapstoneProject.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

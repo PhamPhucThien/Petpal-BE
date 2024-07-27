@@ -1,11 +1,13 @@
 ﻿using CapstoneProject.Database.Model;
+using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request.Account;
+using CapstoneProject.DTO.Response.Account;
 
 namespace CapstoneProject.Business.Interface
 {
     public interface IAuthService
     {
-        Task<User?> Login(LoginRequest request);
-        Task<bool> Register(RegisterRequest request);
+        Task<ResponseObject<LoginResponse>> Login(LoginRequest request);
+        Task<ResponseObject<LoginResponse>> Register(RegisterRequest request);
     }
 }

@@ -17,7 +17,7 @@ namespace CapstoneProject.Database.Model
         [Column("password")]
         public string? Password { get; set; }
         [Column("full_name")]
-        public string? FullName { get; set; }
+        public required string FullName { get; set; }
         [Column("address")]
         public string? Address { get; set; }
         [Column("room_id")]
@@ -29,6 +29,6 @@ namespace CapstoneProject.Database.Model
         [Column("email")]
         public string? Email { get; set; }
         [Column("role", TypeName = "nvarchar(30)")]
-        public UserRole? Role { get; set; }
+        public UserRole Role { get; set; }
     }
 }
