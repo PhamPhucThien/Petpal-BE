@@ -40,7 +40,7 @@ namespace CapstoneProject.Infrastructure.Jwt
 
             string jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
-            return "Bearer " + jwt;
+            return jwt;
         }
     }
 }
