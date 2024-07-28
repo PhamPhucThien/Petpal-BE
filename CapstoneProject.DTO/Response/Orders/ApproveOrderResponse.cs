@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CapstoneProject.DTO.Request.Order
+namespace CapstoneProject.DTO.Response.Orders
 {
-    public class ApproveOrderRequest
+    public class ApproveOrderResponse
     {
-        
+        public bool IsSucceed { get; set; }
     }
 }

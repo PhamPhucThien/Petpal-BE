@@ -18,18 +18,32 @@ namespace CapstoneProject.Business.Service
         private readonly IPackageRepository _packageRepository = packageRepository;
         private readonly IOrderDetailRepository _orderDetailRepository = orderDetailRepository;
         public StatusCode StatusCode { get; set; } = new();
-        public async Task<bool> ApproveRequest(Guid orderId)
+        public async Task<ResponseObject<ApproveOrderResponse>> ApproveRequest(Guid orderId)
         {
+            ResponseObject<ApproveOrderResponse> response = new();
+            ApproveOrderResponse data = new();
             Order? order = await _orderRepository.GetByIdAsync(orderId);
             
             if (order != null) {
                 order.Status = OrderStatus.APPROVED;
-                return await _orderRepository.EditAsync(order);
+                bool check = await _orderRepository.EditAsync(order);
+                data.IsSucceed = check;
+                response.Payload.Data = data;
+                if (data.IsSucceed)
+                {
+                    response.Status = StatusCode.OK;
+                    response.Payload.Message = "Đơn hàng đã được xác nhận";
+                } else
+                {
+                    response.Status = StatusCode.BadRequest;
+                    response.Payload.Message = "Hiện tại không thể xác nhận đơn hàng";
+                }
             }
-            return false;
+
+            return response;
         }
 
-        public async Task<CreateOrderResponse> CreateOrderRequest(CreateOrderRequest request)
+        public async Task<ResponseObject<CreateOrderResponse>> CreateOrderRequest(CreateOrderRequest request)
         {
             ResponseObject<CreateOrderResponse> response = new();
             CreateOrderResponse isSucceed = new() { 
@@ -41,11 +55,24 @@ namespace CapstoneProject.Business.Service
             Pet? pet = await _petRepository.GetByIdAsync(request.PetId);
             Package? package = await _packageRepository.GetByIdAsync(request.PackageId);
 
-            if (user == null) {
+            if (user == null) 
+            {
                 response.Status = StatusCode.NotFound;
+                response.Payload.Message = "Không tìm thấy người dùng";
+                return response;
             }
-            if (pet == null) return response;   
-            if (package == null) return response;
+            if (pet == null)
+            {
+                response.Status = StatusCode.NotFound;
+                response.Payload.Message = "Không tìm thấy thú cưng";
+                return response;
+            }
+            if (package == null)
+            {
+                response.Status = StatusCode.NotFound;
+                response.Payload.Message = "Không tìm thấy gói dịch vụ";
+                return response;
+            }
 
             Order order = new()
             {
@@ -81,7 +108,8 @@ namespace CapstoneProject.Business.Service
 
                 if (existedOrderDetail != null)
                 {
-                    response.IsSucceed = true;
+                    isSucceed.IsSucceed = true;
+                    response.Payload.Data = isSucceed;
                 }
             }
 
@@ -90,26 +118,41 @@ namespace CapstoneProject.Business.Service
             return response;
         }
 
-        public Task<string> GetTransactionStatusVNPay()
+        public Task<ResponseObject<string>> GetTransactionStatusVNPay()
         {
             throw new NotImplementedException();
         }
 
-        public Task<string> PerformTransaction(Guid orderId)
+        public Task<ResponseObject<string>> PerformTransaction(Guid orderId)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<bool> RejectRequest(Guid orderId)
+        public async Task<ResponseObject<RejectOrderResponse>> RejectRequest(Guid orderId)
         {
+            ResponseObject<RejectOrderResponse> response = new();
+            RejectOrderResponse data = new();
             Order? order = await _orderRepository.GetByIdAsync(orderId);
 
             if (order != null)
             {
                 order.Status = OrderStatus.REJECTED;
-                return await _orderRepository.EditAsync(order);
+                bool check = await _orderRepository.EditAsync(order);
+                data.IsSucceed = check;
+                response.Payload.Data = data;
+                if (data.IsSucceed)
+                {
+                    response.Status = StatusCode.OK;
+                    response.Payload.Message = "Đơn hàng đã được từ chối";
+                }
+                else
+                {
+                    response.Status = StatusCode.BadRequest;
+                    response.Payload.Message = "Hiện tại không thể từ chối đơn hàng";
+                }
             }
-            return false;
+
+            return response;
         }
     }
 }
