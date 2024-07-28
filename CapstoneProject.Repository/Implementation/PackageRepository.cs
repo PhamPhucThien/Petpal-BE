@@ -61,12 +61,5 @@ namespace CapstoneProject.Repository.Repository
 
             return await query.ToListAsync();
         }
-
-        public async Task<Package?> GetByIdAsync(Guid id)
-        {
-            return _dbContext.Packages.AsNoTracking().Where(o => o.Id.Equals(id))
-                .Include(o => o.CareCenter)
-                .FirstOrDefault();
-        }
     }
 }

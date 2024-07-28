@@ -18,7 +18,7 @@ namespace CapstoneProject.Database.Model
         public Guid? PetId { get; set; }
         [Column("package_id")]
         public Guid? PackageId { get; set; }
-        [Column("form_date")]
+        [Column("from_date")]
         public DateTimeOffset FromDate { get; set; }
         [Column("to_date")]
         public DateTimeOffset ToDate { get; set; }

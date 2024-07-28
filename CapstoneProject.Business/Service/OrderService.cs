@@ -4,6 +4,8 @@ using CapstoneProject.DTO.Request.Order;
 using CapstoneProject.DTO.Response.Orders;
 using CapstoneProject.Repository.Interface;
 using CapstoneProject.Database.Model.Meta;
+using System.Transactions;
+using CapstoneProject.DTO;
 
 
 namespace CapstoneProject.Business.Service
@@ -15,7 +17,7 @@ namespace CapstoneProject.Business.Service
         private readonly IPetRepository _petRepository = petRepository;
         private readonly IPackageRepository _packageRepository = packageRepository;
         private readonly IOrderDetailRepository _orderDetailRepository = orderDetailRepository;
-
+        public StatusCode StatusCode { get; set; } = new();
         public async Task<bool> ApproveRequest(Guid orderId)
         {
             Order? order = await _orderRepository.GetByIdAsync(orderId);
@@ -29,15 +31,19 @@ namespace CapstoneProject.Business.Service
 
         public async Task<CreateOrderResponse> CreateOrderRequest(CreateOrderRequest request)
         {
-            CreateOrderResponse response = new() { 
+            ResponseObject<CreateOrderResponse> response = new();
+            CreateOrderResponse isSucceed = new() { 
                 IsSucceed = false
             };
+            response.Payload.Data = isSucceed;
 
             User? user = await _userRepository.GetByIdAsync(request.UserId);
             Pet? pet = await _petRepository.GetByIdAsync(request.PetId);
             Package? package = await _packageRepository.GetByIdAsync(request.PackageId);
 
-            if (user == null) return response;
+            if (user == null) {
+                response.Status = StatusCode.NotFound;
+            }
             if (pet == null) return response;   
             if (package == null) return response;
 
@@ -50,6 +56,8 @@ namespace CapstoneProject.Business.Service
                 CreatedAt = DateTime.UtcNow,
                 CreatedBy = user.Username
             };
+
+            using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
             Order? existedOrder = await _orderRepository.AddAsync(order);
 
@@ -76,6 +84,8 @@ namespace CapstoneProject.Business.Service
                     response.IsSucceed = true;
                 }
             }
+
+            scope.Complete();
 
             return response;
         }
