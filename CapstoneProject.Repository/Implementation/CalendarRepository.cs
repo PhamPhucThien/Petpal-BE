@@ -8,10 +8,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CapstoneProject.DTO.Request;
 
 namespace CapstoneProject.Repository.Repository
 {
     public class CalendarRepository(DbContextOptions<PetpalDbContext> contextOptions) : RepositoryGeneric<Calendar>(contextOptions), ICalendarRepository
     {
+        private PetpalDbContext _dbContext;
+
+        public async Task<List<Calendar>> GetWithPaging(Paging pagingRequest)
+        {
+            if (pagingRequest == null)
+            {
+                throw new ArgumentNullException(nameof(pagingRequest));
+            }
+            
+            IQueryable<Calendar> query = _dbContext.Set<Calendar>() 
+                    .Include(o => o.CareCenter)
+                    .AsQueryable()
+                ;
+
+            query = query.Skip(pagingRequest.Size * (pagingRequest.Page - 1))
+                .Take(pagingRequest.Size);
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<Calendar?> GetByIdAsync(Guid id)
+        {
+            return _dbContext.Calendars.AsNoTracking().Where(o => o.Id.Equals(id))
+                .Include(o => o.CareCenter)
+                .FirstOrDefault();
+        }
     }
 }

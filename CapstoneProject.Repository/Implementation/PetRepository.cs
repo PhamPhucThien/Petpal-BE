@@ -22,7 +22,7 @@ namespace CapstoneProject.Repository.Repository
 
         public async Task<Pet?> GetByIdAsync(Guid id)
         {
-            return _dbContext.Pets.Where(o => o.Id.Equals(id))
+            return _dbContext.Pets.AsNoTracking().Where(o => o.Id.Equals(id))
                 .Include(o => o.PetType)
                 .Include(o => o.User)
                 .FirstOrDefault();

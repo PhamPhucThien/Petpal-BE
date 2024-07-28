@@ -45,7 +45,7 @@ namespace CapstoneProject.Business.Service
             var blog = await _blogRepository.GetByIdAsync(Guid.Parse(blogId));
             if (blog == null)
             {
-                throw new Exception("Not found Pet with this id");
+                throw new Exception("Not found Blog with this id");
                
             }
             var blogResponse = _mapper.Map<BlogResponse>(blog);

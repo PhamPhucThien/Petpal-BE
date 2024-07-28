@@ -56,7 +56,8 @@ namespace CapstoneProject.Infrastructure
             _ = services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
             
             //add auto mapper
-            _ = services.AddAutoMapper(typeof(UserProfle));
+            _ = services.AddAutoMapper(typeof(UserProfle), typeof(BlogProfile), typeof(CalendarProfile),  typeof(CommentProfile), typeof(PackageProfile)
+            , typeof(PackageItemProfile), typeof(PetProfile), typeof(PetTypeProfile), typeof(ServiceProfile));
         }
 
         public static void ConfigureSqlContext(this IServiceCollection services, IConfiguration configuration)
