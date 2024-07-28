@@ -1,4 +1,5 @@
-﻿using CapstoneProject.DTO.Request.Order;
+﻿using CapstoneProject.DTO;
+using CapstoneProject.DTO.Request.Order;
 using CapstoneProject.DTO.Response.Orders;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace CapstoneProject.Business.Interface
     public interface IOrderService
     {
         Task<bool> ApproveRequest(Guid orderId);
-        Task<CreateOrderResponse> CreateOrderRequest(CreateOrderRequest request);
+        Task<ResponseObject<CreateOrderResponse>> CreateOrderRequest(CreateOrderRequest request);
         Task<string> GetTransactionStatusVNPay();
         Task<string> PerformTransaction(Guid orderId);
         Task<bool> RejectRequest(Guid orderId);
