@@ -12,14 +12,10 @@ using CapstoneProject.DTO.Request;
 
 namespace CapstoneProject.Repository.Repository
 {
-    public class BlogRepository : RepositoryGeneric<Blog>, IBlogRepository
+    public class BlogRepository(DbContextOptions<PetpalDbContext> contextOptions) : RepositoryGeneric<Blog>(contextOptions), IBlogRepository
     {
-        private PetpalDbContext _dbContext;
-        public BlogRepository(DbContextOptions<PetpalDbContext> contextOptions) : base(contextOptions)
-        {
-            _dbContext = new PetpalDbContext(contextOptions);
-        }
-        
+        private readonly PetpalDbContext _dbContext = new(contextOptions);
+
         public async Task<Blog?> GetByIdAsync(Guid id)
         {
             return _dbContext.Blogs.Where(o => o.Id.Equals(id))
@@ -30,11 +26,8 @@ namespace CapstoneProject.Repository.Repository
 
         public async Task<List<Blog>> GetWithPaging(Paging pagingRequest)
         {
-            if (pagingRequest == null)
-            {
-                throw new ArgumentNullException(nameof(pagingRequest));
-            }
-            
+            ArgumentNullException.ThrowIfNull(pagingRequest);
+
             IQueryable<Blog> query = _dbContext.Set<Blog>() 
                     .Include(o => o.User)
                     .AsQueryable()

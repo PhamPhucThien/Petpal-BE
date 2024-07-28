@@ -11,10 +11,7 @@ using System.Threading.Tasks;
 
 namespace CapstoneProject.Repository.Repository
 {
-    public class CalendarRepository : RepositoryGeneric<Calendar>, ICalendarRepository
+    public class CalendarRepository(DbContextOptions<PetpalDbContext> contextOptions) : RepositoryGeneric<Calendar>(contextOptions), ICalendarRepository
     {
-        public CalendarRepository(DbContextOptions<PetpalDbContext> contextOptions) : base(contextOptions)
-        {
-        }
     }
 }

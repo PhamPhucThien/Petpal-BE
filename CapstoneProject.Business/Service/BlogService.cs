@@ -15,19 +15,12 @@ using CapstoneProject.Repository.Interface;
 
 namespace CapstoneProject.Business.Service
 {
-    public class BlogService : IBlogService
+    public class BlogService(IBlogRepository blogRepository, IUserRepository userRepository, IMapper mapper) : IBlogService
     {
-        private IBlogRepository _blogRepository;
-        private IUserRepository _userRepository;
-        private IMapper _mapper;
+        private readonly IBlogRepository _blogRepository = blogRepository;
+        private readonly IUserRepository _userRepository = userRepository;
+        private readonly IMapper _mapper = mapper;
 
-        public BlogService(IBlogRepository blogRepository, IUserRepository userRepository, IMapper mapper)
-        {
-            _blogRepository = blogRepository;
-            _userRepository = userRepository;
-            _mapper = mapper;
-        }
-        
         public async Task<BaseListResponse<BlogResponse>> GetList(ListRequest request)
         {
             Paging paging = new()

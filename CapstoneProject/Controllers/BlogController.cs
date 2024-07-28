@@ -10,15 +10,10 @@ namespace CapstoneProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BlogController : ControllerBase
+    public class BlogController(IBlogService blogService) : ControllerBase
     {
-        private IBlogService _blogService;
+        private readonly IBlogService _blogService = blogService;
 
-        public BlogController(IBlogService blogService)
-        {
-            _blogService = blogService;
-        }
-        
         [HttpPost("get-list")]
         public async Task<IActionResult> GetList(ListRequest request)
         {

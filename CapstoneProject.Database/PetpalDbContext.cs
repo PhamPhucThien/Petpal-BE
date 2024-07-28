@@ -1,9 +1,10 @@
 ﻿using CapstoneProject.Database.Model;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace CapstoneProject.Database
 {
-    public class PetpalDbContext(DbContextOptions<PetpalDbContext> options) : DbContext(options)
+    public class PetpalDbContext : DbContext
     {
         public DbSet<User>? Users { get; set; }
         public DbSet<Blog>? Blogs { get; set; }
@@ -20,5 +21,10 @@ namespace CapstoneProject.Database
         public DbSet<Pet>? Pets { get; set; }
         public DbSet<PetType>? PetTypes { get; set; }
         public DbSet<Service>? Services { get; set; }
+
+        public PetpalDbContext(DbContextOptions<PetpalDbContext> options) : base(options)
+        {
+            this.ChangeTracker.LazyLoadingEnabled = false;
+        }
     }
 }

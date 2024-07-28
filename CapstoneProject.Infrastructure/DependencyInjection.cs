@@ -61,10 +61,7 @@ namespace CapstoneProject.Infrastructure
 
         public static void ConfigureSqlContext(this IServiceCollection services, IConfiguration configuration)
         {
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
+            ArgumentNullException.ThrowIfNull(configuration);
 
             var connectionString = configuration.GetConnectionString("DefaultConnection");
 

@@ -63,10 +63,7 @@ namespace CapstoneProject.Repository.Generic
 
         public async Task<List<T>> GetWithPaging(Paging pagingRequest)
         {
-            if (pagingRequest == null)
-            {
-                throw new ArgumentNullException(nameof(pagingRequest));
-            }
+            ArgumentNullException.ThrowIfNull(pagingRequest);
 
             using PetpalDbContext context = new(_contextOptions);
             IQueryable<T> query = context.Set<T>().AsQueryable();

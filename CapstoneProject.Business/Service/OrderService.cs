@@ -41,7 +41,8 @@ namespace CapstoneProject.Business.Service
             if (pet == null) return response;   
             if (package == null) return response;
 
-            Order order = new Order {
+            Order order = new()
+            {
                 Id = Guid.NewGuid(),
                 UserId = user.Id,
                 CurrentPrice = package.TotalPrice,
@@ -54,7 +55,7 @@ namespace CapstoneProject.Business.Service
 
             if (existedOrder != null)
             {
-                OrderDetail detail = new OrderDetail
+                OrderDetail detail = new()
                 {
                     Id = Guid.NewGuid(),
                     OrderId = existedOrder.Id,
