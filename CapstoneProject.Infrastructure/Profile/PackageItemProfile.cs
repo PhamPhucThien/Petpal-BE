@@ -9,7 +9,7 @@ public class PackageItemProfile : AutoMapper.Profile
 {
     public PackageItemProfile()
     {
-        CreateMap<PackageItem, PackageItemResponse>();
+        CreateMap<PackageItem, ListPackageItemResponse>();
         CreateMap<PackageItemCreateRequest, PackageItem>();
         CreateMap<PackageItemUpdateRequest, PackageItem>();
         CreateMap<Package, PackageResponse>();

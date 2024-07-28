@@ -8,7 +8,7 @@ using CapstoneProject.DTO.Response.Service;
 
 namespace CapstoneProject.DTO.Response.Package
 {
-    public class PackageItemResponse : BaseResponse
+    public class ListPackageItemResponse : BaseResponse
     {
         public double CurrentPrice { get; set; }
         public string Detail { get; set; }

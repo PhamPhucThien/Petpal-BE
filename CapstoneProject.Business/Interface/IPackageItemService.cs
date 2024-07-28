@@ -12,9 +12,9 @@ namespace CapstoneProject.Business.Interface
 {
     public interface IPackageItemService
     {
-        Task<BaseListResponse<PackageItemResponse>> GetList(ListRequest request);
-        Task<PackageItemResponse> GetById(string packageItemId);
-        Task<PackageItemResponse> Create(PackageItemCreateRequest request);
-        Task<PackageItemResponse> Update(PackageItemUpdateRequest request);
+        Task<BaseListResponse<ListPackageItemResponse>> GetList(ListRequest request);
+        Task<ListPackageItemResponse> GetById(string packageItemId);
+        Task<ListPackageItemResponse> Create(PackageItemCreateRequest request);
+        Task<ListPackageItemResponse> Update(PackageItemUpdateRequest request);
     }
 }

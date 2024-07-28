@@ -1,4 +1,11 @@
 ﻿using CapstoneProject.Business.Interface;
+using CapstoneProject.Database.Model;
+using CapstoneProject.DTO;
+using CapstoneProject.DTO.Request;
+using CapstoneProject.DTO.Request.Package;
+using CapstoneProject.DTO.Response.CareCenters;
+using CapstoneProject.DTO.Response.Package;
+using CapstoneProject.Repository.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,20 +24,14 @@ using CapstoneProject.Repository.Repository;
 
 namespace CapstoneProject.Business.Service
 {
-    public class PackageService : IPackageService
+    public class PackageService(IPackageRepository packageRepository, ICareCenterRepository careCenterRepository,
+            IMapper mapper) : IPackageService
     {
-        private IPackageRepository _packageRepository;
         private ICareCenterRepository _careCenterRepository;
-        private IMapper _mapper;
-        
-        public PackageService(IPackageRepository packageRepository, ICareCenterRepository careCenterRepository,
-            IMapper mapper)
-        {
-            _packageRepository = packageRepository;
-            _careCenterRepository = careCenterRepository;
-            _mapper = mapper;
-        }
-        
+        private IMapper _mapper; 
+        private readonly IPackageRepository _packageRepository = packageRepository;
+        public StatusCode StatusCode { get; set; } = new();
+
         public async Task<BaseListResponse<PackageResponse>> GetList(ListRequest request)
         {
             Paging paging = new()
@@ -50,7 +51,7 @@ namespace CapstoneProject.Business.Service
             return response;
         }
 
-        public async Task<PackageResponse> GetById(string packageId)
+        /*public async Task<PackageResponse> GetById(string packageId)
         {
             var package = await _packageRepository.GetByIdAsync(Guid.Parse(packageId));
             if (package == null)
@@ -60,7 +61,7 @@ namespace CapstoneProject.Business.Service
             }
             var packageResponse = _mapper.Map<PackageResponse>(package);
             return packageResponse;
-        }
+        }*/
 
         public async Task<PackageResponse> Create(PackageCreareRequest request)
         {
@@ -98,6 +99,101 @@ namespace CapstoneProject.Business.Service
             var result = await _packageRepository.EditAsync(packageUpdate);
             var package = await _packageRepository.GetByIdAsync(packageUpdate.Id);
             return result ? _mapper.Map<PackageResponse>(package) : null;
+        }
+    
+        
+        public async Task<ResponseObject<PackageResponseModel>> GetById(GetPackageByIdRequest request)
+        {
+            ResponseObject<PackageResponseModel> response = new();
+
+            Package? package = await _packageRepository.GetByIdIncludePackageItem(request.Id);
+            
+            if (package == null)
+            {
+                response.Status = StatusCode.NotFound;
+                response.Payload.Message = "Id không tồn tại";
+            } else             {
+                response.Status = StatusCode.OK;
+                response.Payload.Message = "Lấy dữ liệu thành công";
+
+                PackageResponseModel packageResponse = new()
+                {
+                    Id = package.Id,
+                    TotalPrice = package.TotalPrice,
+                    Duration = package.Duration,
+                    Description = package.Description,
+                    Type = package.Type
+                };
+
+                List<ListPackageItemResponseModel> list = [];    
+
+                foreach (var packageItem in package.PackageItems)
+                {
+                    ListPackageItemResponseModel item = new()
+                    {
+                        Id = packageItem.Id,
+                        CurrentPrice = packageItem.CurrentPrice,
+                        Detail = packageItem.Detail
+                    };
+                    list.Add(item);
+                }
+                packageResponse.Items = list;
+                response.Payload.Data = packageResponse;
+            }
+
+            return response;
+        }
+
+        public async Task<ResponseObject<ListPackageResponse>> GetListByCareCenterId(GetListPackageByCareCenterIdRequest request)
+        {
+            ResponseObject<ListPackageResponse> response = new();
+
+            Paging paging = new()
+            {
+                Page = request.Page,
+                Size = request.Size,
+                MaxPage = 1
+            };
+
+            List<Package> list = await _packageRepository.GetWithPagingByCareCenterId(request.CareCenterId, paging);
+
+            if (list == null || list.Count == 0)
+            {
+                response.Status = StatusCode.NotFound;
+                response.Payload.Message = "Dữ liệu không tồn tại";
+            }
+            else
+            {
+                ListPackageResponse data = new();
+                List<PackageResponseModel> listModel = [];
+
+                foreach (var item in list)
+                {
+                    PackageResponseModel model = new()
+                    {
+                        Id = item.Id,
+                        Type = item.Type,
+                        TotalPrice = item.TotalPrice,
+                        Duration = item.Duration,
+                        Description = item.Description
+                    };
+                    listModel.Add(model);
+                }
+                data.Packages.AddRange(listModel);
+
+
+                response.Status = StatusCode.OK;
+                response.Payload.Message = "Lấy dữ liệu thành công";
+
+                data.Paging = paging;
+                data.Paging.Total = paging.Total;
+
+                response.Payload.Data = data;
+            }
+
+            
+
+            return response;
         }
     }
 }

@@ -8,14 +8,9 @@ namespace CapstoneProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CareCenterController : ControllerBase
+    public class CareCenterController(ICareCenterService careCenterService) : ControllerBase
     {
-        private readonly ICareCenterService _careCenterService;
-
-        public CareCenterController(ICareCenterService careCenterService)
-        {
-            _careCenterService = careCenterService;
-        }
+        private readonly ICareCenterService _careCenterService = careCenterService;
 
         [HttpPost("get-list")]
         public async Task<IActionResult> GetList(GetCareCenterListRequest request)

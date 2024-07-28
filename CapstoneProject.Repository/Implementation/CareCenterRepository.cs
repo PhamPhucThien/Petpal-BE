@@ -11,10 +11,7 @@ using System.Threading.Tasks;
 
 namespace CapstoneProject.Repository.Repository
 {
-    public class CareCenterRepository : RepositoryGeneric<CareCenter>, ICareCenterRepository
+    public class CareCenterRepository(DbContextOptions<PetpalDbContext> contextOptions) : RepositoryGeneric<CareCenter>(contextOptions), ICareCenterRepository
     {
-        public CareCenterRepository(DbContextOptions<PetpalDbContext> contextOptions) : base(contextOptions)
-        {
-        }
     }
 }

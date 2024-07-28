@@ -25,5 +25,6 @@ namespace CapstoneProject.Database.Model
 
         [ForeignKey("CareCenterId")]
         public CareCenter? CareCenter { get; set; }
+        public virtual List<PackageItem> PackageItems { get; set; } = [];
     }
 }

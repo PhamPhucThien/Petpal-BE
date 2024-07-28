@@ -31,7 +31,7 @@ namespace CapstoneProject.Business.Service
             _mapper = mapper;
         }
         
-        public async Task<BaseListResponse<PackageItemResponse>> GetList(ListRequest request)
+        public async Task<BaseListResponse<ListPackageItemResponse>> GetList(ListRequest request)
         {
             Paging paging = new()
             {
@@ -40,9 +40,9 @@ namespace CapstoneProject.Business.Service
                 MaxPage = 1
             };
             var listPackageItem = await _packageItemRepository.GetWithPaging(paging);
-            var listPackageItemResponse = _mapper.Map<List<PackageItemResponse>>(listPackageItem);
+            var listPackageItemResponse = _mapper.Map<List<ListPackageItemResponse>>(listPackageItem);
             paging.Total = listPackageItemResponse.Count;
-            BaseListResponse<PackageItemResponse> response = new()
+            BaseListResponse<ListPackageItemResponse> response = new()
             {
                 List = listPackageItemResponse,
                 Paging = paging,
@@ -50,7 +50,7 @@ namespace CapstoneProject.Business.Service
             return response;
         }
 
-        public async Task<PackageItemResponse> GetById(string packageItemId)
+        public async Task<ListPackageItemResponse> GetById(string packageItemId)
         {
             var packageItem = await _packageItemRepository.GetByIdAsync(Guid.Parse(packageItemId));
             if (packageItem == null)
@@ -58,11 +58,11 @@ namespace CapstoneProject.Business.Service
                 throw new Exception("Not found package item with this id");
                
             }
-            var packageItemResponse = _mapper.Map<PackageItemResponse>(packageItem);
+            var packageItemResponse = _mapper.Map<ListPackageItemResponse>(packageItem);
             return packageItemResponse;
         }
 
-        public async Task<PackageItemResponse> Create(PackageItemCreateRequest request)
+        public async Task<ListPackageItemResponse> Create(PackageItemCreateRequest request)
         {
             if (request.PackageId != null)
             {
@@ -83,10 +83,10 @@ namespace CapstoneProject.Business.Service
             packageItemCreate.CreatedAt = DateTimeOffset.Now;
             var result = await _packageItemRepository.AddAsync(packageItemCreate);
             var packageItem = await _packageItemRepository.GetByIdAsync(result.Id);
-            return _mapper.Map<PackageItemResponse>(packageItem);
+            return _mapper.Map<ListPackageItemResponse>(packageItem);
         }
 
-        public async Task<PackageItemResponse> Update(PackageItemUpdateRequest request)
+        public async Task<ListPackageItemResponse> Update(PackageItemUpdateRequest request)
         {
             var packageItemCheck = await _packageItemRepository.GetByIdAsync(Guid.Parse(request.Id));
             if (packageItemCheck == null)
@@ -112,7 +112,7 @@ namespace CapstoneProject.Business.Service
             packageItemUpdate.UpdatedAt = DateTimeOffset.Now;
             var result = await _packageItemRepository.EditAsync(packageItemUpdate);
             var packageItem =  await _packageItemRepository.GetByIdAsync(Guid.Parse(request.Id));
-            return result ? _mapper.Map<PackageItemResponse>(packageItem) : null;
+            return result ? _mapper.Map<ListPackageItemResponse>(packageItem) : null;
         }
     }
 }

@@ -16,20 +16,12 @@ using CapstoneProject.Repository.Interface;
 
 namespace CapstoneProject.Business.Service
 {
-    public class PetService : IPetService
+    public class PetService(IPetRepository petRepository, IMapper mapper, IUserRepository userRepository, IPetTypeRepository petTypeRepository) : IPetService
     {
-        private IPetRepository _petRepository;
-        private IUserRepository _userRepository;
-        private IPetTypeRepository _petTypeRepository;
-        private IMapper _mapper;
-
-        public PetService(IPetRepository petRepository, IMapper mapper, IUserRepository userRepository, IPetTypeRepository petTypeRepository)
-        {
-            _mapper = mapper;
-            _petRepository = petRepository;
-            _userRepository = userRepository;
-            _petTypeRepository = petTypeRepository;
-        }
+        private readonly IPetRepository _petRepository = petRepository;
+        private readonly IUserRepository _userRepository = userRepository;
+        private readonly IPetTypeRepository _petTypeRepository = petTypeRepository;
+        private readonly IMapper _mapper = mapper;
 
         public async Task<BaseListResponse<PetResponse>> GetList(ListRequest request)
         {

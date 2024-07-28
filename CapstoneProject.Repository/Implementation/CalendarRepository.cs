@@ -12,13 +12,9 @@ using CapstoneProject.DTO.Request;
 
 namespace CapstoneProject.Repository.Repository
 {
-    public class CalendarRepository : RepositoryGeneric<Calendar>, ICalendarRepository
+    public class CalendarRepository(DbContextOptions<PetpalDbContext> contextOptions) : RepositoryGeneric<Calendar>(contextOptions), ICalendarRepository
     {
         private PetpalDbContext _dbContext;
-        public CalendarRepository(DbContextOptions<PetpalDbContext> contextOptions) : base(contextOptions)
-        {
-            _dbContext = new PetpalDbContext(contextOptions);
-        }
 
         public async Task<List<Calendar>> GetWithPaging(Paging pagingRequest)
         {

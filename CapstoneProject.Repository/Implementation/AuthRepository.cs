@@ -11,14 +11,9 @@ using System.Threading.Tasks;
 
 namespace CapstoneProject.Repository.Repository
 {
-    public class AuthRepository : IAuthRepository
+    public class AuthRepository(DbContextOptions<PetpalDbContext> contextOptions) : IAuthRepository
     {
-        private readonly DbContextOptions<PetpalDbContext> _contextOptions;
-
-        public AuthRepository(DbContextOptions<PetpalDbContext> contextOptions)
-        {
-            _contextOptions = contextOptions;
-        }
+        private readonly DbContextOptions<PetpalDbContext> _contextOptions = contextOptions;
 
         public async Task<User?> GetByUsernameAndPassword(string username, string password)
         {
