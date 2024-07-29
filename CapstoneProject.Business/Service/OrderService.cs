@@ -9,6 +9,7 @@ using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request;
 using CapstoneProject.DTO.Response.Pet;
 using CapstoneProject.DTO.Response.Package;
+using CapstoneProject.DTO.Response.User;
 
 
 namespace CapstoneProject.Business.Service
@@ -42,6 +43,36 @@ namespace CapstoneProject.Business.Service
                     response.Payload.Message = "Hiện tại không thể xác nhận đơn hàng";
                 }
             }
+
+            return response;
+        }
+
+        public async Task<ResponseObject<CountMoneyResponse>> CountMoney()
+        {
+            ResponseObject<CountMoneyResponse> response = new();
+            CountMoneyResponse data = new();
+
+            double money = await _orderRepository.CountMoney();
+            data.Total = money;
+
+            response.Status = StatusCode.OK;
+            response.Payload.Message = "Lấy dữ liệu thành công";
+            response.Payload.Data = data;
+
+            return response;
+        }
+
+        public async Task<ResponseObject<CountOrderResponse>> CountOrder()
+        {
+            ResponseObject<CountOrderResponse> response = new();
+            CountOrderResponse data = new();
+
+            int count = await _orderRepository.Count();
+            data.Count = count;
+
+            response.Status = StatusCode.OK;
+            response.Payload.Message = "Lấy dữ liệu thành công";
+            response.Payload.Data = data;
 
             return response;
         }

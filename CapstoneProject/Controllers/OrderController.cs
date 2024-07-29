@@ -102,5 +102,33 @@ namespace CapstoneProject.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+
+        [HttpGet("count-order")]
+        public async Task<IActionResult> CountOrder()
+        {
+            try
+            {
+                var response = await _orderService.CountOrder();
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpGet("count-money")]
+        public async Task<IActionResult> CountMoney()
+        {
+            try
+            {
+                var response = await _orderService.CountMoney();
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
     }
 }

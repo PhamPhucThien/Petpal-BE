@@ -1,5 +1,6 @@
 ﻿using CapstoneProject.Database;
 using CapstoneProject.Database.Model;
+using CapstoneProject.Database.Model.Meta;
 using CapstoneProject.DTO.Request;
 using CapstoneProject.Repository.Generic;
 using CapstoneProject.Repository.Interface;
@@ -72,6 +73,20 @@ namespace CapstoneProject.Repository.Repository
                          .Take(paging.Size);
 
             return await query.ToListAsync();
+        }
+
+        public async Task<int> Count()
+        {
+            using PetpalDbContext context = new(_contextOptions);
+            int count = await context.Set<Order>().CountAsync();
+            return count;
+        }
+
+        public async Task<double> CountMoney()
+        {
+            using PetpalDbContext context = new(_contextOptions);
+            double money = await context.Set<Order>().Where(a => a.Status == OrderStatus.PAID).SumAsync(x => x.CurrentPrice);
+            return money;
         }
     }
 }
