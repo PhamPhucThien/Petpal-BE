@@ -172,6 +172,7 @@ namespace CapstoneProject.Business.Service
                     PackageResponseModel model = new()
                     {
                         Id = item.Id,
+                        Title = item.Title,
                         Type = item.Type,
                         TotalPrice = item.TotalPrice,
                         Duration = item.Duration,
