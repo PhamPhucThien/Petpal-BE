@@ -16,5 +16,7 @@ namespace CapstoneProject.Business.Interface
         Task<ResponseObject<string>> GetTransactionStatusVNPay();
         Task<ResponseObject<string>> PerformTransaction(Guid orderId);
         Task<ResponseObject<RejectOrderResponse>> RejectRequest(Guid orderId);
+/*        Task<ResponseObject> GetByCareCenterId();
+*/        Task<ResponseObject<GetListOrderResponse>> GetByUserId(Guid userId, GetListOrderById request);
     }
 }

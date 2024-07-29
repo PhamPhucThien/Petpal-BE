@@ -1,5 +1,6 @@
 ﻿using CapstoneProject.Database;
 using CapstoneProject.Database.Model;
+using CapstoneProject.DTO.Request;
 using CapstoneProject.Repository.Generic;
 using CapstoneProject.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
@@ -11,10 +12,66 @@ using System.Threading.Tasks;
 
 namespace CapstoneProject.Repository.Repository
 {
-    public class OrderRepository : RepositoryGeneric<Order>, IOrderRepository
+    public class OrderRepository(DbContextOptions<PetpalDbContext> contextOptions) : RepositoryGeneric<Order>(contextOptions), IOrderRepository
     {
-        public OrderRepository(DbContextOptions<PetpalDbContext> contextOptions) : base(contextOptions)
+        private readonly DbContextOptions<PetpalDbContext> _contextOptions = contextOptions;
+        public async Task<List<Order>?> GetByUserId(Guid userId, Paging paging)
         {
+            ArgumentNullException.ThrowIfNull(paging);
+
+            using PetpalDbContext context = new(_contextOptions);
+            IQueryable<Order> query = context.Set<Order>().
+                Include(od => od.OrderDetail).
+                    ThenInclude(p => p.Package).         
+                    ThenInclude(c => c.CareCenter).
+                Include(od => od.OrderDetail).
+                    ThenInclude(od => od.Pet).
+                Where(x => x.UserId == userId).
+                AsQueryable();
+
+            query = query.Skip(paging.Size * (paging.Page - 1))
+                         .Take(paging.Size);
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<List<Order>?> GetByPartnerId(Guid userId, Paging paging)
+        {
+            ArgumentNullException.ThrowIfNull(paging);
+
+            using PetpalDbContext context = new(_contextOptions);
+            IQueryable<Order> query = context.Set<Order>().
+                Include(od => od.OrderDetail).
+                    ThenInclude(p => p.Package).
+                    ThenInclude(c => c.CareCenter).
+                Include(od => od.OrderDetail).
+                    ThenInclude(od => od.Pet).
+                Where(x => x.OrderDetail != null && x.OrderDetail.Package != null && x.OrderDetail.Package.CareCenter != null && x.OrderDetail.Package.CareCenter.PartnerId == userId).
+                AsQueryable();
+
+            query = query.Skip(paging.Size * (paging.Page - 1))
+                         .Take(paging.Size);
+
+            return await query.ToListAsync();
+        }
+        public async Task<List<Order>?> GetByManagerId(Guid userId, Paging paging)
+        {
+            ArgumentNullException.ThrowIfNull(paging);
+
+            using PetpalDbContext context = new(_contextOptions);
+            IQueryable<Order> query = context.Set<Order>().
+                Include(od => od.OrderDetail).
+                    ThenInclude(p => p.Package).
+                    ThenInclude(c => c.CareCenter).
+                Include(od => od.OrderDetail).
+                    ThenInclude(od => od.Pet).
+                Where(x => x.OrderDetail != null && x.OrderDetail.Package != null && x.OrderDetail.Package.CareCenter != null && x.OrderDetail.Package.CareCenter.ManagerId == userId).
+                AsQueryable();
+
+            query = query.Skip(paging.Size * (paging.Page - 1))
+                         .Take(paging.Size);
+
+            return await query.ToListAsync();
         }
     }
 }

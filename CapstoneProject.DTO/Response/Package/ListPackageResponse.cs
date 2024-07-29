@@ -16,18 +16,18 @@ namespace CapstoneProject.DTO.Response.Package
 
     public class PackageResponseModel
     {
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
         public string? Description { get; set; }
         public string? Duration { get; set; }
         public string? Type { get; set; }
-        public double TotalPrice { get; set; }
+        public double? TotalPrice { get; set; }
         public List<ListPackageItemResponseModel>? Items { get; set; } = [];
     }
 
     public class ListPackageItemResponseModel
     {
-        public Guid Id { get; set; }
-        public double CurrentPrice { get; set; }
+        public Guid? Id { get; set; }
+        public double? CurrentPrice { get; set; }
         public string? Detail { get; set; }
     }
 }

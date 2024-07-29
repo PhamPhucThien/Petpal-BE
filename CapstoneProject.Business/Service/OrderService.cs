@@ -6,6 +6,9 @@ using CapstoneProject.Repository.Interface;
 using CapstoneProject.Database.Model.Meta;
 using System.Transactions;
 using CapstoneProject.DTO;
+using CapstoneProject.DTO.Request;
+using CapstoneProject.DTO.Response.Pet;
+using CapstoneProject.DTO.Response.Package;
 
 
 namespace CapstoneProject.Business.Service
@@ -114,6 +117,87 @@ namespace CapstoneProject.Business.Service
             }
 
             scope.Complete();
+
+            return response;
+        }
+
+        public async Task<ResponseObject<GetListOrderResponse>> GetByUserId(Guid userId, GetListOrderById request)
+        {
+            ResponseObject<GetListOrderResponse> response = new();
+            GetListOrderResponse data = new();
+
+            User? user = await _userRepository.GetByIdAsync(userId);
+
+            if (user == null)
+            {
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Không thể tìm thấy người dùng";
+            } else
+            {
+                List<Order>? list = new();
+
+                Paging paging = new()
+                {
+                    Page = request.Page,
+                    Size = request.Size,
+                    MaxPage = 1
+                };
+
+                if (user.Role == UserRole.CUSTOMER)
+                {
+                    list = await _orderRepository.GetByUserId(userId, paging);
+                } 
+                else if (user.Role == UserRole.MANAGER) {
+                    list = await _orderRepository.GetByManagerId(userId, paging);
+                }
+                else if (user.Role == UserRole.PARTNER)
+                {
+                    list = await _orderRepository.GetByPartnerId(userId, paging);
+                }
+
+                if (list == null)
+                {
+                    response.Status = StatusCode.OK;
+                    response.Payload.Message = "Hiện không có đơn hàng nào";
+                } else
+                {
+                    response.Status = StatusCode.OK;
+                    response.Payload.Message = "Lấy danh sách đơn hàng thành công";
+                    List<OrderResponseModel> orders = [];
+
+                    foreach (var item in list) {
+                        OrderResponseModel model = new()
+                        {
+                            CurrentPrice = item.CurrentPrice,
+                            Detail = item.Detail,
+                            FromDate = (item.OrderDetail?.FromDate),
+                            ToDate = (item.OrderDetail?.ToDate),
+                            ReceiveTime = (item.OrderDetail?.ReceiveTime),
+                            ReturnTime = (item.OrderDetail?.ReturnTime),
+                            Pet = new PetModel
+                            {
+                                Id = item.OrderDetail?.Pet?.Id,
+                                FullName = item.OrderDetail?.Pet?.FullName,
+                                ProfileImage = item.OrderDetail?.Pet?.ProfileImage,
+                                Description = item.OrderDetail?.Pet?.Description
+                            },
+                            Package = new PackageResponseModel
+                            {
+                                Id = item.OrderDetail?.Package?.Id,
+                                Description = item.OrderDetail?.Package?.Description,
+                                Duration = item.OrderDetail?.Package?.Duration,
+                                Type = item.OrderDetail?.Package?.Type,
+                                TotalPrice = item.OrderDetail?.Package?.TotalPrice
+                            }
+                        };
+
+                        orders.Add(model);
+                    }
+
+                    data.Orders = orders;
+                    response.Payload.Data = data;
+                }
+            }
 
             return response;
         }
