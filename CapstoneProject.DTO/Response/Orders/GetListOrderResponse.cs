@@ -1,5 +1,6 @@
 ﻿using CapstoneProject.Database.Model;
 using CapstoneProject.Database.Model.Meta;
+using CapstoneProject.DTO.Request;
 using CapstoneProject.DTO.Response.Package;
 using CapstoneProject.DTO.Response.Pet;
 using System;
@@ -13,7 +14,8 @@ namespace CapstoneProject.DTO.Response.Orders
 {
     public class GetListOrderResponse
     {
-        public List<OrderResponseModel> Orders { get; set; } = new();
+        public List<OrderResponseModel> Orders { get; set; } = [];
+        public Paging Paging { get; set; } = new();
     }
 
     public class OrderResponseModel
