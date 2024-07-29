@@ -1,4 +1,5 @@
 ﻿using CapstoneProject.Database.Model;
+using CapstoneProject.Database.Model.Meta;
 using CapstoneProject.DTO.Response.Package;
 using CapstoneProject.DTO.Response.Pet;
 using System;
@@ -25,5 +26,6 @@ namespace CapstoneProject.DTO.Response.Orders
         public DateTimeOffset? ToDate { get; set; }
         public TimeSpan? ReceiveTime { get; set; }
         public TimeSpan? ReturnTime { get; set; }
+        public OrderStatus Status { get; set; }
     }
 }

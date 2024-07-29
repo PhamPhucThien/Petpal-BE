@@ -174,6 +174,7 @@ namespace CapstoneProject.Business.Service
                             ToDate = (item.OrderDetail?.ToDate),
                             ReceiveTime = (item.OrderDetail?.ReceiveTime),
                             ReturnTime = (item.OrderDetail?.ReturnTime),
+                            Status = item.Status,
                             Pet = new PetModel
                             {
                                 Id = item.OrderDetail?.Pet?.Id,
