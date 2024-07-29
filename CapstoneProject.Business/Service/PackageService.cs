@@ -179,7 +179,7 @@ namespace CapstoneProject.Business.Service
                     };
                     listModel.Add(model);
                 }
-                data.Packages.AddRange(listModel);
+                data.List.AddRange(listModel);
 
 
                 response.Status = StatusCode.OK;
