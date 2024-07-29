@@ -1,5 +1,6 @@
 ﻿using CapstoneProject.Business.Interface;
 using CapstoneProject.DTO.Request.Account;
+using CapstoneProject.DTO.Request.User;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Xml;
@@ -32,6 +33,20 @@ namespace CapstoneProject.Controllers
             try
             {
                 var response = await _authService.Register(request);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost("register-partner")]
+        public async Task<IActionResult> RegisterPartner(CreatePartnerRequest request)
+        {
+            try
+            {
+                var response = await _authService.RegisterPartner(request);
                 return Ok(response);
             }
             catch (Exception ex)

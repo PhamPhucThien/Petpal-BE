@@ -10,7 +10,7 @@ namespace CapstoneProject.DTO.Request.Pet
     public class PetCreateRequest
     {
         [Required(ErrorMessage = "Name is required")]
-        public string? Fullname { get; set; }
+        public string? Fullname { get; set; }   
         [Required(ErrorMessage = "Description is required")]
         public string? Description { get; set; }       
     }
