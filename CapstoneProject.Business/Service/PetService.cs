@@ -104,25 +104,55 @@ namespace CapstoneProject.Business.Service
             return petResponse;
         }
 
-        public async Task<PetResponse> CreatePet(PetCreateRequest request)
+        public async Task<ResponseObject<CreatePetResponse>> CreatePet(Guid userId, PetCreateRequest request)
         {
-            var userCheck =  await _userRepository.GetByIdAsync(Guid.Parse(request.UserId));
-            if (userCheck == null)
+            ResponseObject<CreatePetResponse> response = new();
+            CreatePetResponse data = new();
+
+            User? user = await _userRepository.GetByIdAsync(userId);
+
+            if (user == null)
             {
-                throw new Exception("User id is invalid.");
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Không thể tìm thấy người dùng";
+            }
+            else
+            {
+                if (user.Role == UserRole.CUSTOMER)
+                {
+                    Pet newPet = new()
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = userId,
+                        FullName = request.Fullname,
+                        Description = request.Description,
+                        CreatedAt = DateTime.UtcNow,
+                        CreatedBy = user.Username
+                    };
+
+                    Pet? checkPet = await _petRepository.AddAsync(newPet);
+
+                    if (checkPet != null)
+                    {
+                        response.Status = StatusCode.OK;
+                        response.Payload.Message = "Tạo thú cưng thành công";
+
+                        data.IsSucceed = true;
+                        response.Payload.Data = data;
+                    } else
+                    {
+                        response.Status = StatusCode.BadRequest;
+                        response.Payload.Message = "Tạo thú cưng thất bại";
+                    }
+                }
+                else
+                {
+                    response.Status = StatusCode.BadRequest;
+                    response.Payload.Message = "Chỉ khách hàng mới có thể tạo thú cưng";
+                }
             }
 
-            var petTypeCheck = await _petTypeRepository.GetByIdAsync(Guid.Parse(request.PetTypeId));
-            if (petTypeCheck == null)
-            {
-                throw new Exception("Pet type id is invalid.");
-            }
-            var petCreate = _mapper.Map<Pet>(request);
-            petCreate.CreatedAt = DateTimeOffset.Now;
-            petCreate.CreatedBy = request.CreatedBy;
-            var result = await _petRepository.AddAsync(petCreate);
-            var pet = await _petRepository.GetByIdAsync(result.Id);
-            return _mapper.Map<PetResponse>(pet);
+            return response;
         }
 
         public async Task<PetResponse> UpdatePet(PetUpdateRequest request)

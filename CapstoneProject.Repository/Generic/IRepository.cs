@@ -11,7 +11,7 @@ namespace CapstoneProject.Repository.Generic
     {
         Task<T?> GetByIdAsync(Guid id);
         Task<IEnumerable<T>> GetAll();
-        Task<T> AddAsync(T entity);
+        Task<T?> AddAsync(T entity);
         Task<bool> EditAsync(T entity);
         Task<bool> DeleteByIdAsync(Guid id);
         Task<List<T>> GetWithPaging(Paging pagingRequest);

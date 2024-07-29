@@ -13,14 +13,20 @@ namespace CapstoneProject.Repository.Generic
     {
         private readonly DbContextOptions<PetpalDbContext> _contextOptions = contextOptions ?? throw new ArgumentNullException(nameof(contextOptions));
 
-        public async Task<T> AddAsync(T entity)
+        public async Task<T?> AddAsync(T entity)
         {
             using (PetpalDbContext context = new(_contextOptions))
             {
                 _ = await context.Set<T>().AddAsync(entity);
-                _ = await context.SaveChangesAsync();
+                int check = await context.SaveChangesAsync();
+                if (check > 0)
+                {
+                    return entity;
+                } else
+                {
+                    return null;
+                }
             }
-            return entity;
         }
 
         public async Task<bool> DeleteByIdAsync(Guid id)
