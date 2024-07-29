@@ -21,5 +21,6 @@ namespace CapstoneProject.Database.Model
 
         [ForeignKey("UserId")]
         public User? User { get; set; }
+        public virtual OrderDetail? OrderDetail { get; set; }
     }
 }

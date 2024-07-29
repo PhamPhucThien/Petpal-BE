@@ -1,6 +1,7 @@
 ﻿using CapstoneProject.Business.Interface;
 using CapstoneProject.Business.Service;
 using CapstoneProject.DTO.Request.Order;
+using CapstoneProject.Infrastructure.Extension;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -79,6 +80,21 @@ namespace CapstoneProject.Controllers
             try
             {
                 var response = await _orderService.GetTransactionStatusVNPay();
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost("get-order-request")]
+        public async Task<IActionResult> GetOrderRequest(GetListOrderById request)
+        {
+            try
+            {
+                Guid userId = Guid.Parse(HttpContext.GetName());
+                var response = await _orderService.GetByUserId(userId, request);
                 return Ok(response);
             }
             catch (Exception ex)
