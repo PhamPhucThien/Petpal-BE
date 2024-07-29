@@ -22,6 +22,8 @@ namespace CapstoneProject.Database.Model
         public string? Type { get; set; }
         [Column("total_price")]
         public double TotalPrice { get; set; }
+        [Column("title")]
+        public string? Title { get; set; }
 
         [ForeignKey("CareCenterId")]
         public CareCenter? CareCenter { get; set; }

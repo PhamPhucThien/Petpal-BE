@@ -1,4 +1,6 @@
 ﻿using CapstoneProject.Business.Interface;
+using CapstoneProject.Database.Model.Meta;
+using CapstoneProject.DTO.Request;
 using CapstoneProject.DTO.Request.Base;
 using CapstoneProject.DTO.Request.User;
 using Microsoft.AspNetCore.Http;
@@ -128,5 +130,33 @@ namespace CapstoneProject.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+
+        /*[HttpGet("get-pending-partner")]
+        public async Task<IActionResult> GetPendingPartner(Paging paging)
+        {
+            try
+            {
+                var response = await _userService.GetPendingParter(paging, UserStatus.PENDING);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpGet("get-active-partner")]
+        public async Task<IActionResult> GetPendingPartner(Paging paging)
+        {
+            try
+            {
+                var response = await _userService.GetPendingParter(paging, UserStatus.PENDING);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }*/
     }
 }
