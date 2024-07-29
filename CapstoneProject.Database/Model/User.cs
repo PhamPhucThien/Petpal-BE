@@ -10,11 +10,11 @@ using System.Threading.Tasks;
 namespace CapstoneProject.Database.Model
 {
     [Table("User")]
-    public class User : BaseModel<BaseStatus>
+    public class User : BaseModel<UserStatus>
     {
         [Column("username")]
         public string? Username { get; set; }
-        [Column("password")]
+        [Column("password")]    
         public string? Password { get; set; }
         [Column("full_name")]
         public required string FullName { get; set; }

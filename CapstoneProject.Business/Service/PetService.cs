@@ -13,6 +13,10 @@ using CapstoneProject.DTO.Response.Base;
 using CapstoneProject.DTO.Response.Pet;
 using CapstoneProject.DTO.Response.User;
 using CapstoneProject.Repository.Interface;
+using CapstoneProject.DTO;
+using CapstoneProject.Database.Model.Meta;
+using CapstoneProject.DTO.Response.Orders;
+using CapstoneProject.Repository.Repository;
 
 namespace CapstoneProject.Business.Service
 {
@@ -22,23 +26,69 @@ namespace CapstoneProject.Business.Service
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IPetTypeRepository _petTypeRepository = petTypeRepository;
         private readonly IMapper _mapper = mapper;
+        public StatusCode StatusCode { get; set; } = new();
 
-        public async Task<BaseListResponse<PetResponse>> GetList(ListRequest request)
+        public async Task<ResponseObject<ListPetModel>> GetList(Guid userId, ListRequest request)
         {
-            Paging paging = new()
+            ResponseObject<ListPetModel> response = new();
+            ListPetModel data = new();
+
+            User? user = await _userRepository.GetByIdAsync(userId);
+
+            if (user == null)
             {
-                Page = request.Page,
-                Size = request.Size,
-                MaxPage = 1
-            };
-            var listPet = await _petRepository.GetWithPaging(paging);
-            var listPetResponse = _mapper.Map<List<PetResponse>>(listPet);
-            paging.Total = listPetResponse.Count;
-            BaseListResponse<PetResponse> response = new()
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Không thể tìm thấy người dùng";
+            }
+            else
             {
-                List = listPetResponse,
-                Paging = paging,
-            };
+                List<Pet>? list = [];
+                List<PetModel> petList = [];
+
+                Paging paging = new()
+                {
+                    Page = request.Page,
+                    Size = request.Size,
+                    MaxPage = 1
+                };
+
+                if (user.Role == UserRole.CUSTOMER)
+                {
+                    list = await _petRepository.GetByUserId(userId, paging);
+
+                    if (list != null && list.Count != 0)
+                    {
+                        foreach (var item in list)
+                        {
+                            PetModel model = new()
+                            {
+                                Id = item.Id,
+                                FullName = item.FullName,
+                                ProfileImage = item.ProfileImage,
+                                Description = item.Description,
+                                Status = item.Status
+                            };
+                            petList.Add(model);
+                        }
+                        data.List = petList;
+                        data.Paging = paging;
+
+                        response.Status = StatusCode.OK;
+                        response.Payload.Message = "Lấy dữ liệu thành công";
+                        response.Payload.Data = data;
+                    } else
+                    {
+                        response.Status = StatusCode.OK;
+                        response.Payload.Message = "Bạn chưa có thú cưng nào";
+                    }
+                } 
+                else
+                {
+                    response.Status = StatusCode.BadRequest;
+                    response.Payload.Message = "Chỉ khách hàng mới có thú cưng";
+                }
+            }
+
             return response;
         }
 

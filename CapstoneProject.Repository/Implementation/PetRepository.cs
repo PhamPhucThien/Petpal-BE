@@ -12,22 +12,34 @@ using CapstoneProject.DTO.Request;
 
 namespace CapstoneProject.Repository.Repository
 {
-    public class PetRepository : RepositoryGeneric<Pet>, IPetRepository
+    public class PetRepository(DbContextOptions<PetpalDbContext> contextOptions) : RepositoryGeneric<Pet>(contextOptions), IPetRepository
     {
-        private PetpalDbContext _dbContext;
-        public PetRepository(DbContextOptions<PetpalDbContext> contextOptions) : base(contextOptions)
-        {
-            _dbContext = new PetpalDbContext(contextOptions);
-        }
+        private readonly DbContextOptions<PetpalDbContext> _contextOptions = contextOptions;
 
         public async Task<Pet?> GetByIdAsync(Guid id)
         {
-            return _dbContext.Pets.AsNoTracking().Where(o => o.Id.Equals(id))
+            using PetpalDbContext context = new(_contextOptions);
+
+            return context.Pets.AsNoTracking().Where(o => o.Id.Equals(id))
                 .Include(o => o.PetType)
                 .Include(o => o.User)
                 .FirstOrDefault();
         }
-        
+
+        public async Task<List<Pet>?> GetByUserId(Guid userId, Paging paging)
+        {
+            ArgumentNullException.ThrowIfNull(paging);
+
+            using PetpalDbContext context = new(_contextOptions);
+            IQueryable<Pet> query = context.Set<Pet>().
+                Where(x => x.UserId == userId).
+                AsQueryable();
+
+            query = query.Skip(paging.Size * (paging.Page - 1))
+                         .Take(paging.Size);
+
+            return await query.ToListAsync();
+        }
 
         public async Task<List<Pet>> GetWithPaging(Paging pagingRequest)
         {
@@ -35,8 +47,9 @@ namespace CapstoneProject.Repository.Repository
             {
                 throw new ArgumentNullException(nameof(pagingRequest));
             }
-            
-            IQueryable<Pet> query = _dbContext.Set<Pet>() 
+            using PetpalDbContext context = new(_contextOptions);
+
+            IQueryable<Pet> query = context.Set<Pet>() 
                     .Include(o => o.PetType)
                     .Include(o => o.User)
                     .AsQueryable()

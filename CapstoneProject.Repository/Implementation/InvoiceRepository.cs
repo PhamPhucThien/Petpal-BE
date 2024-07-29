@@ -11,10 +11,7 @@ using System.Threading.Tasks;
 
 namespace CapstoneProject.Repository.Repository
 {
-    public class InvoiceRepository : RepositoryGeneric<Invoice>, IInvoiceRepository
+    public class InvoiceRepository(DbContextOptions<PetpalDbContext> contextOptions) : RepositoryGeneric<Invoice>(contextOptions), IInvoiceRepository
     {
-        public InvoiceRepository(DbContextOptions<PetpalDbContext> contextOptions) : base(contextOptions)
-        {
-        }
     }
 }
