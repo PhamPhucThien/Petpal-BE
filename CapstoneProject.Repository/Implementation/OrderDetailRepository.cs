@@ -11,10 +11,7 @@ using System.Threading.Tasks;
 
 namespace CapstoneProject.Repository.Repository
 {
-    public class OrderDetailRepository : RepositoryGeneric<OrderDetail>, IOrderDetailRepository
+    public class OrderDetailRepository(DbContextOptions<PetpalDbContext> contextOptions) : RepositoryGeneric<OrderDetail>(contextOptions), IOrderDetailRepository
     {
-        public OrderDetailRepository(DbContextOptions<PetpalDbContext> contextOptions) : base(contextOptions)
-        {
-        }
     }
 }

@@ -83,7 +83,7 @@ namespace CapstoneProject.Business.Service
                throw new Exception("Username is duplicated.");
            }
            var userCreate = _mapper.Map<User>(request);
-           userCreate.Status = BaseStatus.ACTIVE;
+           userCreate.Status = UserStatus.ACTIVE;
            userCreate.CreatedBy = request.CreatedBy;
            userCreate.CreatedAt = DateTimeOffset.Now;
            userCreate.Role = UserRole.CUSTOMER;
