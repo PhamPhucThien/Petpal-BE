@@ -1,5 +1,6 @@
 ﻿using CapstoneProject.Database;
 using CapstoneProject.Database.Model;
+using CapstoneProject.Database.Model.Meta;
 using CapstoneProject.Repository.Generic;
 using CapstoneProject.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
@@ -13,5 +14,13 @@ namespace CapstoneProject.Repository.Repository
 {
     public class CareCenterRepository(DbContextOptions<PetpalDbContext> contextOptions) : RepositoryGeneric<CareCenter>(contextOptions), ICareCenterRepository
     {
+        private readonly DbContextOptions<PetpalDbContext> _contextOptions = contextOptions;
+
+        public async Task<CareCenter?> GetByPartnerId(Guid partnerId)
+        {
+            using PetpalDbContext context = new(_contextOptions);
+            CareCenter? careCenter = await context.Set<CareCenter>().Include(m => m.Manager).FirstOrDefaultAsync(x => x.PartnerId == partnerId);
+            return careCenter;
+        }
     }
 }

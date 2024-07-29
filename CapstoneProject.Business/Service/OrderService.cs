@@ -77,7 +77,7 @@ namespace CapstoneProject.Business.Service
             return response;
         }
 
-        public async Task<ResponseObject<CreateOrderResponse>> CreateOrderRequest(CreateOrderRequest request)
+        public async Task<ResponseObject<CreateOrderResponse>> CreateOrderRequest(Guid userId, CreateOrderRequest request)
         {
             ResponseObject<CreateOrderResponse> response = new();
             CreateOrderResponse isSucceed = new() { 
@@ -85,7 +85,7 @@ namespace CapstoneProject.Business.Service
             };
             response.Payload.Data = isSucceed;
 
-            User? user = await _userRepository.GetByIdAsync(request.UserId);
+            User? user = await _userRepository.GetByIdAsync(userId);
             Pet? pet = await _petRepository.GetByIdAsync(request.PetId);
             Package? package = await _packageRepository.GetByIdAsync(request.PackageId);
 

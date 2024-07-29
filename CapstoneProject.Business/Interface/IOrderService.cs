@@ -12,7 +12,7 @@ namespace CapstoneProject.Business.Interface
     public interface IOrderService
     {
         Task<ResponseObject<ApproveOrderResponse>> ApproveRequest(Guid orderId);
-        Task<ResponseObject<CreateOrderResponse>> CreateOrderRequest(CreateOrderRequest request);
+        Task<ResponseObject<CreateOrderResponse>> CreateOrderRequest(Guid userId, CreateOrderRequest request);
         Task<ResponseObject<string>> GetTransactionStatusVNPay();
         Task<ResponseObject<string>> PerformTransaction(Guid orderId);
         Task<ResponseObject<RejectOrderResponse>> RejectRequest(Guid orderId);

@@ -100,5 +100,33 @@ namespace CapstoneProject.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+
+        [HttpPost("approve-partner-registration")]
+        public async Task<IActionResult> ApprovePartnerRegistration(EditPartnerRegistrationRequest request)
+        {
+            try
+            {
+                var response = await _userService.ApprovePartnerRegistration(request);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost("reject-partner-registration")]
+        public async Task<IActionResult> RejestPartnerRegistration(EditPartnerRegistrationRequest request)
+        {
+            try
+            {
+                var response = await _userService.RejestPartnerRegistration(request);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
     }
 }

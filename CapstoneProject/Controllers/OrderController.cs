@@ -23,7 +23,8 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var response = await _orderService.CreateOrderRequest(request);
+                Guid userId = Guid.Parse(HttpContext.GetName());
+                var response = await _orderService.CreateOrderRequest(userId, request);
                 return Ok(response);
             }
             catch (Exception ex)

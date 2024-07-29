@@ -16,36 +16,33 @@ using CapstoneProject.DTO.Response.User;
 using CapstoneProject.Repository.Interface;
 using User = CapstoneProject.Database.Model.User;
 using CapstoneProject.DTO;
+using CapstoneProject.DTO.Response.Account;
+using CapstoneProject.DTO.Response.Orders;
+using CapstoneProject.Repository.Repository;
+using System.Transactions;
 
 namespace CapstoneProject.Business.Service
 {
-    public class UserService : IUserService
-    {
-        private static string ApiKey = "YOUR_API_KEY";
-        private static string Bucket = "your-bucket.appspot.com";
-        private IUserRepository _userRepository;
-        private IMapper _mapper;
+    public class UserService(IUserRepository userRepository, ICareCenterRepository careCenterRepository, IMapper mapper) : IUserService
+    {     
+        private IUserRepository _userRepository = userRepository;
+        private ICareCenterRepository _careCenterRepository = careCenterRepository;
+        private IMapper _mapper = mapper;
         public StatusCode StatusCode { get; set; } = new();
 
-        public UserService(IUserRepository userRepository, IMapper mapper)
-        {
-            _userRepository = userRepository;
-            _mapper = mapper;
-        }
+        /* public Task<bool> UploadProfile(FileStream file)
+         {
+             *//*try
+             {
+                 var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey))
+             } catch (Exception e)
+             {
 
-       /* public Task<bool> UploadProfile(FileStream file)
-        {
-            *//*try
-            {
-                var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey))
-            } catch (Exception e)
-            {
+             }
+             *//*
+         }*/
 
-            }
-            *//*
-        }*/
-        
-       public async Task<BaseListResponse<UserDetailResponse>> GetList(ListRequest request)
+        public async Task<BaseListResponse<UserDetailResponse>> GetList(ListRequest request)
        {
            Paging paging = new()
            {
@@ -122,6 +119,109 @@ namespace CapstoneProject.Business.Service
             response.Status = StatusCode.OK;
             response.Payload.Message = "Lấy dữ liệu thành công";
             response.Payload.Data = data;
+
+            return response;
+        }
+
+        public async Task<ResponseObject<LoginResponse>> ApprovePartnerRegistration(EditPartnerRegistrationRequest request)
+        {
+            ResponseObject<LoginResponse> response = new();
+            LoginResponse data = new();
+            User? partner = await _userRepository.GetByIdAsync(request.PartnerId);
+
+            if (partner != null)
+            {
+                CareCenter? careCenter = await _careCenterRepository.GetByPartnerId(request.PartnerId);
+
+                if (careCenter != null) {
+                    if (careCenter.Manager != null)
+                    {
+                        User? manager = careCenter.Manager;
+
+                        manager.Status = UserStatus.ACTIVE;
+                        partner.Status = UserStatus.ACTIVE;
+                        careCenter.Status = CareCenterStatus.ACTIVE;
+
+                        using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+                        _ = await _careCenterRepository.EditAsync(careCenter);
+                        _ = await _userRepository.EditAsync(manager);
+                        _ = await _userRepository.EditAsync(partner);
+
+                        scope.Complete();
+
+                        response.Status = StatusCode.OK;
+                        response.Payload.Message = "Xác nhận thành công";
+                    }
+                    else
+                    {
+                        response.Status = StatusCode.BadRequest;
+                        response.Payload.Message = "Không tìm thấy thông tin tài khoản của Quản lý";
+                    }
+                } 
+                else
+                {
+                    response.Status = StatusCode.BadRequest;
+                    response.Payload.Message = "Không tìm thấy thông tin trung tâm chăm sóc";
+                }
+            }
+            else
+            {
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Id đối tác không tồn tại";
+            }
+
+            return response;
+        }
+
+        public async Task<ResponseObject<LoginResponse>> RejestPartnerRegistration(EditPartnerRegistrationRequest request)
+        {
+            ResponseObject<LoginResponse> response = new();
+            LoginResponse data = new();
+            User? partner = await _userRepository.GetByIdAsync(request.PartnerId);
+
+            if (partner != null)
+            {
+                CareCenter? careCenter = await _careCenterRepository.GetByPartnerId(request.PartnerId);
+
+                if (careCenter != null)
+                {
+                    if (careCenter.Manager != null)
+                    {
+                        User? manager = careCenter.Manager;
+
+                        manager.Status = UserStatus.REJECTED;
+                        partner.Status = UserStatus.REJECTED;
+                        careCenter.Status = CareCenterStatus.REJECTED;
+
+                        using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+                        _ = await _careCenterRepository.EditAsync(careCenter);
+                        _ = await _userRepository.EditAsync(manager);
+                        _ = await _userRepository.EditAsync(partner);
+
+                        scope.Complete();
+
+                        response.Status = StatusCode.OK;
+                        response.Payload.Message = "Từ chối thành công";
+                    }
+                    else
+                    {
+                        response.Status = StatusCode.BadRequest;
+                        response.Payload.Message = "Không tìm thấy thông tin tài khoản của Quản lý";
+                    }
+                }
+                else
+                {
+                    response.Status = StatusCode.BadRequest;
+                    response.Payload.Message = "Không tìm thấy thông tin trung tâm chăm sóc";
+                }
+            }
+            else
+            {
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Id đối tác không tồn tại";
+            }
 
             return response;
         }
