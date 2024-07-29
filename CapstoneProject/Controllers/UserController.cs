@@ -86,5 +86,19 @@ namespace CapstoneProject.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+
+        [HttpGet("count-user")]
+        public async Task<IActionResult> CountUser()
+        {
+            try
+            {
+                var response = await _userService.CountUser();
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
     }
 }

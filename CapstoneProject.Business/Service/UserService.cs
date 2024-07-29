@@ -15,6 +15,7 @@ using CapstoneProject.DTO.Response.Base;
 using CapstoneProject.DTO.Response.User;
 using CapstoneProject.Repository.Interface;
 using User = CapstoneProject.Database.Model.User;
+using CapstoneProject.DTO;
 
 namespace CapstoneProject.Business.Service
 {
@@ -24,6 +25,7 @@ namespace CapstoneProject.Business.Service
         private static string Bucket = "your-bucket.appspot.com";
         private IUserRepository _userRepository;
         private IMapper _mapper;
+        public StatusCode StatusCode { get; set; } = new();
 
         public UserService(IUserRepository userRepository, IMapper mapper)
         {
@@ -108,5 +110,20 @@ namespace CapstoneProject.Business.Service
            var updateStatus = await _userRepository.EditAsync(userUpdate);
            return updateStatus ? _mapper.Map<UserDetailResponse>(userUpdate) : null;
        }
+
+        public async Task<ResponseObject<CountUserResponse>> CountUser()
+        {
+            ResponseObject<CountUserResponse> response = new();
+            CountUserResponse data = new();
+
+            int count = await _userRepository.Count();
+            data.Count = count;
+
+            response.Status = StatusCode.OK;
+            response.Payload.Message = "Lấy dữ liệu thành công";
+            response.Payload.Data = data;
+
+            return response;
+        }
     }
 }

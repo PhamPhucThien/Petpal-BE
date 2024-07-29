@@ -11,17 +11,22 @@ using System.Threading.Tasks;
 
 namespace CapstoneProject.Repository.Repository
 {
-    public class UserRepository : RepositoryGeneric<User>, IUserRepository
+    public class UserRepository(DbContextOptions<PetpalDbContext> contextOptions) : RepositoryGeneric<User>(contextOptions), IUserRepository
     {
-        private PetpalDbContext _dbContext;
-        public UserRepository(DbContextOptions<PetpalDbContext> contextOptions) : base(contextOptions)
+        private readonly DbContextOptions<PetpalDbContext> _contextOptions = contextOptions;
+
+        public async Task<int> Count()
         {
-            _dbContext = new PetpalDbContext(contextOptions);
+            using PetpalDbContext context = new(_contextOptions);
+            int count = await context.Set<User>().CountAsync();
+            return count;
         }
 
         public User GetUserByUsername(string username)
         {
-            return _dbContext.Users.Where(o => o.Username.Equals(username))
+            using PetpalDbContext context = new(_contextOptions);
+
+            return context.Users.Where(o => o.Username.Equals(username))
                 .FirstOrDefault();
         }
     }

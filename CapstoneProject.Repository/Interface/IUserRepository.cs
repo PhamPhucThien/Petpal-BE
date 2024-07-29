@@ -10,6 +10,7 @@ namespace CapstoneProject.Repository.Interface
 {
     public interface IUserRepository : IRepository<User>
     {
+        Task<int> Count();
         public User GetUserByUsername(string username);
     }
 }
