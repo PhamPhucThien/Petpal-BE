@@ -30,5 +30,7 @@ namespace CapstoneProject.Database.Model
         public string? Email { get; set; }
         [Column("role", TypeName = "nvarchar(30)")]
         public UserRole Role { get; set; }
+
+        public virtual List<Pet>? Pets { get; set; }
     }
 }
