@@ -10,7 +10,7 @@ namespace CapstoneProject.DTO.Response.Package
 {
     public class ListPackageResponse
     {
-        public List<PackageResponseModel> Packages { get; set; } = [];
+        public List<PackageResponseModel> List { get; set; } = [];
         public Paging Paging { get; set; } = new();
     }
 
