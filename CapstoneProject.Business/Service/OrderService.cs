@@ -196,6 +196,7 @@ namespace CapstoneProject.Business.Service
                     }
 
                     data.Orders = orders;
+                    data.Paging = paging;
                     response.Payload.Data = data;
                 }
             }
