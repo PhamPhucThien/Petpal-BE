@@ -1,8 +1,11 @@
 ﻿using CapstoneProject.Business.Interface;
 using CapstoneProject.Database.Model.Meta;
+using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request;
 using CapstoneProject.DTO.Request.Base;
 using CapstoneProject.DTO.Request.User;
+using CapstoneProject.DTO.Response.Base;
+using CapstoneProject.DTO.Response.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -38,7 +41,11 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var response = await _userService.GetList(request);
+                var userList = await _userService.GetList(request);
+                var response = new ResponseObject<BaseListResponse<UserDetailResponse>>();
+                response.Status = StatusCodes.Status200OK.ToString();
+                response.Payload.Message = "Get all user successfully";
+                response.Payload.Data = userList;
                 return Ok(response);
             }
             catch (Exception ex)
@@ -52,7 +59,11 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var response = await _userService.GetUserById(userId);
+                var userResponse = await _userService.GetUserById(userId);
+                var response = new ResponseObject<UserDetailResponse>();
+                response.Status = StatusCodes.Status200OK.ToString();
+                response.Payload.Message = "Get user successfully";
+                response.Payload.Data = userResponse;
                 return Ok(response);
             }
             catch (Exception ex)
@@ -66,7 +77,11 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var response = await _userService.CreateUser(request);
+                var userResponse = await _userService.CreateUser(request);
+                var response = new ResponseObject<UserDetailResponse>();
+                response.Status = StatusCodes.Status200OK.ToString();
+                response.Payload.Message = "Create user successfully";
+                response.Payload.Data = userResponse;
                 return Ok(response);
             }
             catch (Exception ex)
@@ -80,7 +95,11 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var response = await _userService.UpdateUser(request);
+                var userResponse = await _userService.UpdateUser(request);
+                var response = new ResponseObject<UserDetailResponse>();
+                response.Status = StatusCodes.Status200OK.ToString();
+                response.Payload.Message = "Update user successfully";
+                response.Payload.Data = userResponse;
                 return Ok(response);
             }
             catch (Exception ex)
