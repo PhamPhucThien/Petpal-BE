@@ -1,7 +1,9 @@
 ﻿using CapstoneProject.Business.Interface;
+using CapstoneProject.Database.Model.Meta;
 using CapstoneProject.DTO.Request.Base;
 using CapstoneProject.DTO.Request.Pet;
 using CapstoneProject.Infrastructure.Extension;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,11 +18,10 @@ namespace CapstoneProject.Controllers
         public PetController(IPetService petService)
         {
             _petService = petService;
-        }
-        
-        
+        }        
         
         [HttpPost("get-list")]
+        [Authorize(Roles = "CUSTOMER")]
         public async Task<IActionResult> GetList(ListRequest request)
         {
             try
