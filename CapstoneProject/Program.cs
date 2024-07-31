@@ -1,5 +1,11 @@
+using CapstoneProject.Database.Model.Meta;
 using CapstoneProject.Infrastructure;
+using Firebase.Storage;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -14,12 +20,31 @@ configurationBuilder.AddJsonFile("appsettings.json", optional: true, reloadOnCha
 IConfiguration configuration = configurationBuilder.Build();
 // Add services to the container.
 
-
 builder.Services.AddControllers().AddJsonOptions(x =>
 {
     x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
+
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var problemDetailsFactory = context.HttpContext.RequestServices.GetRequiredService<ProblemDetailsFactory>();
+            ValidationProblemDetails problemDetails = problemDetailsFactory.CreateValidationProblemDetails(context.HttpContext, context.ModelState, 422);
+
+            return new ObjectResult(problemDetails)
+            {
+                StatusCode = 422
+            };
+        }
+    );
+
 builder.Services.AddEndpointsApiExplorer();
+
+FirebaseApp.Create(new AppOptions()
+{
+    Credential = GoogleCredential.FromFile("petpal-c6642-firebase-adminsdk-45893-ad2d528fff.json")    
+});
 
 /*builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.ConfigureServiceManager();*/

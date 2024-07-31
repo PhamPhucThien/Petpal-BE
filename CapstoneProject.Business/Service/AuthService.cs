@@ -7,6 +7,7 @@ using CapstoneProject.DTO.Response.Account;
 using CapstoneProject.Repository.Interface;
 using CapstoneProject.Repository.Repository;
 using System.Transactions;
+using System.Web;
 
 
 namespace CapstoneProject.Business.Service
@@ -102,20 +103,20 @@ namespace CapstoneProject.Business.Service
             LoginResponse data = new();
 
             User? partner = await _authRepository.GetByUsername(request.Partner.Username);
-            User? manager = await _authRepository.GetByUsername(request.Manager.Username);
-
+/*            User? manager = await _authRepository.GetByUsername(request.Manager.Username);
+*/
             if (partner != null)
             {
                 response.Status = StatusCode.BadRequest;
                 response.Payload.Message = "Đã tồn tại tên tài khoản của đối tác, xin vui lòng nhập lại";
                 response.Payload.Data = null;
             }
-            else if (manager != null)
+            /*else if (manager != null)
             {
                 response.Status = StatusCode.BadRequest;
                 response.Payload.Message = "Đã tồn tại tên tài khoản của quản lý, xin vui lòng nhập lại";
                 response.Payload.Data = null;
-            }
+            }*/
             else
             {
                 response.Status = StatusCode.OK;
@@ -138,7 +139,7 @@ namespace CapstoneProject.Business.Service
                     CreatedBy = request.Partner.Username
                 };
 
-                User newManager = new()
+                /*User newManager = new()
                 {
                     Id = Guid.NewGuid(),
                     Username = request.Manager.Username,
@@ -161,11 +162,11 @@ namespace CapstoneProject.Business.Service
                     Status = Database.Model.Meta.CareCenterStatus.PENDING,
                     CreatedAt = DateTime.UtcNow,
                     CreatedBy = request.Partner.Username
-                };
+                };*/
 
                 User? checkUser = await _userRepository.AddAsync(newPartner);
-                _ = await _userRepository.AddAsync(newManager);
-                _ = await _careCenterRepository.AddAsync(newCareCenter);
+/*                _ = await _userRepository.AddAsync(newManager);
+                _ = await _careCenterRepository.AddAsync(newCareCenter);*/
 
                 if (checkUser != null)
                 {
@@ -187,5 +188,7 @@ namespace CapstoneProject.Business.Service
             }
             return response;
         }
+
+   
     }
 }

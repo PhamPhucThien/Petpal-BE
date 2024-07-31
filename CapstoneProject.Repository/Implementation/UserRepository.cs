@@ -1,5 +1,7 @@
 ﻿using CapstoneProject.Database;
 using CapstoneProject.Database.Model;
+using CapstoneProject.Database.Model.Meta;
+using CapstoneProject.DTO.Request;
 using CapstoneProject.Repository.Generic;
 using CapstoneProject.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +30,29 @@ namespace CapstoneProject.Repository.Repository
 
             return context.Users.Where(o => o.Username.Equals(username))
                 .FirstOrDefault();
+        }
+
+        public async Task<List<User>?> GetWithPagingAndStatusAndRole(Paging paging, UserStatus? status, UserRole? role)
+        {
+            ArgumentNullException.ThrowIfNull(paging);
+
+            using PetpalDbContext context = new(_contextOptions);
+            IQueryable<User> query = context.Set<User>().AsQueryable();
+
+            if (status != null)
+            {
+                query = query.Where(o => o.Status == status);
+            }
+
+            if (role != null)
+            {
+                query = query.Where(o => o.Role == role);
+            }
+
+            query = query.Skip(paging.Size * (paging.Page - 1))
+                         .Take(paging.Size);
+
+            return await query.ToListAsync();
         }
     }
 }

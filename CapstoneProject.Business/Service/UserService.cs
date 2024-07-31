@@ -20,6 +20,8 @@ using CapstoneProject.DTO.Response.Account;
 using CapstoneProject.DTO.Response.Orders;
 using CapstoneProject.Repository.Repository;
 using System.Transactions;
+using Firebase.Storage;
+using Newtonsoft.Json;
 
 namespace CapstoneProject.Business.Service
 {
@@ -131,7 +133,7 @@ namespace CapstoneProject.Business.Service
 
             if (partner != null)
             {
-                CareCenter? careCenter = await _careCenterRepository.GetByPartnerId(request.PartnerId);
+                /*CareCenter? careCenter = await _careCenterRepository.GetByPartnerId(request.PartnerId);
 
                 if (careCenter != null) {
                     if (careCenter.Manager != null)
@@ -163,7 +165,17 @@ namespace CapstoneProject.Business.Service
                 {
                     response.Status = StatusCode.BadRequest;
                     response.Payload.Message = "Không tìm thấy thông tin trung tâm chăm sóc";
-                }
+                }*/
+                partner.Status = UserStatus.ACTIVE;
+
+                using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+                _ = await _userRepository.EditAsync(partner);
+
+                scope.Complete();
+
+                response.Status = StatusCode.OK;
+                response.Payload.Message = "Xác nhận thành công";
             }
             else
             {
@@ -182,7 +194,7 @@ namespace CapstoneProject.Business.Service
 
             if (partner != null)
             {
-                CareCenter? careCenter = await _careCenterRepository.GetByPartnerId(request.PartnerId);
+                /*CareCenter? careCenter = await _careCenterRepository.GetByPartnerId(request.PartnerId);
 
                 if (careCenter != null)
                 {
@@ -215,7 +227,17 @@ namespace CapstoneProject.Business.Service
                 {
                     response.Status = StatusCode.BadRequest;
                     response.Payload.Message = "Không tìm thấy thông tin trung tâm chăm sóc";
-                }
+                }*/
+                partner.Status = UserStatus.REJECTED;
+
+                using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+
+                _ = await _userRepository.EditAsync(partner);
+
+                scope.Complete();
+
+                response.Status = StatusCode.OK;
+                response.Payload.Message = "Từ chối thành công";
             }
             else
             {
@@ -224,6 +246,74 @@ namespace CapstoneProject.Business.Service
             }
 
             return response;
+        }
+
+        public async Task<ResponseObject<ListUserResponse>> GetUser(ListRequest request, UserStatus? status, UserRole? role)
+        {
+            ResponseObject<ListUserResponse> response = new();
+            ListUserResponse data = new();
+
+            Paging paging = new()
+            {
+                Page = request.Page,
+                Size = request.Size,
+                MaxPage = 1
+            };
+
+            List<User>? list = await _userRepository.GetWithPagingAndStatusAndRole(paging, status, role);
+            List<UserModel> modelList = new();
+
+            if (list != null)
+            {
+                foreach (var item in list)
+                {
+                    UserModel model = new()
+                    {
+                        Username = item.Username,
+                        FullName = item.FullName,
+                        Address = item.Address,
+                        Email = item.Email,
+                        PhoneNumber = item.PhoneNumber,
+                        Role = item.Role
+                    };
+                    modelList.Add(model);
+                }
+
+                response.Status = StatusCode.OK;
+                response.Payload.Message = "Lấy dữ liệu thành công";
+                data.List = modelList;
+                data.Paging = paging;
+                response.Payload.Data = data;
+            } else
+            {
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Không có bát cứ tài khoản nào";
+            }
+
+            return response;
+        }
+
+        public async Task<int> UploadProfile(Guid userId, List<FileDetails> filesDetail)
+        {
+            int count = 0;
+
+            foreach (var file in filesDetail)
+            {
+                if (file.FileData != null)
+                {
+                    using var stream = new MemoryStream(file.FileData);
+
+                    var task = new FirebaseStorage("petpal-c6642.appspot.com")
+                        .Child(file.FileName)
+                        .PutAsync(stream);
+
+                    var downloadUrl = await task;
+
+                    count++;
+                }
+            }
+
+            return count;
         }
     }
 }

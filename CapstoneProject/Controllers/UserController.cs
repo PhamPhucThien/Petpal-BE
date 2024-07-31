@@ -1,9 +1,13 @@
-﻿using CapstoneProject.Business.Interface;
+﻿using CapstoneProject.Business;
+using CapstoneProject.Business.Interface;
+using CapstoneProject.Business.Service;
 using CapstoneProject.Database.Model.Meta;
 using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request;
 using CapstoneProject.DTO.Request.Base;
 using CapstoneProject.DTO.Request.User;
+using CapstoneProject.DTO.Response;
+using CapstoneProject.Infrastructure.Extension;
 using CapstoneProject.DTO.Response.Base;
 using CapstoneProject.DTO.Response.User;
 using Microsoft.AspNetCore.Http;
@@ -16,6 +20,7 @@ namespace CapstoneProject.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        public StatusCode StatusCode { get; set; } = new();
 
         public UserController(IUserService userService)
         {
@@ -150,12 +155,12 @@ namespace CapstoneProject.Controllers
             }
         }
 
-        /*[HttpGet("get-pending-partner")]
-        public async Task<IActionResult> GetPendingPartner(Paging paging)
+        [HttpPost("get-pending-partner")]
+        public async Task<IActionResult> GetPendingPartner(ListRequest request)
         {
             try
             {
-                var response = await _userService.GetPendingParter(paging, UserStatus.PENDING);
+                var response = await _userService.GetUser(request, UserStatus.PENDING, UserRole.PARTNER);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -164,18 +169,57 @@ namespace CapstoneProject.Controllers
             }
         }
 
-        [HttpGet("get-active-partner")]
-        public async Task<IActionResult> GetPendingPartner(Paging paging)
+        [HttpPost("get-user")]
+        public async Task<IActionResult> GetUser(ListRequest request)
         {
             try
             {
-                var response = await _userService.GetPendingParter(paging, UserStatus.PENDING);
+                var response = await _userService.GetUser(request, null, null);
                 return Ok(response);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
-        }*/
+        }
+
+        [HttpPost("upload-profile")]
+        public async Task<IActionResult> UploadProfile(List<IFormFile> files)
+        {
+            try
+            {
+                Guid userId = Guid.Parse(HttpContext.GetName());
+                List<FileDetails> filesDetail = [];
+                
+                foreach (var file in files)
+                {
+                    if (file.Length > 0)
+                    {
+                        FileDetails data = new();
+                        using var stream = new MemoryStream();
+                        await file.CopyToAsync(stream);
+                        data.FileName = Path.GetFileName(file.FileName);
+                        data.TempPath = Path.GetTempFileName();
+                        data.FileData = stream.ToArray();
+                        filesDetail.Add(data);
+                    }
+                }
+
+                var response = await _userService.UploadProfile(userId, filesDetail);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return Ok(new ResponseObject<ExceptionClass>()
+                {
+                    Status = StatusCode.BadRequest,
+                    Payload = new Payload<ExceptionClass>()
+                    {
+                        Message = ex.Message.ToString(),
+                        Data = null
+                    }
+                });    
+            }
+        }
     }
 }

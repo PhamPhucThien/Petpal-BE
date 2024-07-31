@@ -12,8 +12,21 @@ namespace CapstoneProject.DTO.Request.User
     public class CreatePartnerRequest
     {
         public RegisterRequest Partner { get; set; } = new();
+        public PaymentModel Payment { get; set; } = new();
+    }
+
+    public class CreateCareCenterRequest
+    {
         public CareCenterModel CareCenter { get; set; } = new();
-        public ManagerModel Manager { get; set; } = new();
+        public RegisterRequest Manager { get; set; } = new();
+    }
+
+    public class PaymentModel
+    {
+        public string? Name { get; set; }
+        public string? AccountNumber { get; set; }
+        public string? CreateBy { get; set; }
+        public string? CreateAt { get; set; }
     }
 
     public class CareCenterModel {
