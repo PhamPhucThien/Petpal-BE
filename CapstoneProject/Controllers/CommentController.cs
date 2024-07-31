@@ -1,7 +1,10 @@
 ﻿using CapstoneProject.Business.Interface;
+using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request.Base;
 using CapstoneProject.DTO.Request.Blog;
 using CapstoneProject.DTO.Request.Comment;
+using CapstoneProject.DTO.Response.Base;
+using CapstoneProject.DTO.Response.Comment;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +26,11 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var response = await _commentService.GetList(request);
+                var listComment = await _commentService.GetList(request);
+                var response = new ResponseObject<BaseListResponse<CommentResponse>>();
+                response.Status = StatusCodes.Status200OK.ToString();
+                response.Payload.Message = "Get all comment successfully";
+                response.Payload.Data = listComment;
                 return Ok(response);
             }
             catch (Exception ex)
@@ -37,7 +44,11 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var response = await _commentService.GetById(commentId);
+                var commentResponse = await _commentService.GetById(commentId);
+                var response = new ResponseObject<CommentResponse>();
+                response.Status = StatusCodes.Status200OK.ToString();
+                response.Payload.Message = "Get comment successfully";
+                response.Payload.Data = commentResponse;
                 return Ok(response);
             }
             catch (Exception ex)
@@ -51,7 +62,11 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var response = await _commentService.Create(request);
+                var commentResponse = await _commentService.Create(request);
+                var response = new ResponseObject<CommentResponse>();
+                response.Status = StatusCodes.Status200OK.ToString();
+                response.Payload.Message = "Create comment successfully";
+                response.Payload.Data = commentResponse;
                 return Ok(response);
             }
             catch (Exception ex)
@@ -65,7 +80,11 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var response = await _commentService.Update(request);
+                var commentResponse = await _commentService.Update(request);
+                var response = new ResponseObject<CommentResponse>();
+                response.Status = StatusCodes.Status200OK.ToString();
+                response.Payload.Message = "Update comment successfully";
+                response.Payload.Data = commentResponse;
                 return Ok(response);
             }
             catch (Exception ex)

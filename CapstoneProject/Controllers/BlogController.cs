@@ -1,8 +1,11 @@
 ﻿using CapstoneProject.Business.Interface;
 using CapstoneProject.Business.Service;
+using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request.Base;
 using CapstoneProject.DTO.Request.Blog;
 using CapstoneProject.DTO.Request.Pet;
+using CapstoneProject.DTO.Response.Base;
+using CapstoneProject.DTO.Response.Blog;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +22,11 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var response = await _blogService.GetList(request);
+                var listResponse = await _blogService.GetList(request);
+                var response = new ResponseObject<BaseListResponse<BlogResponse>>();
+                response.Status = StatusCodes.Status200OK.ToString();
+                response.Payload.Message = "Get all successfully";
+                response.Payload.Data = listResponse;
                 return Ok(response);
             }
             catch (Exception ex)
@@ -29,11 +36,15 @@ namespace CapstoneProject.Controllers
         }
         
         [HttpGet("get-blog{blogId}")]
-        public async Task<IActionResult> GetPetById(string blogId)
+        public async Task<IActionResult> getBlogById(string blogId)
         {
             try
             {
-                var response = await _blogService.GetById(blogId);
+                var blogResponse = await _blogService.GetById(blogId);
+                var response = new ResponseObject<BlogResponse>();
+                response.Status = StatusCodes.Status200OK.ToString();
+                response.Payload.Message = "Get blog successfully";
+                response.Payload.Data = blogResponse;
                 return Ok(response);
             }
             catch (Exception ex)
@@ -47,7 +58,11 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var response = await _blogService.Create(request);
+                var blogResponse = await _blogService.Create(request);
+                var response = new ResponseObject<BlogResponse>();
+                response.Status = StatusCodes.Status200OK.ToString();
+                response.Payload.Message = "Create successfully";
+                response.Payload.Data = blogResponse;
                 return Ok(response);
             }
             catch (Exception ex)
@@ -61,7 +76,11 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var response = await _blogService.Update(request);
+                var blogResponse = await _blogService.Update(request);
+                var response = new ResponseObject<BlogResponse>();
+                response.Status = StatusCodes.Status200OK.ToString();
+                response.Payload.Message = "Update successfully";
+                response.Payload.Data = blogResponse;
                 return Ok(response);
             }
             catch (Exception ex)

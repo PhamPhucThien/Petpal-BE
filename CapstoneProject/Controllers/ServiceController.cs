@@ -1,7 +1,10 @@
 ﻿using CapstoneProject.Business.Interface;
+using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request.Base;
 using CapstoneProject.DTO.Request.PetType;
 using CapstoneProject.DTO.Request.Service;
+using CapstoneProject.DTO.Response.Base;
+using CapstoneProject.DTO.Response.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,7 +26,11 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var response = await _serviceService.GetList(request);
+                var serviceList = await _serviceService.GetList(request);
+                var response = new ResponseObject<BaseListResponse<ServiceResponse>>();
+                response.Status = StatusCodes.Status200OK.ToString();
+                response.Payload.Message = "Get all service successfully";
+                response.Payload.Data = serviceList;
                 return Ok(response);
             }
             catch (Exception ex)
@@ -37,7 +44,11 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var response = await _serviceService.GetById(serviceId);
+                var serviceResponse = await _serviceService.GetById(serviceId);
+                var response = new ResponseObject<ServiceResponse>();
+                response.Status = StatusCodes.Status200OK.ToString();
+                response.Payload.Message = "Get service successfully";
+                response.Payload.Data = serviceResponse;
                 return Ok(response);
             }
             catch (Exception ex)
@@ -51,7 +62,11 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var response = await _serviceService.Create(request);
+                var serviceResponse = await _serviceService.Create(request);
+                var response = new ResponseObject<ServiceResponse>();
+                response.Status = StatusCodes.Status200OK.ToString();
+                response.Payload.Message = "Create service successfully";
+                response.Payload.Data = serviceResponse;
                 return Ok(response);
             }
             catch (Exception ex)
@@ -65,7 +80,11 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var response = await _serviceService.Update(request);
+                var serviceResponse = await _serviceService.Update(request);
+                var response = new ResponseObject<ServiceResponse>();
+                response.Status = StatusCodes.Status200OK.ToString();
+                response.Payload.Message = "Create service successfully";
+                response.Payload.Data = serviceResponse;
                 return Ok(response);
             }
             catch (Exception ex)
