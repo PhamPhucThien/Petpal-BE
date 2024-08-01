@@ -22,7 +22,7 @@ namespace CapstoneProject.DTO.Request.Account
         [StringLength(300, ErrorMessage = "Độ dài địa chỉ không quá 300 ký tự")]
         public string? Address { get; set; }
         [Required]
-        [StringLength(10, MinimumLength = 10, ErrorMessage = "Độ dài số điện thoại phải từ 8 đến 15 ký tự")]
+        [StringLength(10, MinimumLength = 10, ErrorMessage = "Độ dài số điện thoại phải là 10 số")]
         [RegularExpression("^[0-9]*$", ErrorMessage = "Chỉ được nhập số")]
         public string? PhoneNumber { get; set; }
         [Required]

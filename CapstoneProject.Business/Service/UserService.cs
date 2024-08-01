@@ -54,21 +54,86 @@ namespace CapstoneProject.Business.Service
             return response;
         }
 
-        public async Task<UserDetailResponse> GetUserById(string userID)
+        public async Task<ResponseObject<UserDetailResponse>> GetUserById(Guid userId)
         {
-            User? user = await _userRepository.GetByIdAsync(Guid.Parse(userID));
-            if (user == null)
-            {
-                throw new Exception("Not found User with this id");
+            ResponseObject<UserDetailResponse> response = new();
+            UserDetailResponse data = new();
+            User? user = await _userRepository.GetByIdAsync(userId);
 
+            if (user != null)
+            {
+                response.Status = StatusCode.OK;
+                response.Payload.Message = "Truy vấn thông tin thành công";
+
+                /*data.Username = user.Username;
+                data.FullName = user.FullName;
+                data.Address = user.Address;
+                data.PhoneNumber = user.PhoneNumber;
+                data.Email = user.Email;
+                data.RoomId = user.RoomId;
+                data.ProfileImage = user.ProfileImage;
+                data.Role = user.Role.ToString();*/
+
+                data = _mapper.Map<UserDetailResponse>(user);
+                response.Payload.Data = data;
+            } else
+            {
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Id người dùng không tồn tại";
+                response.Payload.Data = null;
             }
-            UserDetailResponse userResponse = _mapper.Map<UserDetailResponse>(user);
-            return userResponse;
+
+            return response;
 
         }
 
-        public async Task<UserDetailResponse> CreateUser(UserCreateRequest request)
+        /*public async Task<ResponseObject<UserDetailResponse>> CreateUser(Guid userId, UserCreateRequest request)
         {
+            ResponseObject<UserDetailResponse> response = new();
+            UserDetailResponse data = new();
+            User? user = await _userRepository.GetByIdAsync(userId);
+
+            if (user != null)
+            {
+                user.FullName = request.Fullname ?? user.FullName;
+                user.Address = request.Address ?? user.Address;
+                user.PhoneNumber = request.PhoneNumber ?? user.PhoneNumber;
+                user.RoomId = request.RoomId ?? user.RoomId;
+                user.Email = request.Email ?? request.Email;
+
+                user.UpdatedBy = user.Username;
+                user.UpdatedAt = DateTimeOffset.Now;
+
+                bool check = await _userRepository.EditAsync(user);
+
+                if (check)
+                {
+                    response.Status = StatusCode.OK;
+                    response.Payload.Message = "Thay đổi thông tin thành công";
+
+                    data.Username = user.Username;
+                    data.FullName = user.FullName;
+                    data.Address = user.Address;
+                    data.PhoneNumber = user.PhoneNumber;
+                    data.Email = user.Email;
+                    data.RoomId = user.RoomId;
+                    data.ProfileImage = user.ProfileImage;
+                    data.Role = user.Role.ToString();
+
+                    response.Payload.Data = data;
+                }
+                else
+                {
+                    response.Status = StatusCode.BadRequest;
+                    response.Payload.Message = "Thay đổi thông tin thất bại";
+                    response.Payload.Data = null;
+                }
+            }
+
+            return response;
+
+
+
             User userCheck = _userRepository.GetUserByUsername(request.Username);
             if (userCheck != null)
             {
@@ -81,7 +146,7 @@ namespace CapstoneProject.Business.Service
             userCreate.Role = UserRole.CUSTOMER;
             User? user = await _userRepository.AddAsync(userCreate);
             return _mapper.Map<UserDetailResponse>(user);
-        }
+        }*/
 
         public async Task<ResponseObject<UserDetailResponse>> UpdateUser(Guid userId, UserUpdateRequest request, List<FileDetails> fileDetails)
         {
@@ -123,6 +188,7 @@ namespace CapstoneProject.Business.Service
                     data.Email = user.Email;
                     data.RoomId = user.RoomId;
                     data.ProfileImage = user.ProfileImage;
+                    data.Role = user.Role.ToString();
                     
                     response.Payload.Data = data;
                 }
@@ -319,11 +385,6 @@ namespace CapstoneProject.Business.Service
             }
 
             return response;
-        }
-
-        public Task<int> UploadProfile(Guid userId, List<FileDetails> filesDetail)
-        {
-            throw new NotImplementedException();
         }
     }
 }

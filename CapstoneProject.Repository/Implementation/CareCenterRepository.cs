@@ -22,5 +22,12 @@ namespace CapstoneProject.Repository.Repository
             CareCenter? careCenter = await context.Set<CareCenter>().Include(m => m.Manager).FirstOrDefaultAsync(x => x.PartnerId == partnerId);
             return careCenter;
         }
+
+        public async Task<CareCenter?> GetCareCenterByIdAsync(Guid careCenterId)
+        {
+            using PetpalDbContext context = new(_contextOptions);
+            CareCenter? careCenter = await context.Set<CareCenter>().Include(m => m.Manager).FirstOrDefaultAsync(x => x.Id == careCenterId);
+            return careCenter;
+        }
     }
 }

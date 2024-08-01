@@ -25,22 +25,16 @@ namespace CapstoneProject.DTO.Request.User
     {
         public string? Name { get; set; }
         public string? AccountNumber { get; set; }
-        public string? CreateBy { get; set; }
-        public string? CreateAt { get; set; }
+        public string? ExpiryAt { get; set; }
     }
 
     public class CareCenterModel {
+        [Required(ErrorMessage = "Không được bỏ trống tên trung tâm")]
         public string? CareCenterName { get; set; }
+        [Required(ErrorMessage = "Không được bỏ trống địa chỉ")]
         public string? Address { get; set; }
-        public string? Description { get; set; }
-    }
-
-    public class ManagerModel
-    {
-        [Required]
-        [StringLength(15, MinimumLength = 8, ErrorMessage = "Độ dài tên tài khoản phải từ 8 đến 15 ký tự")]
-        public string Username { get; set; } = string.Empty;
-        [StringLength(15, MinimumLength = 8, ErrorMessage = "Độ dài mật khẩu phải từ 8 đến 15 ký tự")]
-        public string Password { get; set; } = string.Empty;
+        [StringLength(10, MinimumLength = 10, ErrorMessage = "Độ dài số điện thoại phải là 10 số")]
+        [RegularExpression("^[0-9]*$", ErrorMessage = "Chỉ được nhập số")]
+        public string? Hotline { get; set; }
     }
 }
