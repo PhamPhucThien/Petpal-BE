@@ -5,11 +5,6 @@ using CapstoneProject.DTO.Request;
 using CapstoneProject.DTO.Request.CareCenters;
 using CapstoneProject.DTO.Response.CareCenters;
 using CapstoneProject.Repository.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CapstoneProject.Business.Service
 {
@@ -32,7 +27,7 @@ namespace CapstoneProject.Business.Service
 
             GetCareCenterListResponse listModel = new();
 
-            foreach (var item in list)
+            foreach (CareCenter item in list)
             {
                 CareCenterListModel model = new()
                 {

@@ -5,9 +5,7 @@ using CapstoneProject.DTO.Request.Account;
 using CapstoneProject.DTO.Request.User;
 using CapstoneProject.DTO.Response.Account;
 using CapstoneProject.Repository.Interface;
-using CapstoneProject.Repository.Repository;
 using System.Transactions;
-using System.Web;
 
 
 namespace CapstoneProject.Business.Service
@@ -103,8 +101,8 @@ namespace CapstoneProject.Business.Service
             LoginResponse data = new();
 
             User? partner = await _authRepository.GetByUsername(request.Partner.Username);
-/*            User? manager = await _authRepository.GetByUsername(request.Manager.Username);
-*/
+            /*            User? manager = await _authRepository.GetByUsername(request.Manager.Username);
+            */
             if (partner != null)
             {
                 response.Status = StatusCode.BadRequest;
@@ -122,7 +120,7 @@ namespace CapstoneProject.Business.Service
                 response.Status = StatusCode.OK;
                 response.Payload.Message = "Tạo tài khoản thành công";
 
-                using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+                using TransactionScope scope = new(TransactionScopeAsyncFlowOption.Enabled);
 
                 User newPartner = new()
                 {
@@ -165,8 +163,8 @@ namespace CapstoneProject.Business.Service
                 };*/
 
                 User? checkUser = await _userRepository.AddAsync(newPartner);
-/*                _ = await _userRepository.AddAsync(newManager);
-                _ = await _careCenterRepository.AddAsync(newCareCenter);*/
+                /*                _ = await _userRepository.AddAsync(newManager);
+                                _ = await _careCenterRepository.AddAsync(newCareCenter);*/
 
                 if (checkUser != null)
                 {
@@ -189,6 +187,6 @@ namespace CapstoneProject.Business.Service
             return response;
         }
 
-   
+
     }
 }

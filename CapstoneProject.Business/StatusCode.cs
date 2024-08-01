@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CapstoneProject.Business
+﻿namespace CapstoneProject.Business
 {
     public class StatusCode
     {
-        public string OK = "200" ;
+        public string OK = "200";
         public string BadRequest = "400";
         public string Created = "202";
         public string NotFound = "404";

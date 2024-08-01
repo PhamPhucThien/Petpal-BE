@@ -1,35 +1,26 @@
-﻿using CapstoneProject.Business.Interface;
-using Firebase.Auth;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
-using CapstoneProject.Database.Model;
+﻿using AutoMapper;
+using CapstoneProject.Business.Interface;
 using CapstoneProject.Database.Model.Meta;
+using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request;
 using CapstoneProject.DTO.Request.Base;
 using CapstoneProject.DTO.Request.User;
+using CapstoneProject.DTO.Response.Account;
 using CapstoneProject.DTO.Response.Base;
 using CapstoneProject.DTO.Response.User;
 using CapstoneProject.Repository.Interface;
-using User = CapstoneProject.Database.Model.User;
-using CapstoneProject.DTO;
-using CapstoneProject.DTO.Response.Account;
-using CapstoneProject.DTO.Response.Orders;
-using CapstoneProject.Repository.Repository;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using System.Transactions;
-using Firebase.Storage;
-using Newtonsoft.Json;
+using User = CapstoneProject.Database.Model.User;
 
 namespace CapstoneProject.Business.Service
 {
     public class UserService(IUserRepository userRepository, ICareCenterRepository careCenterRepository, IMapper mapper) : IUserService
-    {     
-        private IUserRepository _userRepository = userRepository;
-        private ICareCenterRepository _careCenterRepository = careCenterRepository;
-        private IMapper _mapper = mapper;
+    {
+        private readonly IUserRepository _userRepository = userRepository;
+        private readonly ICareCenterRepository _careCenterRepository = careCenterRepository;
+        private readonly IMapper _mapper = mapper;
+        public UploadImageService uploadImage = new();
         public StatusCode StatusCode { get; set; } = new();
 
         /* public Task<bool> UploadProfile(FileStream file)
@@ -45,70 +36,106 @@ namespace CapstoneProject.Business.Service
          }*/
 
         public async Task<BaseListResponse<UserDetailResponse>> GetList(ListRequest request)
-       {
-           Paging paging = new()
-           {
-               Page = request.Page,
-               Size = request.Size,
-               MaxPage = 1
-           };
-           var listUser = await _userRepository.GetWithPaging(paging);
-           var listUserResponse = _mapper.Map<List<UserDetailResponse>>(listUser);
-           paging.Total = listUserResponse.Count;
-           BaseListResponse<UserDetailResponse> response = new()
-           {
-               List = listUserResponse,
-               Paging = paging,
-           };
-           return response;
-       }
+        {
+            Paging paging = new()
+            {
+                Page = request.Page,
+                Size = request.Size,
+                MaxPage = 1
+            };
+            List<User> listUser = await _userRepository.GetWithPaging(paging);
+            List<UserDetailResponse> listUserResponse = _mapper.Map<List<UserDetailResponse>>(listUser);
+            paging.Total = listUserResponse.Count;
+            BaseListResponse<UserDetailResponse> response = new()
+            {
+                List = listUserResponse,
+                Paging = paging,
+            };
+            return response;
+        }
 
-       public async Task<UserDetailResponse> GetUserById(string userID)
-       {
-           var user = await _userRepository.GetByIdAsync(Guid.Parse(userID));
-           if (user == null)
-           {
-               throw new Exception("Not found User with this id");
-               
-           }
-           var userResponse = _mapper.Map<UserDetailResponse>(user);
-           return userResponse;
-           
-       }
+        public async Task<UserDetailResponse> GetUserById(string userID)
+        {
+            User? user = await _userRepository.GetByIdAsync(Guid.Parse(userID));
+            if (user == null)
+            {
+                throw new Exception("Not found User with this id");
 
-       public async Task<UserDetailResponse> CreateUser(UserCreateRequest request)
-       {
-           var userCheck = _userRepository.GetUserByUsername(request.Username);
-           if (userCheck != null)
-           {
-               throw new Exception("Username is duplicated.");
-           }
-           var userCreate = _mapper.Map<User>(request);
-           userCreate.Status = UserStatus.ACTIVE;
-           userCreate.CreatedBy = request.CreatedBy;
-           userCreate.CreatedAt = DateTimeOffset.Now;
-           userCreate.Role = UserRole.CUSTOMER;
-           var user = await _userRepository.AddAsync(userCreate);
-           return _mapper.Map<UserDetailResponse>(user);
-       }
+            }
+            UserDetailResponse userResponse = _mapper.Map<UserDetailResponse>(user);
+            return userResponse;
 
-       public async Task<UserDetailResponse> UpdateUser(UserUpdateRequest request)
-       {
-           var userCheck = await _userRepository.GetByIdAsync(Guid.Parse(request.Id));
-           if (userCheck == null)
-           {
-               throw new Exception("Not found User with this id");
-           }
-           var userUpdate = _mapper.Map<User>(request);
-           userUpdate.Username = userCheck.Username;
-           userUpdate.Password = userCheck.Password;
-           userUpdate.CreatedAt = userCheck.CreatedAt;
-           userUpdate.CreatedBy = userCheck.CreatedBy;
-           userUpdate.UpdatedAt = DateTimeOffset.Now;
-           userUpdate.UpdatedBy = request.UpdatedBy;
-           var updateStatus = await _userRepository.EditAsync(userUpdate);
-           return updateStatus ? _mapper.Map<UserDetailResponse>(userUpdate) : null;
-       }
+        }
+
+        public async Task<UserDetailResponse> CreateUser(UserCreateRequest request)
+        {
+            User userCheck = _userRepository.GetUserByUsername(request.Username);
+            if (userCheck != null)
+            {
+                throw new Exception("Username is duplicated.");
+            }
+            User userCreate = _mapper.Map<User>(request);
+            userCreate.Status = UserStatus.ACTIVE;
+            userCreate.CreatedBy = request.CreatedBy;
+            userCreate.CreatedAt = DateTimeOffset.Now;
+            userCreate.Role = UserRole.CUSTOMER;
+            User? user = await _userRepository.AddAsync(userCreate);
+            return _mapper.Map<UserDetailResponse>(user);
+        }
+
+        public async Task<ResponseObject<UserDetailResponse>> UpdateUser(Guid userId, UserUpdateRequest request, List<FileDetails> fileDetails)
+        {
+            ResponseObject<UserDetailResponse> response = new();
+            UserDetailResponse data = new();
+            User? user = await _userRepository.GetByIdAsync(userId);
+
+            if (user != null)
+            {
+                user.FullName = request.Fullname ?? user.FullName;
+                user.Address = request.Address ?? user.Address;
+                user.PhoneNumber = request.PhoneNumber ?? user.PhoneNumber;
+                user.RoomId = request.RoomId ?? user.RoomId;
+                user.Email = request.Email ?? request.Email;
+                
+                if (fileDetails != null && fileDetails.Count > 0)
+                {
+                    List<string> fileName = await uploadImage.UploadImage(fileDetails);
+                    if (fileName != null && fileName.Count > 0) 
+                    { 
+                        user.ProfileImage = String.Join(",", fileName);    
+                    }
+                }
+
+                user.UpdatedBy = user.Username;
+                user.UpdatedAt = DateTimeOffset.Now;
+
+                bool check = await _userRepository.EditAsync(user);
+
+                if (check)
+                {
+                    response.Status = StatusCode.OK;
+                    response.Payload.Message = "Thay đổi thông tin thành công";
+
+                    data.Username = user.Username;
+                    data.FullName = user.FullName;
+                    data.Address = user.Address;
+                    data.PhoneNumber = user.PhoneNumber;
+                    data.Email = user.Email;
+                    data.RoomId = user.RoomId;
+                    data.ProfileImage = user.ProfileImage;
+                    
+                    response.Payload.Data = data;
+                }
+                else
+                {
+                    response.Status = StatusCode.BadRequest;
+                    response.Payload.Message = "Thay đổi thông tin thất bại";
+                    response.Payload.Data = null;
+                }
+            }
+            
+            return response;
+        }
 
         public async Task<ResponseObject<CountUserResponse>> CountUser()
         {
@@ -128,7 +155,7 @@ namespace CapstoneProject.Business.Service
         public async Task<ResponseObject<LoginResponse>> ApprovePartnerRegistration(EditPartnerRegistrationRequest request)
         {
             ResponseObject<LoginResponse> response = new();
-            LoginResponse data = new();
+            _ = new LoginResponse();
             User? partner = await _userRepository.GetByIdAsync(request.PartnerId);
 
             if (partner != null)
@@ -168,7 +195,7 @@ namespace CapstoneProject.Business.Service
                 }*/
                 partner.Status = UserStatus.ACTIVE;
 
-                using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+                using TransactionScope scope = new(TransactionScopeAsyncFlowOption.Enabled);
 
                 _ = await _userRepository.EditAsync(partner);
 
@@ -189,7 +216,7 @@ namespace CapstoneProject.Business.Service
         public async Task<ResponseObject<LoginResponse>> RejestPartnerRegistration(EditPartnerRegistrationRequest request)
         {
             ResponseObject<LoginResponse> response = new();
-            LoginResponse data = new();
+            _ = new LoginResponse();
             User? partner = await _userRepository.GetByIdAsync(request.PartnerId);
 
             if (partner != null)
@@ -230,7 +257,7 @@ namespace CapstoneProject.Business.Service
                 }*/
                 partner.Status = UserStatus.REJECTED;
 
-                using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+                using TransactionScope scope = new(TransactionScopeAsyncFlowOption.Enabled);
 
                 _ = await _userRepository.EditAsync(partner);
 
@@ -261,11 +288,11 @@ namespace CapstoneProject.Business.Service
             };
 
             List<User>? list = await _userRepository.GetWithPagingAndStatusAndRole(paging, status, role);
-            List<UserModel> modelList = new();
+            List<UserModel> modelList = [];
 
             if (list != null)
             {
-                foreach (var item in list)
+                foreach (User item in list)
                 {
                     UserModel model = new()
                     {
@@ -284,7 +311,8 @@ namespace CapstoneProject.Business.Service
                 data.List = modelList;
                 data.Paging = paging;
                 response.Payload.Data = data;
-            } else
+            }
+            else
             {
                 response.Status = StatusCode.BadRequest;
                 response.Payload.Message = "Không có bát cứ tài khoản nào";
@@ -293,27 +321,9 @@ namespace CapstoneProject.Business.Service
             return response;
         }
 
-        public async Task<int> UploadProfile(Guid userId, List<FileDetails> filesDetail)
+        public Task<int> UploadProfile(Guid userId, List<FileDetails> filesDetail)
         {
-            int count = 0;
-
-            foreach (var file in filesDetail)
-            {
-                if (file.FileData != null)
-                {
-                    using var stream = new MemoryStream(file.FileData);
-
-                    var task = new FirebaseStorage("petpal-c6642.appspot.com")
-                        .Child(file.FileName)
-                        .PutAsync(stream);
-
-                    var downloadUrl = await task;
-
-                    count++;
-                }
-            }
-
-            return count;
+            throw new NotImplementedException();
         }
     }
 }
