@@ -96,15 +96,28 @@ namespace CapstoneProject.Controllers
         }
         
         [HttpPut("update-user")]
-        public async Task<IActionResult> UpdateUser(UserUpdateRequest request)
+        public async Task<IActionResult> UpdateUser(List<IFormFile> files, UserUpdateRequest request)
         {
             try
             {
-                var userResponse = await _userService.UpdateUser(request);
-                var response = new ResponseObject<UserDetailResponse>();
-                response.Status = StatusCodes.Status200OK.ToString();
-                response.Payload.Message = "Update user successfully";
-                response.Payload.Data = userResponse;
+                Guid userId = Guid.Parse(HttpContext.GetName());
+                List<FileDetails> filesDetail = [];
+
+                foreach (var file in files)
+                {
+                    if (file.Length > 0)
+                    {
+                        FileDetails data = new();
+                        using var stream = new MemoryStream();
+                        await file.CopyToAsync(stream);
+                        data.FileName = Path.GetFileName(file.FileName);
+                        data.TempPath = Path.GetTempFileName();
+                        data.FileData = stream.ToArray();
+                        filesDetail.Add(data);
+                    }
+                }
+
+                var response = await _userService.UpdateUser(userId, request, filesDetail);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -180,45 +193,6 @@ namespace CapstoneProject.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, $"An error occurred: {ex.Message}");
-            }
-        }
-
-        [HttpPost("upload-profile")]
-        public async Task<IActionResult> UploadProfile(List<IFormFile> files)
-        {
-            try
-            {
-                Guid userId = Guid.Parse(HttpContext.GetName());
-                List<FileDetails> filesDetail = [];
-                
-                foreach (var file in files)
-                {
-                    if (file.Length > 0)
-                    {
-                        FileDetails data = new();
-                        using var stream = new MemoryStream();
-                        await file.CopyToAsync(stream);
-                        data.FileName = Path.GetFileName(file.FileName);
-                        data.TempPath = Path.GetTempFileName();
-                        data.FileData = stream.ToArray();
-                        filesDetail.Add(data);
-                    }
-                }
-
-                var response = await _userService.UploadProfile(userId, filesDetail);
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                return Ok(new ResponseObject<ExceptionClass>()
-                {
-                    Status = StatusCode.BadRequest,
-                    Payload = new Payload<ExceptionClass>()
-                    {
-                        Message = ex.Message.ToString(),
-                        Data = null
-                    }
-                });    
             }
         }
     }

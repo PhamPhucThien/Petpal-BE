@@ -1,15 +1,14 @@
 ﻿using CapstoneProject.Business.Interface;
 using CapstoneProject.Database.Model;
-using CapstoneProject.DTO.Request.Order;
-using CapstoneProject.DTO.Response.Orders;
-using CapstoneProject.Repository.Interface;
 using CapstoneProject.Database.Model.Meta;
-using System.Transactions;
 using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request;
-using CapstoneProject.DTO.Response.Pet;
+using CapstoneProject.DTO.Request.Order;
+using CapstoneProject.DTO.Response.Orders;
 using CapstoneProject.DTO.Response.Package;
-using CapstoneProject.DTO.Response.User;
+using CapstoneProject.DTO.Response.Pet;
+using CapstoneProject.Repository.Interface;
+using System.Transactions;
 
 
 namespace CapstoneProject.Business.Service
@@ -27,8 +26,9 @@ namespace CapstoneProject.Business.Service
             ResponseObject<ApproveOrderResponse> response = new();
             ApproveOrderResponse data = new();
             Order? order = await _orderRepository.GetByIdAsync(orderId);
-            
-            if (order != null) {
+
+            if (order != null)
+            {
                 order.Status = OrderStatus.APPROVED;
                 bool check = await _orderRepository.EditAsync(order);
                 data.IsSucceed = check;
@@ -37,7 +37,8 @@ namespace CapstoneProject.Business.Service
                 {
                     response.Status = StatusCode.OK;
                     response.Payload.Message = "Đơn hàng đã được xác nhận";
-                } else
+                }
+                else
                 {
                     response.Status = StatusCode.BadRequest;
                     response.Payload.Message = "Hiện tại không thể xác nhận đơn hàng";
@@ -80,7 +81,8 @@ namespace CapstoneProject.Business.Service
         public async Task<ResponseObject<CreateOrderResponse>> CreateOrderRequest(Guid userId, CreateOrderRequest request)
         {
             ResponseObject<CreateOrderResponse> response = new();
-            CreateOrderResponse isSucceed = new() { 
+            CreateOrderResponse isSucceed = new()
+            {
                 IsSucceed = false
             };
             response.Payload.Data = isSucceed;
@@ -89,7 +91,7 @@ namespace CapstoneProject.Business.Service
             Pet? pet = await _petRepository.GetByIdAsync(request.PetId);
             Package? package = await _packageRepository.GetByIdAsync(request.PackageId);
 
-            if (user == null) 
+            if (user == null)
             {
                 response.Status = StatusCode.NotFound;
                 response.Payload.Message = "Không tìm thấy người dùng";
@@ -118,7 +120,7 @@ namespace CapstoneProject.Business.Service
                 CreatedBy = user.Username
             };
 
-            using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            using TransactionScope scope = new(TransactionScopeAsyncFlowOption.Enabled);
 
             Order? existedOrder = await _orderRepository.AddAsync(order);
 
@@ -163,9 +165,10 @@ namespace CapstoneProject.Business.Service
             {
                 response.Status = StatusCode.BadRequest;
                 response.Payload.Message = "Không thể tìm thấy người dùng";
-            } else
+            }
+            else
             {
-                List<Order>? list = new();
+                List<Order>? list = [];
 
                 Paging paging = new()
                 {
@@ -177,8 +180,9 @@ namespace CapstoneProject.Business.Service
                 if (user.Role == UserRole.CUSTOMER)
                 {
                     list = await _orderRepository.GetByUserId(userId, paging);
-                } 
-                else if (user.Role == UserRole.MANAGER) {
+                }
+                else if (user.Role == UserRole.MANAGER)
+                {
                     list = await _orderRepository.GetByManagerId(userId, paging);
                 }
                 else if (user.Role == UserRole.PARTNER)
@@ -190,13 +194,15 @@ namespace CapstoneProject.Business.Service
                 {
                     response.Status = StatusCode.OK;
                     response.Payload.Message = "Hiện không có đơn hàng nào";
-                } else
+                }
+                else
                 {
                     response.Status = StatusCode.OK;
                     response.Payload.Message = "Lấy danh sách đơn hàng thành công";
                     List<OrderResponseModel> orders = [];
 
-                    foreach (var item in list) {
+                    foreach (Order item in list)
+                    {
                         OrderResponseModel model = new()
                         {
                             CurrentPrice = item.CurrentPrice,

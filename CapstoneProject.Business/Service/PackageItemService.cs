@@ -1,10 +1,5 @@
-﻿using CapstoneProject.Business.Interface;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
+using CapstoneProject.Business.Interface;
 using CapstoneProject.Database.Model;
 using CapstoneProject.DTO.Request;
 using CapstoneProject.DTO.Request.Base;
@@ -17,20 +12,20 @@ namespace CapstoneProject.Business.Service
 {
     public class PackageItemService : IPackageItemService
     {
-        private IPackageItemRepository _packageItemRepository;
-        private IPackageRepository _packageRepository;
-        private IServiceRepository _serviceRepository;
-        private IMapper _mapper;
+        private readonly IPackageItemRepository _packageItemRepository;
+        private readonly IPackageRepository _packageRepository;
+        private readonly IServiceRepository _serviceRepository;
+        private readonly IMapper _mapper;
 
-        public PackageItemService(IPackageItemRepository packageItemRepository, 
-            IPackageRepository  packageRepository,  IServiceRepository serviceRepository,  IMapper  mapper)
+        public PackageItemService(IPackageItemRepository packageItemRepository,
+            IPackageRepository packageRepository, IServiceRepository serviceRepository, IMapper mapper)
         {
             _packageItemRepository = packageItemRepository;
             _packageRepository = packageRepository;
             _serviceRepository = serviceRepository;
             _mapper = mapper;
         }
-        
+
         public async Task<BaseListResponse<ListPackageItemResponse>> GetList(ListRequest request)
         {
             Paging paging = new()
@@ -39,8 +34,8 @@ namespace CapstoneProject.Business.Service
                 Size = request.Size,
                 MaxPage = 1
             };
-            var listPackageItem = await _packageItemRepository.GetWithPaging(paging);
-            var listPackageItemResponse = _mapper.Map<List<ListPackageItemResponse>>(listPackageItem);
+            List<PackageItem> listPackageItem = await _packageItemRepository.GetWithPaging(paging);
+            List<ListPackageItemResponse> listPackageItemResponse = _mapper.Map<List<ListPackageItemResponse>>(listPackageItem);
             paging.Total = listPackageItemResponse.Count;
             BaseListResponse<ListPackageItemResponse> response = new()
             {
@@ -52,13 +47,13 @@ namespace CapstoneProject.Business.Service
 
         public async Task<ListPackageItemResponse> GetById(string packageItemId)
         {
-            var packageItem = await _packageItemRepository.GetByIdAsync(Guid.Parse(packageItemId));
+            PackageItem? packageItem = await _packageItemRepository.GetByIdAsync(Guid.Parse(packageItemId));
             if (packageItem == null)
             {
                 throw new Exception("Not found package item with this id");
-               
+
             }
-            var packageItemResponse = _mapper.Map<ListPackageItemResponse>(packageItem);
+            ListPackageItemResponse packageItemResponse = _mapper.Map<ListPackageItemResponse>(packageItem);
             return packageItemResponse;
         }
 
@@ -66,52 +61,52 @@ namespace CapstoneProject.Business.Service
         {
             if (request.PackageId != null)
             {
-                var packageCheck = await _packageRepository.GetByIdAsync(Guid.Parse(request.PackageId));
+                Package? packageCheck = await _packageRepository.GetByIdAsync(Guid.Parse(request.PackageId));
                 if (packageCheck == null)
                 {
                     throw new Exception("Package id is invalid.");
                 }
             }
-            
-            var serviceCheck = await _serviceRepository.GetByIdAsync(Guid.Parse(request.ServiceId));
+
+            Database.Model.Service? serviceCheck = await _serviceRepository.GetByIdAsync(Guid.Parse(request.ServiceId));
             if (serviceCheck == null)
             {
                 throw new Exception("Service id is invalid.");
             }
-            
-            var packageItemCreate = _mapper.Map<PackageItem>(request);
+
+            PackageItem packageItemCreate = _mapper.Map<PackageItem>(request);
             packageItemCreate.CreatedAt = DateTimeOffset.Now;
-            var result = await _packageItemRepository.AddAsync(packageItemCreate);
-            var packageItem = await _packageItemRepository.GetByIdAsync(result.Id);
+            PackageItem? result = await _packageItemRepository.AddAsync(packageItemCreate);
+            PackageItem? packageItem = await _packageItemRepository.GetByIdAsync(result.Id);
             return _mapper.Map<ListPackageItemResponse>(packageItem);
         }
 
-        public async Task<ListPackageItemResponse> Update(PackageItemUpdateRequest request)
+        public async Task<ListPackageItemResponse?> Update(PackageItemUpdateRequest request)
         {
-            var packageItemCheck = await _packageItemRepository.GetByIdAsync(Guid.Parse(request.Id));
+            PackageItem? packageItemCheck = await _packageItemRepository.GetByIdAsync(Guid.Parse(request.Id));
             if (packageItemCheck == null)
             {
                 throw new Exception("Package Item id is invalid.");
             }
-            
-            var packageCheck = await _packageRepository.GetByIdAsync(Guid.Parse(request.PackageId));
-            if (packageCheck == null) 
-            { 
+
+            Package? packageCheck = await _packageRepository.GetByIdAsync(Guid.Parse(request.PackageId));
+            if (packageCheck == null)
+            {
                 throw new Exception("Package id is invalid.");
             }
-            
-            var serviceCheck = await _serviceRepository.GetByIdAsync(Guid.Parse(request.ServiceId));
+
+            Database.Model.Service? serviceCheck = await _serviceRepository.GetByIdAsync(Guid.Parse(request.ServiceId));
             if (serviceCheck == null)
             {
                 throw new Exception("Service id is invalid.");
             }
 
-            var packageItemUpdate = _mapper.Map<PackageItem>(request);
+            PackageItem packageItemUpdate = _mapper.Map<PackageItem>(request);
             packageItemUpdate.CreatedAt = packageItemCheck.CreatedAt;
             packageItemUpdate.CreatedBy = packageItemCheck.CreatedBy;
             packageItemUpdate.UpdatedAt = DateTimeOffset.Now;
-            var result = await _packageItemRepository.EditAsync(packageItemUpdate);
-            var packageItem =  await _packageItemRepository.GetByIdAsync(Guid.Parse(request.Id));
+            bool result = await _packageItemRepository.EditAsync(packageItemUpdate);
+            PackageItem? packageItem = await _packageItemRepository.GetByIdAsync(Guid.Parse(request.Id));
             return result ? _mapper.Map<ListPackageItemResponse>(packageItem) : null;
         }
     }
