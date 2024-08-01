@@ -17,10 +17,10 @@ namespace CapstoneProject.Business.Service
         private readonly ICareCenterRepository _careCenterRepository = careCenterRepository;
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IAuthRepository _authRepository = authRepository;
-
+        public UploadImageService UploadImageService { get; set; }
         public StatusCode StatusCode { get; set; } = new();
 
-        public async Task<ResponseObject<CreateCareCenterAndManagerResponse>> CreateCareCenterAndManager(Guid userId, CreateCareCenterRequest request)
+        public async Task<ResponseObject<CreateCareCenterAndManagerResponse>> CreateCareCenterAndManager(Guid userId, CreateCareCenterRequest request, FileDetails front_image, FileDetails back_image)
         {
             ResponseObject<CreateCareCenterAndManagerResponse> response = new();
             CreateCareCenterAndManagerResponse data = new();
@@ -41,10 +41,19 @@ namespace CapstoneProject.Business.Service
                         Address = request.Manager.Address,
                         Email = request.Manager.Email,
                         Role = UserRole.MANAGER,
+                        IdentityNumber = request.ManagerIdentity.Number,
+                        IdentityCreatedAt = request.ManagerIdentity.CreatedAt,
+                        IdentityCreatedLocation = request.ManagerIdentity.CreatedLocation,
                         Status = Database.Model.Meta.UserStatus.PENDING,
                         CreatedAt = DateTime.UtcNow,
                         CreatedBy = user.Username
                     };
+
+                    List<FileDetails> files = [front_image, back_image];
+                    List<string> images = await UploadImageService.UploadImage(files);
+
+                    manager.IdentityFrontImage = images[0] ?? "";
+                    manager.IdentityBackImage = images[1] ?? "";
 
                     CareCenter careCenter = new()
                     {

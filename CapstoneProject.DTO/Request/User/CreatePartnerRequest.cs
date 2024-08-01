@@ -15,10 +15,22 @@ namespace CapstoneProject.DTO.Request.User
         public PaymentModel Payment { get; set; } = new();
     }
 
+    public class IdentityModel
+    {
+        [Required(ErrorMessage = "Không được bỏ trống số CMND")]
+        [StringLength(12, MinimumLength = 12, ErrorMessage = "Độ dài số CMND phải là 12 số")]
+        [RegularExpression("^[0-9]*$", ErrorMessage = "Chỉ được nhập số")]
+        public string? Number { get; set; }
+        [Required(ErrorMessage = "Không được bỏ trống ngày cấp")]
+        public string? CreatedAt { get; set; }
+        [Required(ErrorMessage = "Không được bỏ trống nơi cấp")]
+        public String? CreatedLocation {  get; set; }
+    }
     public class CreateCareCenterRequest
     {
         public CareCenterModel CareCenter { get; set; } = new();
         public RegisterRequest Manager { get; set; } = new();
+        public IdentityModel ManagerIdentity { get; set; } = new();
     }
 
     public class PaymentModel

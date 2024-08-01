@@ -20,6 +20,10 @@ namespace CapstoneProject.Business
                 {
                     using var stream = new MemoryStream(file.FileData);
 
+                    string[] data = file.FileName.Split('.');
+                    string mediaType = data[1] ?? "jpg";
+                    file.FileName = Guid.NewGuid().ToString() + "." + mediaType;
+
                     var task = new FirebaseStorage("petpal-c6642.appspot.com")
                         .Child(file.FileName)
                         .PutAsync(stream);
