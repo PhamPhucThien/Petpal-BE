@@ -30,6 +30,16 @@ namespace CapstoneProject.Database.Model
         public string? Email { get; set; }
         [Column("role", TypeName = "nvarchar(30)")]
         public UserRole Role { get; set; }
+        [Column("identity_number")]
+        public string? IdentityNumber { get; set; }
+        [Column("identity_created_at")]
+        public string? IdentityCreatedAt { get; set; }
+        [Column("identity_created_location")]
+        public string? IdentityCreatedLocation { get; set; }
+        [Column("identity_front_image")]
+        public string? IdentityFrontImage { get; set; }
+        [Column("identity_back_image")]
+        public string? IdentityBackImage { get; set; }
 
         public virtual List<Pet>? Pets { get; set; }
     }
