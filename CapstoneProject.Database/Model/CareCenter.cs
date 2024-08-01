@@ -30,6 +30,8 @@ namespace CapstoneProject.Database.Model
         public string? Longtitude { get; set; }
         [Column("averate_rating")]
         public double AverageRating { get; set; }
+        [Column("hotline")]
+        public string? Hotline { get; set; }
 
         [ForeignKey("PartnerId")]
         public User? Partner { get; set; }

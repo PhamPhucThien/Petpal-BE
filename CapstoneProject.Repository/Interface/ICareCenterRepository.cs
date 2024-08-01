@@ -11,5 +11,6 @@ namespace CapstoneProject.Repository.Interface
     public interface ICareCenterRepository : IRepository<CareCenter>
     {
         Task<CareCenter?> GetByPartnerId(Guid partnerId);
+        Task<CareCenter?> GetCareCenterByIdAsync(Guid careCenterId);
     }
 }

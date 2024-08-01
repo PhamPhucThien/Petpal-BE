@@ -59,16 +59,13 @@ namespace CapstoneProject.Controllers
             }
         }
         
-        [HttpGet("get-user{userId}")]
-        public async Task<IActionResult> GetUserById(string userId)
+        [HttpGet("get-user-by-id")]
+        public async Task<IActionResult> GetUserById(Guid userId)
         {
             try
             {
-                var userResponse = await _userService.GetUserById(userId);
-                var response = new ResponseObject<UserDetailResponse>();
-                response.Status = StatusCodes.Status200OK.ToString();
-                response.Payload.Message = "Get user successfully";
-                response.Payload.Data = userResponse;
+                var response = await _userService.GetUserById(userId);
+          
                 return Ok(response);
             }
             catch (Exception ex)
@@ -76,27 +73,43 @@ namespace CapstoneProject.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
-        
-        [HttpPost("create-user")]
+
+        [HttpGet("get-info")]
+        public async Task<IActionResult> GetInfo()
+        {
+            try
+            {
+                Guid userId = Guid.Parse(HttpContext.GetName());
+
+                var response = await _userService.GetUserById(userId);
+              
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        /*[HttpPost("create-user")]
         public async Task<IActionResult> CreateUser(UserCreateRequest request)
         {
             try
             {
-                var userResponse = await _userService.CreateUser(request);
-                var response = new ResponseObject<UserDetailResponse>();
-                response.Status = StatusCodes.Status200OK.ToString();
-                response.Payload.Message = "Create user successfully";
-                response.Payload.Data = userResponse;
+                Guid userId = Guid.Parse(HttpContext.GetName());
+
+                var response = await _userService.CreateUser(userId, request);
+        
                 return Ok(response);
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
-        }
-        
+        }*/
+
         [HttpPut("update-user")]
-        public async Task<IActionResult> UpdateUser(List<IFormFile> files, UserUpdateRequest request)
+        public async Task<IActionResult> UpdateUser([FromForm] List<IFormFile> files, [FromBody] UserUpdateRequest request)
         {
             try
             {
@@ -141,7 +154,7 @@ namespace CapstoneProject.Controllers
         }
 
         [HttpPost("approve-partner-registration")]
-        public async Task<IActionResult> ApprovePartnerRegistration(EditPartnerRegistrationRequest request)
+        public async Task<IActionResult> ApprovePartnerRegistration([FromQuery] EditPartnerRegistrationRequest request)
         {
             try
             {
@@ -155,7 +168,7 @@ namespace CapstoneProject.Controllers
         }
 
         [HttpPost("reject-partner-registration")]
-        public async Task<IActionResult> RejestPartnerRegistration(EditPartnerRegistrationRequest request)
+        public async Task<IActionResult> RejestPartnerRegistration([FromQuery] EditPartnerRegistrationRequest request)
         {
             try
             {
