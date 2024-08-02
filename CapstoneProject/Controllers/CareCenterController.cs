@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CapstoneProject.Controllers
@@ -38,7 +39,8 @@ namespace CapstoneProject.Controllers
         public async Task<IActionResult> CreateCareCenterAndManager(
             [FromForm] CreateCareCenterRequest request,
             IFormFile front_identity,
-            IFormFile back_identity)
+            IFormFile back_identity,
+            IFormFile carecenter)
         {
             try
             {
@@ -46,17 +48,49 @@ namespace CapstoneProject.Controllers
 
                 FileDetails front_image = new();
                 FileDetails back_image = new();
+                FileDetails carecenter_image = new();
 
-                using var stream = new MemoryStream();
+                // Kiểm tra ảnh id phía trước
+                if (front_identity != null && front_identity.Length != 0)
+                {
+                    using var stream = new MemoryStream();
+                    await front_identity.CopyToAsync(stream);
+                    front_image.FileName = Path.GetFileName(front_identity.FileName);
+                    front_image.TempPath = Path.GetTempFileName();
+                    front_image.FileData = stream.ToArray();
+                }
+                else
+                {
+                    front_image.IsContain = false;
+                }
 
-                await front_identity.CopyToAsync(stream);
-                front_image.FileName = Path.GetFileName(front_identity.FileName);
-                front_image.TempPath = Path.GetTempFileName();
-                front_image.FileData = stream.ToArray();
+                // Kiểm tra ảnh id phía sau
+                if (back_identity != null && back_identity.Length != 0)
+                {
+                    using var stream = new MemoryStream();
+                    await back_identity.CopyToAsync(stream);
+                    back_image.FileName = Path.GetFileName(back_identity.FileName);
+                    back_image.TempPath = Path.GetTempFileName();
+                    back_image.FileData = stream.ToArray();
+                }
+                else
+                {
+                    back_image.IsContain = false;
+                }
 
-                back_image.FileName = Path.GetFileName(back_identity.FileName);
-                back_image.TempPath = Path.GetTempFileName();
-                back_image.FileData = stream.ToArray();
+                // Kiểm tra ảnh carecenter
+                if (carecenter != null && carecenter.Length != 0)
+                {
+                    using var stream = new MemoryStream();
+                    await carecenter.CopyToAsync(stream);
+                    carecenter_image.FileName = Path.GetFileName(carecenter.FileName);
+                    carecenter_image.TempPath = Path.GetTempFileName();
+                    carecenter_image.FileData = stream.ToArray();
+                }
+                else
+                {
+                    carecenter_image.IsContain = false;
+                }                
 
                 var response = await _careCenterService.CreateCareCenterAndManager(userId, request, front_image, back_image);
                 return Ok(response);
