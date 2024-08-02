@@ -35,13 +35,13 @@ namespace CapstoneProject.Controllers
 
         [HttpPost("create-carecenter-and-manager")]
         [Authorize(Roles = "PARTNER")]
-        public async Task<IActionResult> CreateCareCenterAndManager(CreateCareCenterRequest request, [Required] IFormFile front_identity, [Required] IFormFile back_identity)
+        public async Task<IActionResult> CreateCareCenterAndManager(CreateCareCenterRequest request)
         {
             try
             {
                 Guid userId = Guid.Parse(HttpContext.GetName());
 
-                FileDetails front_image = new();
+                /*FileDetails front_image = new();
                 FileDetails back_image = new();
 
                 using var stream = new MemoryStream();
@@ -53,9 +53,9 @@ namespace CapstoneProject.Controllers
 
                 back_image.FileName = Path.GetFileName(back_identity.FileName);
                 back_image.TempPath = Path.GetTempFileName();
-                back_image.FileData = stream.ToArray();
+                back_image.FileData = stream.ToArray();*/
 
-                var response = await _careCenterService.CreateCareCenterAndManager(userId, request, front_image, back_image);
+                var response = await _careCenterService.CreateCareCenterAndManager(userId, request);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -66,7 +66,7 @@ namespace CapstoneProject.Controllers
 
         [HttpPost("approve-carecenter-registration")]
         [Authorize(Roles = "ADMIN")]
-        public async Task<IActionResult> ApproveCareCenterRegistration([FromQuery] EditCareCenterRegistrationRequest request)
+        public async Task<IActionResult> ApproveCareCenterRegistration(EditCareCenterRegistrationRequest request)
         {
             try
             {
@@ -81,7 +81,7 @@ namespace CapstoneProject.Controllers
 
         [HttpPost("reject-carecenter-registration")]
         [Authorize(Roles = "ADMIN")]
-        public async Task<IActionResult> RejectCareCenterRegistration([FromQuery] EditCareCenterRegistrationRequest request)
+        public async Task<IActionResult> RejectCareCenterRegistration(EditCareCenterRegistrationRequest request)
         {
             try
             {
