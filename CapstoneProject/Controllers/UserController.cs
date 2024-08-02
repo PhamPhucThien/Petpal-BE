@@ -13,6 +13,7 @@ using CapstoneProject.DTO.Response.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Diagnostics.CodeAnalysis;
 
 namespace CapstoneProject.Controllers
 {
@@ -110,12 +111,12 @@ namespace CapstoneProject.Controllers
         }*/
 
         [HttpPut("update-user")]
-        public async Task<IActionResult> UpdateUser([FromForm] IFormFile file, [FromBody] UserUpdateRequest request)
+        public async Task<IActionResult> UpdateUser([FromBody] UserUpdateRequest request)
         {
             try
             {
                 Guid userId = Guid.Parse(HttpContext.GetName());
-                FileDetails filesDetail = new();
+                /*FileDetails filesDetail = new();
 
                 if (file != null && file.Length != 0)
                 {
@@ -127,9 +128,9 @@ namespace CapstoneProject.Controllers
                 } else 
                 {
                     filesDetail.IsContain = false;
-                }
+                }*/
 
-                var response = await _userService.UpdateUser(userId, request, filesDetail);
+                var response = await _userService.UpdateUser(userId, request);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -153,7 +154,7 @@ namespace CapstoneProject.Controllers
         }
 
         [HttpPost("approve-partner-registration")]
-        public async Task<IActionResult> ApprovePartnerRegistration([FromQuery] EditPartnerRegistrationRequest request)
+        public async Task<IActionResult> ApprovePartnerRegistration(EditPartnerRegistrationRequest request)
         {
             try
             {
@@ -167,7 +168,7 @@ namespace CapstoneProject.Controllers
         }
 
         [HttpPost("reject-partner-registration")]
-        public async Task<IActionResult> RejestPartnerRegistration([FromQuery] EditPartnerRegistrationRequest request)
+        public async Task<IActionResult> RejestPartnerRegistration(EditPartnerRegistrationRequest request)
         {
             try
             {
