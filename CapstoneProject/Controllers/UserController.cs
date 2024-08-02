@@ -12,6 +12,7 @@ using CapstoneProject.DTO.Response.Base;
 using CapstoneProject.DTO.Response.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CapstoneProject.Controllers
 {
@@ -109,25 +110,23 @@ namespace CapstoneProject.Controllers
         }*/
 
         [HttpPut("update-user")]
-        public async Task<IActionResult> UpdateUser([FromForm] List<IFormFile> files, [FromBody] UserUpdateRequest request)
+        public async Task<IActionResult> UpdateUser([FromForm] IFormFile file, [FromBody] UserUpdateRequest request)
         {
             try
             {
                 Guid userId = Guid.Parse(HttpContext.GetName());
-                List<FileDetails> filesDetail = [];
+                FileDetails filesDetail = new();
 
-                foreach (var file in files)
+                if (file != null && file.Length != 0)
                 {
-                    if (file.Length > 0)
-                    {
-                        FileDetails data = new();
-                        using var stream = new MemoryStream();
-                        await file.CopyToAsync(stream);
-                        data.FileName = Path.GetFileName(file.FileName);
-                        data.TempPath = Path.GetTempFileName();
-                        data.FileData = stream.ToArray();
-                        filesDetail.Add(data);
-                    }
+                    using var stream = new MemoryStream();
+                    await file.CopyToAsync(stream);
+                    filesDetail.FileName = Path.GetFileName(file.FileName);
+                    filesDetail.TempPath = Path.GetTempFileName();
+                    filesDetail.FileData = stream.ToArray();
+                } else 
+                {
+                    filesDetail.IsContain = false;
                 }
 
                 var response = await _userService.UpdateUser(userId, request, filesDetail);

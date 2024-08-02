@@ -148,7 +148,7 @@ namespace CapstoneProject.Business.Service
             return _mapper.Map<UserDetailResponse>(user);
         }*/
 
-        public async Task<ResponseObject<UserDetailResponse>> UpdateUser(Guid userId, UserUpdateRequest request, List<FileDetails> fileDetails)
+        public async Task<ResponseObject<UserDetailResponse>> UpdateUser(Guid userId, UserUpdateRequest request, FileDetails fileDetail)
         {
             ResponseObject<UserDetailResponse> response = new();
             UserDetailResponse data = new();
@@ -161,14 +161,14 @@ namespace CapstoneProject.Business.Service
                 user.PhoneNumber = request.PhoneNumber ?? user.PhoneNumber;
                 user.RoomId = request.RoomId ?? user.RoomId;
                 user.Email = request.Email ?? request.Email;
-                
-                if (fileDetails != null && fileDetails.Count > 0)
+
+                if (fileDetail.IsContain)
                 {
-                    List<string> fileName = await uploadImage.UploadImage(fileDetails);
-                    if (fileName != null && fileName.Count > 0) 
-                    { 
-                        user.ProfileImage = String.Join(",", fileName);    
-                    }
+                    List<FileDetails> images = [fileDetail];
+
+                    List<string> fileName = await uploadImage.UploadImage(images);
+
+                    user.ProfileImage = String.Join(",", fileName);
                 }
 
                 user.UpdatedBy = user.Username;
