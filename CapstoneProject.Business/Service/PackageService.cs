@@ -163,11 +163,12 @@ namespace CapstoneProject.Business.Service
                     PackageResponseModel model = new()
                     {
                         Id = item.Id,
-                        Title = item.Title,
-                        Type = item.Type,
                         TotalPrice = item.TotalPrice,
+                        Title = item.Title,
+                        Image = item.Image,
                         Duration = item.Duration,
-                        Description = item.Description
+                        Description = item.Description,
+                        Type = item.Type
                     };
                     listModel.Add(model);
                 }
