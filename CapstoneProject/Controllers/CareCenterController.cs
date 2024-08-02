@@ -35,13 +35,16 @@ namespace CapstoneProject.Controllers
 
         [HttpPost("create-carecenter-and-manager")]
         [Authorize(Roles = "PARTNER")]
-        public async Task<IActionResult> CreateCareCenterAndManager(CreateCareCenterRequest request)
+        public async Task<IActionResult> CreateCareCenterAndManager(
+            [FromForm] CreateCareCenterRequest request,
+            IFormFile front_identity,
+            IFormFile back_identity)
         {
             try
             {
                 Guid userId = Guid.Parse(HttpContext.GetName());
 
-                /*FileDetails front_image = new();
+                FileDetails front_image = new();
                 FileDetails back_image = new();
 
                 using var stream = new MemoryStream();
@@ -53,9 +56,9 @@ namespace CapstoneProject.Controllers
 
                 back_image.FileName = Path.GetFileName(back_identity.FileName);
                 back_image.TempPath = Path.GetTempFileName();
-                back_image.FileData = stream.ToArray();*/
+                back_image.FileData = stream.ToArray();
 
-                var response = await _careCenterService.CreateCareCenterAndManager(userId, request);
+                var response = await _careCenterService.CreateCareCenterAndManager(userId, request, front_image, back_image);
                 return Ok(response);
             }
             catch (Exception ex)

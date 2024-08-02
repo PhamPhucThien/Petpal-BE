@@ -111,12 +111,14 @@ namespace CapstoneProject.Controllers
         }*/
 
         [HttpPut("update-user")]
-        public async Task<IActionResult> UpdateUser([FromBody] UserUpdateRequest request)
+        public async Task<IActionResult> UpdateUser(
+            [FromForm] UserUpdateRequest request, 
+            IFormFile file)
         {
             try
             {
                 Guid userId = Guid.Parse(HttpContext.GetName());
-                /*FileDetails filesDetail = new();
+                FileDetails filesDetail = new();
 
                 if (file != null && file.Length != 0)
                 {
@@ -125,12 +127,13 @@ namespace CapstoneProject.Controllers
                     filesDetail.FileName = Path.GetFileName(file.FileName);
                     filesDetail.TempPath = Path.GetTempFileName();
                     filesDetail.FileData = stream.ToArray();
-                } else 
+                }
+                else
                 {
                     filesDetail.IsContain = false;
-                }*/
+                }
 
-                var response = await _userService.UpdateUser(userId, request);
+                var response = await _userService.UpdateUser(userId, request, filesDetail);
                 return Ok(response);
             }
             catch (Exception ex)
