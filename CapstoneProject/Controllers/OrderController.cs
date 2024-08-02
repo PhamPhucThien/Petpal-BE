@@ -1,7 +1,9 @@
 ﻿using CapstoneProject.Business.Interface;
 using CapstoneProject.Business.Service;
+using CapstoneProject.Database.Model;
 using CapstoneProject.DTO.Request.Order;
 using CapstoneProject.Infrastructure.Extension;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -76,11 +78,14 @@ namespace CapstoneProject.Controllers
         }
 
         [HttpGet("get-transaction-status-vnpay")]
-        public async Task<IActionResult> GetTransactionStatusVNPay()
+        [Authorize(Roles = "CUSTOMER")]
+        public async Task<IActionResult> GetTransactionStatusVNPay([FromQuery] Guid orderId)
         {
             try
             {
-                var response = await _orderService.GetTransactionStatusVNPay();
+                Guid userId = Guid.Parse(HttpContext.GetName());
+                var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
+                var response = await _orderService.GetTransactionStatusVNPay(orderId, userId, baseUrl);
                 return Ok(response);
             }
             catch (Exception ex)

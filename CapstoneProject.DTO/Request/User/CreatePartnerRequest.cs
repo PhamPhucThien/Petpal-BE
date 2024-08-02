@@ -22,9 +22,9 @@ namespace CapstoneProject.DTO.Request.User
         [RegularExpression("^[0-9]*$", ErrorMessage = "Chỉ được nhập số")]
         public string? Number { get; set; }
         [Required(ErrorMessage = "Không được bỏ trống ngày cấp")]
-        public string? CreatedAt { get; set; }
+        public DateTimeOffset? CreatedAt { get; set; }
         [Required(ErrorMessage = "Không được bỏ trống nơi cấp")]
-        public String? CreatedLocation {  get; set; }
+        public string? CreatedLocation {  get; set; }
     }
     public class CreateCareCenterRequest
     {

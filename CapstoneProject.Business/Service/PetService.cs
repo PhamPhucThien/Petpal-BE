@@ -116,7 +116,12 @@ namespace CapstoneProject.Business.Service
                         Id = Guid.NewGuid(),
                         UserId = userId,
                         FullName = request.Fullname,
-                        Description = request.Description,
+                        Description = request.Description ?? "Không có",
+                        Age = request.Age,
+                        Weight = request.Weight,
+                        Gender = request.Gender,
+                        Breed = request.Breed,
+                        Sterilise = request.Sterilise,
                         CreatedAt = DateTime.UtcNow,
                         CreatedBy = user.Username
                     };

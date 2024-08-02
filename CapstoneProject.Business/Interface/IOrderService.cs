@@ -8,7 +8,7 @@ namespace CapstoneProject.Business.Interface
     {
         Task<ResponseObject<ApproveOrderResponse>> ApproveRequest(Guid orderId);
         Task<ResponseObject<CreateOrderResponse>> CreateOrderRequest(Guid userId, CreateOrderRequest request);
-        Task<ResponseObject<string>> GetTransactionStatusVNPay();
+        Task<ResponseObject<string>> GetTransactionStatusVNPay(Guid orderId, Guid userId, String urlReturn);
         Task<ResponseObject<string>> PerformTransaction(Guid orderId);
         Task<ResponseObject<RejectOrderResponse>> RejectRequest(Guid orderId);
         /*        Task<ResponseObject> GetByCareCenterId();

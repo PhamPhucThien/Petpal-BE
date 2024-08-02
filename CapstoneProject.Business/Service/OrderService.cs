@@ -8,7 +8,12 @@ using CapstoneProject.DTO.Response.Orders;
 using CapstoneProject.DTO.Response.Package;
 using CapstoneProject.DTO.Response.Pet;
 using CapstoneProject.Repository.Interface;
+using Microsoft.IdentityModel.Protocols;
+using System.Globalization;
+using System.Text;
 using System.Transactions;
+using System.Web;
+using static Google.Apis.Requests.BatchRequest;
 
 
 namespace CapstoneProject.Business.Service
@@ -20,6 +25,7 @@ namespace CapstoneProject.Business.Service
         private readonly IPetRepository _petRepository = petRepository;
         private readonly IPackageRepository _packageRepository = packageRepository;
         private readonly IOrderDetailRepository _orderDetailRepository = orderDetailRepository;
+
         public StatusCode StatusCode { get; set; } = new();
         public async Task<ResponseObject<ApproveOrderResponse>> ApproveRequest(Guid orderId)
         {
@@ -205,6 +211,7 @@ namespace CapstoneProject.Business.Service
                     {
                         OrderResponseModel model = new()
                         {
+                            Id = item.Id,
                             CurrentPrice = item.CurrentPrice,
                             Detail = item.Detail,
                             FromDate = (item.OrderDetail?.FromDate),
@@ -241,10 +248,140 @@ namespace CapstoneProject.Business.Service
             return response;
         }
 
-        public Task<ResponseObject<string>> GetTransactionStatusVNPay()
+        public async Task<ResponseObject<string>> GetTransactionStatusVNPay(Guid orderId, Guid userId, String urlReturn)
         {
-            throw new NotImplementedException();
+            ResponseObject<string> response = new();
+            Order? order = await _orderRepository.GetByIdAsync(orderId);
+
+            if (order == null || order.UserId != userId)
+            {
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Không thể tìm thấy đơn hàng";
+                return response;
+            }
+
+            string vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+            string vnp_ReturnUrl = "/api/v1/vnpay/vnpay-payment";
+            string vnp_TmnCode = "NCLDLDTA";
+            string vnp_HashSecret = "J4VTRXS61APKTX5M834JUSMXX3DR501C";
+            string vnp_apiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
+            string vnp_Version = "2.1.0";
+            string vnp_Command = "pay";
+            string vnp_TxnRef = GetRandomNumber(8);
+            string vnp_IpAddr = "127.0.0.1";
+            string orderType = "250000";
+            double money = order.CurrentPrice * 100;
+
+            string totalPrice = money.ToString();
+            
+
+            Dictionary<String, String> vnp_Params = new();
+            vnp_Params.Add("vnp_Version", vnp_Version);
+            vnp_Params.Add("vnp_Command", vnp_Command);
+            vnp_Params.Add("vnp_TmnCode", vnp_TmnCode);
+            vnp_Params.Add("vnp_Amount", totalPrice);
+            vnp_Params.Add("vnp_CurrCode", "VND");
+
+            vnp_Params.Add("vnp_TxnRef", vnp_TxnRef);
+            vnp_Params.Add("vnp_OrderInfo", order.Id.ToString());
+            vnp_Params.Add("vnp_OrderType", orderType);
+
+            String locate = "vn";
+            vnp_Params.Add("vnp_Locale", locate);
+
+            urlReturn += vnp_ReturnUrl;
+            vnp_Params.Add("vnp_ReturnUrl", urlReturn);
+            vnp_Params.Add("vnp_IpAddr", vnp_IpAddr);
+
+
+            var formatter = "yyyyMMddHHmmss";
+            var now = DateTime.UtcNow.AddHours(7); // GMT+7
+            var vnp_CreateDate = now.ToString(formatter, CultureInfo.InvariantCulture);
+            vnp_Params["vnp_CreateDate"] = vnp_CreateDate;
+
+            var expireTime = now.AddMinutes(15);
+            var vnp_ExpireDate = expireTime.ToString(formatter, CultureInfo.InvariantCulture);
+            vnp_Params["vnp_ExpireDate"] = vnp_ExpireDate;
+
+            var fieldNames = vnp_Params.Keys.ToList();
+            fieldNames.Sort();
+
+            var hashData = new StringBuilder();
+            var query = new StringBuilder();
+
+            foreach (var fieldName in fieldNames)
+            {
+                var fieldValue = vnp_Params[fieldName];
+                if (!string.IsNullOrEmpty(fieldValue))
+                {
+                    hashData.Append(fieldName)
+                            .Append('=')
+                            .Append(HttpUtility.UrlEncode(fieldValue, Encoding.ASCII));
+                    query.Append(HttpUtility.UrlEncode(fieldName, Encoding.ASCII))
+                         .Append('=')
+                         .Append(HttpUtility.UrlEncode(fieldValue, Encoding.ASCII));
+                    if (fieldNames.IndexOf(fieldName) != fieldNames.Count - 1)
+                    {
+                        query.Append('&');
+                        hashData.Append('&');
+                    }
+                }
+            }
+
+            var queryUrl = query.ToString();
+            var vnp_SecureHash = HmacSHA512(vnp_HashSecret, hashData.ToString());
+            queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
+
+            response.Status = StatusCode.OK;
+            
+            response.Payload.Message = "Tạo giao dịch thành công";
+            response.Payload.Data = vnp_PayUrl + "?" + queryUrl;
+
+            return response;
         }
+
+
+        public static string HmacSHA512(string key, string data)
+        {
+            if (key == null || data == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            using (var hmac512 = new System.Security.Cryptography.HMACSHA512(Encoding.UTF8.GetBytes(key)))
+            {
+                byte[] hashValue = hmac512.ComputeHash(Encoding.UTF8.GetBytes(data));
+                StringBuilder sb = new StringBuilder(2 * hashValue.Length);
+                foreach (byte b in hashValue)
+                {
+                    sb.Append(b.ToString("x2"));
+                }
+                return sb.ToString();
+            }
+        }
+
+        /*public static string GetIpAddress(HttpRequest request)
+        {
+            string ipAddress = request.Headers["X-FORWARDED-FOR"];
+            if (string.IsNullOrEmpty(ipAddress))
+            {
+                ipAddress = request.HttpContext.Connection.LocalIpAddress.ToString();
+            }
+            return ipAddress;
+        }*/
+
+        public string GetRandomNumber(int len)
+        {
+            Random rnd = new Random();
+            const string chars = "0123456789";
+            StringBuilder sb = new StringBuilder(len);
+            for (int i = 0; i < len; i++)
+            {
+                sb.Append(chars[rnd.Next(chars.Length)]);
+            }
+            return sb.ToString();
+        }
+
 
         public Task<ResponseObject<string>> PerformTransaction(Guid orderId)
         {
