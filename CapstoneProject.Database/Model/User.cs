@@ -33,7 +33,7 @@ namespace CapstoneProject.Database.Model
         [Column("identity_number")]
         public string? IdentityNumber { get; set; }
         [Column("identity_created_at")]
-        public string? IdentityCreatedAt { get; set; }
+        public DateTimeOffset? IdentityCreatedAt { get; set; }
         [Column("identity_created_location")]
         public string? IdentityCreatedLocation { get; set; }
         [Column("identity_front_image")]

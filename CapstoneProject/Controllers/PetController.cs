@@ -56,6 +56,9 @@ namespace CapstoneProject.Controllers
             try
             {
                 Guid userId = Guid.Parse(HttpContext.GetName());
+
+
+
                 var response = await _petService.CreatePet(userId, request);
                 return Ok(response);
             }

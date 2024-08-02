@@ -20,6 +20,7 @@ namespace CapstoneProject.DTO.Response.Orders
 
     public class OrderResponseModel
     {
+        public Guid Id { get; set; }
         public PetModel? Pet { get; set; }
         public PackageResponseModel? Package { get; set; }
         public double CurrentPrice { get; set; }
