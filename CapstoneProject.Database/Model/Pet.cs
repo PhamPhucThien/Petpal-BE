@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace CapstoneProject.Database.Model
 {
     [Table("Pet")]
-    public class Pet : BaseModel<BaseStatus>
+    public class Pet : BaseModel<PetStatus>
     {
         [Column("user_id")]
         public Guid? UserId { get; set; }
@@ -20,12 +20,12 @@ namespace CapstoneProject.Database.Model
         public string? FullName { get; set; }
         [Column("profile_image")]
         public string? ProfileImage { get; set; }
-        [Column("age")]
-        public int? Age { get; set; }
+        [Column("birthday")]
+        public DateTimeOffset? Birthday { get; set; }
         [Column("weight")]
         public double? Weight { get; set; }
         [Column("gender", TypeName = "nvarchar(10)")]
-        public Gender Gender { get; set; }
+        public Gender? Gender { get; set; }
         [Column("breed")]
         public string? Breed {  get; set; }
         [Column("sterilise")]

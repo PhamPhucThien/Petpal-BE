@@ -96,5 +96,21 @@ namespace CapstoneProject.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+
+        [HttpPost("get-carecenter-by-role")]
+        [Authorize(Roles = "PARTNER,MANAGER")]
+        public async Task<IActionResult> GetCareCenterByRole(GetCareCenterListRequest request)
+        {
+            try
+            {
+                Guid userId = Guid.Parse(HttpContext.GetName());
+                var response = await _careCenterService.GetCareCenterByRole(userId, request);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
     }
 }

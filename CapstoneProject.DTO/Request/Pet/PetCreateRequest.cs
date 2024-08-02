@@ -14,8 +14,8 @@ namespace CapstoneProject.DTO.Request.Pet
         [Required(ErrorMessage = "Thiếu tên thú cưng")]
         public string? Fullname { get; set; }   
         public string? Description { get; set; }
-        [Required(ErrorMessage = "Thiếu tuổi thú cưng")]
-        public int? Age { get; set; }
+        [Required(ErrorMessage = "Thiếu ngày sinh thú cưng")]
+        public DateTimeOffset? Birthday { get; set; }
         [Required(ErrorMessage = "Thiếu cân nặng thú cưng")]
         public double? Weight { get; set; }
         [Required(ErrorMessage = "Thiếu giới tính thú cưng")]

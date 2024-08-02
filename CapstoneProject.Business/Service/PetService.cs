@@ -54,6 +54,11 @@ namespace CapstoneProject.Business.Service
                             {
                                 Id = item.Id,
                                 FullName = item.FullName,
+                                Birthday = item.Birthday,
+                                Weight = item.Weight,
+                                Breed = item.Breed,
+                                Sterilise = item.Sterilise,
+                                Gender = item.Gender,
                                 ProfileImage = item.ProfileImage,
                                 Description = item.Description,
                                 Status = item.Status
@@ -117,7 +122,7 @@ namespace CapstoneProject.Business.Service
                         UserId = userId,
                         FullName = request.Fullname,
                         Description = request.Description ?? "Không có",
-                        Age = request.Age,
+                        Birthday = request.Birthday,
                         Weight = request.Weight,
                         Gender = request.Gender,
                         Breed = request.Breed,
