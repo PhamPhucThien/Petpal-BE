@@ -20,7 +20,7 @@ namespace CapstoneProject.Business.Service
         public UploadImageService uploadImage = new();
         public StatusCode StatusCode { get; set; } = new();
 
-        public async Task<ResponseObject<CreateCareCenterAndManagerResponse>> CreateCareCenterAndManager(Guid userId, CreateCareCenterRequest request, FileDetails front_image, FileDetails back_image)
+        public async Task<ResponseObject<CreateCareCenterAndManagerResponse>> CreateCareCenterAndManager(Guid userId, CreateCareCenterRequest request, FileDetails front_image, FileDetails back_image, FileDetails carecenter_image)
         {
             ResponseObject<CreateCareCenterAndManagerResponse> response = new();
             CreateCareCenterAndManagerResponse data = new();
@@ -49,11 +49,11 @@ namespace CapstoneProject.Business.Service
                         CreatedBy = user.Username
                     };
 
-                    List<FileDetails> files = [front_image, back_image];
+                    List<FileDetails> files = [front_image, back_image, carecenter_image];
                     List<string> images = await uploadImage.UploadImage(files);
 
-                    manager.IdentityFrontImage = images[0] ?? "";
-                    manager.IdentityBackImage = images[1] ?? "";
+                    manager.IdentityFrontImage = images[0] ?? string.Empty;
+                    manager.IdentityBackImage = images[1] ?? string.Empty;
 
                     CareCenter careCenter = new()
                     {
@@ -67,6 +67,8 @@ namespace CapstoneProject.Business.Service
                         CreatedAt = DateTime.UtcNow,
                         CreatedBy = user.Username
                     };
+
+                    careCenter.ListImages = images[2] ?? string.Empty;
 
                     using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
 
