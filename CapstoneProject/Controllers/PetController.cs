@@ -1,5 +1,6 @@
 ﻿using CapstoneProject.Business.Interface;
 using CapstoneProject.Database.Model.Meta;
+using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request.Base;
 using CapstoneProject.DTO.Request.Pet;
 using CapstoneProject.Infrastructure.Extension;
@@ -51,15 +52,28 @@ namespace CapstoneProject.Controllers
         }
         
         [HttpPost("create-pet")]
-        public async Task<IActionResult> CreatePet(PetCreateRequest request)
+        public async Task<IActionResult> CreatePet([FromForm] PetCreateRequest request, IFormFile file)
         {
             try
             {
                 Guid userId = Guid.Parse(HttpContext.GetName());
 
+                FileDetails filesDetail = new();
 
+                if (file != null && file.Length != 0)
+                {
+                    using var stream = new MemoryStream();
+                    await file.CopyToAsync(stream);
+                    filesDetail.FileName = Path.GetFileName(file.FileName);
+                    filesDetail.TempPath = Path.GetTempFileName();
+                    filesDetail.FileData = stream.ToArray();
+                }
+                else
+                {
+                    filesDetail.IsContain = false;
+                }
 
-                var response = await _petService.CreatePet(userId, request);
+                var response = await _petService.CreatePet(userId, request, filesDetail);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -68,7 +82,7 @@ namespace CapstoneProject.Controllers
             }
         }
         
-        [HttpPut("update-pet")]
+       /* [HttpPut("update-pet")]
         public async Task<IActionResult> UpdatePet(PetUpdateRequest request)
         {
             try
@@ -80,6 +94,6 @@ namespace CapstoneProject.Controllers
             {
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
-        }
+        }*/
     }
 }
