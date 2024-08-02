@@ -21,7 +21,7 @@ namespace CapstoneProject.Database.Model
         [Column("type")]
         public string? Type { get; set; }
         [Column("total_price")]
-        public double TotalPrice { get; set; }
+        public double? TotalPrice { get; set; }
         [Column("title")]
         public string? Title { get; set; }
         [Column("image")]

@@ -1,6 +1,6 @@
 ﻿using CapstoneProject.Business;
-using CapstoneProject.Business.Interface;
-using CapstoneProject.Business.Service;
+using CapstoneProject.Business.Interfaces;
+using CapstoneProject.Business.Services;
 using CapstoneProject.Database.Model.Meta;
 using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request;

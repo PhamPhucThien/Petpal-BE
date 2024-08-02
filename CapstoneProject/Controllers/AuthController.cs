@@ -1,4 +1,4 @@
-﻿using CapstoneProject.Business.Interface;
+﻿using CapstoneProject.Business.Interfaces;
 using CapstoneProject.DTO.Request.Account;
 using CapstoneProject.DTO.Request.User;
 using Microsoft.AspNetCore.Mvc;

@@ -8,6 +8,6 @@ namespace CapstoneProject.DTO.Response.Orders
 {
     public class CountMoneyResponse
     {
-        public double Total { get; set; } 
+        public double? Total { get; set; } 
     }
 }

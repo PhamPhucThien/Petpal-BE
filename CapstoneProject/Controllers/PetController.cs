@@ -1,4 +1,4 @@
-﻿using CapstoneProject.Business.Interface;
+﻿using CapstoneProject.Business.Interfaces;
 using CapstoneProject.Database.Model.Meta;
 using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request.Base;

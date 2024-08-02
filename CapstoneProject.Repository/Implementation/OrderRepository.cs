@@ -82,10 +82,10 @@ namespace CapstoneProject.Repository.Repository
             return count;
         }
 
-        public async Task<double> CountMoney()
+        public async Task<double?> CountMoney()
         {
             using PetpalDbContext context = new(_contextOptions);
-            double money = await context.Set<Order>().Where(a => a.Status == OrderStatus.PAID).SumAsync(x => x.CurrentPrice);
+            double? money = await context.Set<Order>().Where(a => a.Status == OrderStatus.PAID).SumAsync(x => x.CurrentPrice);
             return money;
         }
     }

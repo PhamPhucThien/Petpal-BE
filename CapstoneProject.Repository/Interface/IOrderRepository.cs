@@ -12,7 +12,7 @@ namespace CapstoneProject.Repository.Interface
     public interface IOrderRepository : IRepository<Order>
     {
         Task<int> Count();
-        Task<double> CountMoney();
+        Task<double?> CountMoney();
         Task<List<Order>?> GetByManagerId(Guid userId, Paging paging);
         Task<List<Order>?> GetByPartnerId(Guid userId, Paging paging);
         Task<List<Order>?> GetByUserId(Guid userId, Paging paging);

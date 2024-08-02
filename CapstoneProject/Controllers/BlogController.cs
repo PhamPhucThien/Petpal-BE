@@ -1,5 +1,5 @@
-﻿using CapstoneProject.Business.Interface;
-using CapstoneProject.Business.Service;
+﻿using CapstoneProject.Business.Interfaces;
+using CapstoneProject.Business.Services;
 using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request.Base;
 using CapstoneProject.DTO.Request.Blog;

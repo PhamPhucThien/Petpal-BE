@@ -1,5 +1,5 @@
-﻿using CapstoneProject.Business.Interface;
-using CapstoneProject.Business.Service;
+﻿using CapstoneProject.Business.Interfaces;
+using CapstoneProject.Business.Services;
 using CapstoneProject.Database.Model.Meta;
 using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request.CareCenters;
@@ -92,7 +92,7 @@ namespace CapstoneProject.Controllers
                     carecenter_image.IsContain = false;
                 }                
 
-                var response = await _careCenterService.CreateCareCenterAndManager(userId, request, front_image, back_image);
+                var response = await _careCenterService.CreateCareCenterAndManager(userId, request, front_image, back_image, carecenter_image);
                 return Ok(response);
             }
             catch (Exception ex)
