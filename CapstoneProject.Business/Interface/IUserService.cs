@@ -14,7 +14,7 @@ namespace CapstoneProject.Business.Interface
         */
         Task<BaseListResponse<UserDetailResponse>> GetList(ListRequest request);
         Task<ResponseObject<UserDetailResponse>> GetUserById(Guid userID);
-        Task<ResponseObject<UserDetailResponse>> UpdateUser(Guid userId, UserUpdateRequest request);
+        Task<ResponseObject<UserDetailResponse>> UpdateUser(Guid userId, UserUpdateRequest request, FileDetails filesDetail);
         Task<ResponseObject<CountUserResponse>> CountUser();
         Task<ResponseObject<LoginResponse>> ApprovePartnerRegistration(EditPartnerRegistrationRequest request);
         Task<ResponseObject<LoginResponse>> RejestPartnerRegistration(EditPartnerRegistrationRequest request);

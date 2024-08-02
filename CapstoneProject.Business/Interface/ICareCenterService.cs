@@ -9,7 +9,7 @@ namespace CapstoneProject.Business.Interface
     public interface ICareCenterService
     {
         Task<ResponseObject<EditCareCenterRegistrationResponse>> EditCareCenterRegistration(EditCareCenterRegistrationRequest request, CareCenterStatus careCenterStatus, UserStatus userStatus);
-        Task<ResponseObject<CreateCareCenterAndManagerResponse>> CreateCareCenterAndManager(Guid userId, CreateCareCenterRequest request);
+        Task<ResponseObject<CreateCareCenterAndManagerResponse>> CreateCareCenterAndManager(Guid userId, CreateCareCenterRequest request, FileDetails front_image, FileDetails back_image);
         Task<ResponseObject<GetCareCenterListResponse>> GetList(GetCareCenterListRequest request);
     }
 }
