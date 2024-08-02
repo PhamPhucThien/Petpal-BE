@@ -110,7 +110,7 @@ namespace CapstoneProject.Business.Service
                 MaxPage = 1
             };
 
-            List<CareCenter> list = await _careCenterRepository.GetWithPaging(paging);
+            List<CareCenter> list = await _careCenterRepository.GetWithPagingCustom(paging);
 
             GetCareCenterListResponse listModel = new();
 
@@ -121,6 +121,7 @@ namespace CapstoneProject.Business.Service
                     Address = item.Address,
                     CareCenterName = item.CareCenterName,
                     AverageRating = item.AverageRating,
+                    Description = item.Description,
                     Id = item.Id,
                     ListImages = item.ListImages
                 };

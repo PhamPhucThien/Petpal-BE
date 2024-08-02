@@ -17,6 +17,7 @@ namespace CapstoneProject.Business.Service
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IPetTypeRepository _petTypeRepository = petTypeRepository;
         private readonly IMapper _mapper = mapper;
+        public UploadImageService uploadImage = new();
         public StatusCode StatusCode { get; set; } = new();
 
         public async Task<ResponseObject<ListPetModel>> GetList(Guid userId, ListRequest request)
@@ -100,7 +101,7 @@ namespace CapstoneProject.Business.Service
             return petResponse;
         }
 
-        public async Task<ResponseObject<CreatePetResponse>> CreatePet(Guid userId, PetCreateRequest request)
+        public async Task<ResponseObject<CreatePetResponse>> CreatePet(Guid userId, PetCreateRequest request, FileDetails fileDetail)
         {
             ResponseObject<CreatePetResponse> response = new();
             CreatePetResponse data = new();
@@ -130,6 +131,15 @@ namespace CapstoneProject.Business.Service
                         CreatedAt = DateTime.UtcNow,
                         CreatedBy = user.Username
                     };
+
+                    if (fileDetail.IsContain)
+                    {
+                        List<FileDetails> images = [fileDetail];
+
+                        List<string> fileName = await uploadImage.UploadImage(images);
+
+                        newPet.ProfileImage = String.Join(",", fileName);
+                    }
 
                     Pet? checkPet = await _petRepository.AddAsync(newPet);
 
