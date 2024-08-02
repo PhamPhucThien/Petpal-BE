@@ -23,7 +23,7 @@ namespace CapstoneProject.DTO.Response.Orders
         public Guid Id { get; set; }
         public PetModel? Pet { get; set; }
         public PackageResponseModel? Package { get; set; }
-        public double CurrentPrice { get; set; }
+        public double? CurrentPrice { get; set; }
         public string? Detail { get; set; }
         public DateTimeOffset? FromDate { get; set; }
         public DateTimeOffset? ToDate { get; set; }

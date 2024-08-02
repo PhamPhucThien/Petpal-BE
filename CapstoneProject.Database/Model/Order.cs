@@ -15,7 +15,7 @@ namespace CapstoneProject.Database.Model
         [Column("user_id")]
         public Guid? UserId { get; set; }
         [Column("current_price")]
-        public double CurrentPrice { get; set; }
+        public double? CurrentPrice { get; set; }
         [Column("detail")]
         public string? Detail { get; set; }
 

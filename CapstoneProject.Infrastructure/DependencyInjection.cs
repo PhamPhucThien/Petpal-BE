@@ -1,5 +1,5 @@
-﻿using CapstoneProject.Business.Interface;
-using CapstoneProject.Business.Service;
+﻿using CapstoneProject.Business.Interfaces;
+using CapstoneProject.Business.Services;
 using CapstoneProject.Database;
 using CapstoneProject.Repository.Interface;
 using CapstoneProject.Repository.Repository;
