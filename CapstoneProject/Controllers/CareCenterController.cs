@@ -8,6 +8,7 @@ using CapstoneProject.Infrastructure.Extension;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CapstoneProject.Controllers
@@ -34,7 +35,7 @@ namespace CapstoneProject.Controllers
 
         [HttpPost("create-carecenter-and-manager")]
         [Authorize(Roles = "PARTNER")]
-        public async Task<IActionResult> CreateCareCenterAndManager(CreateCareCenterRequest request, IFormFile front_identity, IFormFile back_identity)
+        public async Task<IActionResult> CreateCareCenterAndManager(CreateCareCenterRequest request, [Required] IFormFile front_identity, [Required] IFormFile back_identity)
         {
             try
             {

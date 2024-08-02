@@ -11,5 +11,6 @@ namespace CapstoneProject.DTO
         public string? FileName { get; set; }
         public string? TempPath { get; set; }
         public byte[]? FileData { get; set; }
+        public bool IsContain { get; set; } = true;
     }
 }
