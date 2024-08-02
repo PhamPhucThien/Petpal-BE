@@ -109,6 +109,8 @@ namespace CapstoneProject.Business.Service
                 {
                     Id = package.Id,
                     TotalPrice = package.TotalPrice,
+                    Title = package.Title,
+                    Image = package.Image,
                     Duration = package.Duration,
                     Description = package.Description,
                     Type = package.Type
