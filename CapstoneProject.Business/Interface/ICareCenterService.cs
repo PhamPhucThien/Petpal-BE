@@ -11,5 +11,6 @@ namespace CapstoneProject.Business.Interface
         Task<ResponseObject<EditCareCenterRegistrationResponse>> EditCareCenterRegistration(EditCareCenterRegistrationRequest request, CareCenterStatus careCenterStatus, UserStatus userStatus);
         Task<ResponseObject<CreateCareCenterAndManagerResponse>> CreateCareCenterAndManager(Guid userId, CreateCareCenterRequest request, FileDetails front_image, FileDetails back_image);
         Task<ResponseObject<GetCareCenterListResponse>> GetList(GetCareCenterListRequest request);
+        Task<ResponseObject<GetCareCenterListResponse>> GetCareCenterByRole(Guid userId, GetCareCenterListRequest request);
     }
 }

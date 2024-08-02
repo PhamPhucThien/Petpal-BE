@@ -180,5 +180,75 @@ namespace CapstoneProject.Business.Service
 
             return response;
         }
+
+        public async Task<ResponseObject<GetCareCenterListResponse>> GetCareCenterByRole(Guid userId, GetCareCenterListRequest request)
+        {
+            ResponseObject<GetCareCenterListResponse> response = new();
+            GetCareCenterListResponse data = new();
+            Paging paging = new()
+            {
+                Page = request.Page,
+                Size = request.Size,
+                MaxPage = 1
+            };
+            CareCenter? manager = await _careCenterRepository.GetByManagerId(userId);
+            List<CareCenter>? partner = await _careCenterRepository.GetByPartnerId(userId, paging);
+
+            if (manager != null && partner != null)
+            {
+                if (manager != null)
+                {
+                    response.Status = StatusCode.OK;
+                    response.Payload.Message = "Tìm thấy trung tâm cho quản lý";
+
+                    CareCenterListModel model = new()
+                    {
+                        Id = manager.Id,
+                        CareCenterName = manager.CareCenterName,
+                        Address = manager.Address,
+                        Description = manager.Description,
+                        AverageRating = manager.AverageRating
+                    };
+
+                    response.Payload.Data = data;
+                }
+                else
+                {
+                    
+
+                    List<CareCenter> list = await _careCenterRepository.GetWithPaging(paging);
+
+
+                    foreach (CareCenter item in list)
+                    {
+                        CareCenterListModel model = new()
+                        {
+                            Address = item.Address,
+                            CareCenterName = item.CareCenterName,
+                            AverageRating = item.AverageRating,
+                            Id = item.Id,
+                            ListImages = item.ListImages
+                        };
+                        data.List.Add(model);
+                    }
+
+                    data.Paging = paging;
+                    data.Paging.Total = paging.Total;
+
+                    response.Status = StatusCode.OK;
+                    response.Payload.Data = data;
+                }
+            }
+            else
+            {
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Id không tồn tại";
+                response.Payload.Data = null;
+            }
+
+            
+
+            return response;
+        }
     }
 }

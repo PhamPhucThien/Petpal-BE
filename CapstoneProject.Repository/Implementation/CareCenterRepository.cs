@@ -1,6 +1,7 @@
 ﻿using CapstoneProject.Database;
 using CapstoneProject.Database.Model;
 using CapstoneProject.Database.Model.Meta;
+using CapstoneProject.DTO.Request;
 using CapstoneProject.Repository.Generic;
 using CapstoneProject.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
@@ -16,17 +17,30 @@ namespace CapstoneProject.Repository.Repository
     {
         private readonly DbContextOptions<PetpalDbContext> _contextOptions = contextOptions;
 
-        public async Task<CareCenter?> GetByPartnerId(Guid partnerId)
+        public async Task<CareCenter?> GetByManagerId(Guid managerId)
         {
             using PetpalDbContext context = new(_contextOptions);
-            CareCenter? careCenter = await context.Set<CareCenter>().Include(m => m.Manager).FirstOrDefaultAsync(x => x.PartnerId == partnerId);
+            CareCenter? careCenter = await context.Set<CareCenter>().Include(m => m.Partner).Include(n => n.Manager).FirstOrDefaultAsync(x => x.ManagerId == managerId);
             return careCenter;
+        }
+
+        public async Task<List<CareCenter>?> GetByPartnerId(Guid partnerId, Paging pagingRequest)
+        {
+            ArgumentNullException.ThrowIfNull(pagingRequest);
+
+            using PetpalDbContext context = new(_contextOptions);
+            IQueryable<CareCenter> query = context.Set<CareCenter>().Include(m => m.Partner).Include(n => n.Manager).Where(x => x.PartnerId == partnerId).AsQueryable();
+
+            query = query.Skip(pagingRequest.Size * (pagingRequest.Page - 1))
+                         .Take(pagingRequest.Size);
+
+            return await query.ToListAsync();
         }
 
         public async Task<CareCenter?> GetCareCenterByIdAsync(Guid careCenterId)
         {
             using PetpalDbContext context = new(_contextOptions);
-            CareCenter? careCenter = await context.Set<CareCenter>().Include(m => m.Manager).FirstOrDefaultAsync(x => x.Id == careCenterId);
+            CareCenter? careCenter = await context.Set<CareCenter>().Include(m => m.Partner).Include(n => n.Manager).FirstOrDefaultAsync(x => x.Id == careCenterId);
             return careCenter;
         }
     }

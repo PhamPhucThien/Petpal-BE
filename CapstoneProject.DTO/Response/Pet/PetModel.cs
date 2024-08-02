@@ -13,8 +13,13 @@ namespace CapstoneProject.DTO.Response.Pet
         public Guid? Id { get; set; }
         public string? FullName { get; set; }
         public string? ProfileImage { get; set; }
+        public DateTimeOffset? Birthday { get; set; }
+        public double? Weight { get; set; }
+        public Gender? Gender { get; set; }
+        public string? Breed { get; set; }
+        public bool? Sterilise { get; set; }
         public string? Description { get; set; }
-        public BaseStatus Status { get; set; }
+        public PetStatus Status { get; set; }
     }
 
     public class ListPetModel
