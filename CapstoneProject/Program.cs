@@ -10,6 +10,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
+using CapstoneProject.Business.Services;
+using CapstoneProject.DTO.Request.Email;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +21,8 @@ configurationBuilder.AddJsonFile("appsettings.json", optional: true, reloadOnCha
 
 IConfiguration configuration = configurationBuilder.Build();
 // Add services to the container.
+
+builder.Services.Configure<EmailSetting>(builder.Configuration.GetSection("EmailSetting"));
 
 builder.Services.AddControllers().AddJsonOptions(x =>
 {
