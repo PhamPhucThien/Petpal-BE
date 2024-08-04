@@ -92,6 +92,11 @@ namespace CapstoneProject.Business.Services
             return result ? _mapper.Map<PackageResponse>(package) : null;
         }
 
+        public Task<bool> DataGenerator()
+        {
+            throw new NotImplementedException();
+        }
+
 
         public async Task<ResponseObject<PackageResponseModel>> GetById(GetPackageByIdRequest request)
         {
