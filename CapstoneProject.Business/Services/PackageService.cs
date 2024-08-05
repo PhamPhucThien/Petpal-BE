@@ -16,8 +16,8 @@ namespace CapstoneProject.Business.Services
     public class PackageService(IPackageRepository packageRepository, ICareCenterRepository careCenterRepository,
             IMapper mapper, IServiceRepository serviceRepository, IPackageItemRepository packageItemRepository) : IPackageService
     {
-        private readonly ICareCenterRepository _careCenterRepository;
-        private readonly IMapper _mapper;
+        private readonly ICareCenterRepository _careCenterRepository = careCenterRepository;
+        private readonly IMapper _mapper = mapper;
         private readonly IPackageRepository _packageRepository = packageRepository;
         private readonly IServiceRepository _serviceRepository = serviceRepository;
         private readonly IPackageItemRepository _packageItemRepository = packageItemRepository;
