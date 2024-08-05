@@ -12,7 +12,9 @@ namespace CapstoneProject.DTO.Request.Pet
     public class PetCreateRequest
     {
         [Required(ErrorMessage = "Thiếu tên thú cưng")]
-        public string? Fullname { get; set; }   
+        public string? Fullname { get; set; }
+        [Required(ErrorMessage = "Thiếu loại thú cưng")]
+        public Guid PetTypeId { get; set; }
         public string? Description { get; set; }
         [Required(ErrorMessage = "Thiếu ngày sinh thú cưng")]
         public DateTimeOffset? Birthday { get; set; }

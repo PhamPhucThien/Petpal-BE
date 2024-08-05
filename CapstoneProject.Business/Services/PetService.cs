@@ -107,11 +107,17 @@ namespace CapstoneProject.Business.Services
             CreatePetResponse data = new();
 
             User? user = await _userRepository.GetByIdAsync(userId);
+            PetType? petType = await _petTypeRepository.GetByIdAsync(request.PetTypeId);
 
             if (user == null)
             {
                 response.Status = StatusCode.BadRequest;
                 response.Payload.Message = "Không thể tìm thấy người dùng";
+            }
+            else if(petType == null)
+            {
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Không thể tìm thấy loại thú cưng";
             }
             else
             {
@@ -121,6 +127,7 @@ namespace CapstoneProject.Business.Services
                     {
                         Id = Guid.NewGuid(),
                         UserId = userId,
+                        PetTypeId = petType.Id,
                         FullName = request.Fullname,
                         Description = request.Description ?? "Không có",
                         Birthday = request.Birthday,
