@@ -20,16 +20,17 @@ using static Google.Apis.Requests.BatchRequest;
 
 namespace CapstoneProject.Business.Services
 {
-    public class OrderService(IOrderRepository orderRepository, IUserRepository userRepository, IPetRepository petRepository, IPackageRepository packageRepository, IOrderDetailRepository orderDetailRepository) : IOrderService
+    public class OrderService(IOrderRepository orderRepository, IUserRepository userRepository, IPetRepository petRepository, IPackageRepository packageRepository, IOrderDetailRepository orderDetailRepository, IInvoiceRepository invoiceRepository) : IOrderService
     {
         private readonly IOrderRepository _orderRepository = orderRepository;
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IPetRepository _petRepository = petRepository;
         private readonly IPackageRepository _packageRepository = packageRepository;
         private readonly IOrderDetailRepository _orderDetailRepository = orderDetailRepository;
+        private readonly IInvoiceRepository _invoiceRepository = invoiceRepository;
 
         public string vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        public string vnp_ReturnUrl = "/api/v1/vnpay/vnpay-payment";
+        public string vnp_ReturnUrl = "/api/v1/Order/vnpay-payment";
         public string vnp_TmnCode = "NCLDLDTA";
         public string vnp_HashSecret = "J4VTRXS61APKTX5M834JUSMXX3DR501C";
         public string vnp_apiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
@@ -378,7 +379,7 @@ namespace CapstoneProject.Business.Services
 
         public string GetRandomNumber(int len)
         {
-            Random rnd = new Random();
+            Random rnd = new();
             const string chars = "0123456789";
             StringBuilder sb = new StringBuilder(len);
             for (int i = 0; i < len; i++)
@@ -432,44 +433,49 @@ namespace CapstoneProject.Business.Services
             var method = request.VnpCardType;
             var listMessage = request.VnpSecureHash;
 
-            var amount = double.Parse(totalPrice) / 100;
-            var returlUrl = $"https://bgss-dgrm.onrender.com/order-details/{id}";
+            if (totalPrice == null || double.TryParse(totalPrice, out _ ))
+            {
+                return "Không tìm thấy giá trị đơn hàng";
+            }
 
-/*            var order = _orderRepository.FindById(Guid.Parse(id));
-*/
+            if (id == null)
+            {
+                return "Không tìm thấy Id đơn hàng";
+            }
+
+            var amount = double.Parse(totalPrice) / 100;
+            var returlUrl = $"https://petpal.up.railway.app/get-order/{id}";
+
+            Order? order = await _orderRepository.GetByIdAsync(Guid.Parse(id));
+
             fields.Remove("vnp_SecureHashType");
             fields.Remove("vnp_SecureHash");
 
-            /*var signValue = HashAllFields(fields);
+            var signValue = HashAllFields(fields);
             if (signValue.Equals(vnpSecureHash))
             {
-                *//*if ("00".Equals(request.VnpTransactionStatus))
+                if ("00".Equals(request.VnpTransactionStatus))
                 {
-                    var transaction = new Transaction
+                    var invoice = new Invoice
                     {
                         Id = Guid.NewGuid(),
                         Detail = detail,
                         PaymentMethod = method,
-                        IsDeposit = !order.IsPayDeposit,
                         Amount = amount,
-                        ListResponseMessage = listMessage,
                         OrderId = order.Id,
-                        Status = TransactionStatus.Completed,
+                        Status = BaseStatus.ACTIVE,
                         CreatedAt = DateTimeOffset.Now,
                         CreatedBy = "VNPAY"
                     };
 
-                    if (order.IsPayDeposit)
-                    {
-                        order.Status = OrderStatus.Completed;
-                    }
-                    else
-                    {
-                        order.IsPayDeposit = true;
-                    }
+                    order.Status = OrderStatus.PAID;
 
-                    _transactionRepository.Save(transaction);
-                    _orderRepository.Save(order);*//*
+                    using TransactionScope scope = new(TransactionScopeAsyncFlowOption.Enabled);
+
+                    await _invoiceRepository.AddAsync(invoice);
+                    await _orderRepository.EditAsync(order);
+
+                    scope.Complete();
                 }
                 else
                 {
@@ -481,8 +487,7 @@ namespace CapstoneProject.Business.Services
             else
             {
                 return returlUrl;
-            }*/
-            return "";
+            }
         }
 
         public string HashAllFields(Dictionary<string, string> fields)
@@ -508,5 +513,34 @@ namespace CapstoneProject.Business.Services
             return HmacSHA512(vnp_HashSecret, sb.ToString());
         }
 
+        public async Task<ResponseObject<OrderResponseModel>> GetById(Guid orderId, Guid userId)
+        {
+            ResponseObject<OrderResponseModel> response = new();
+            OrderResponseModel data = new();
+
+            Order? order = await _orderRepository.GetByOrderId(orderId);
+
+            if (order != null && order.UserId == userId)
+            {
+                response.Status = StatusCode.OK;
+                response.Payload.Message = "Lấy dữ liệu thành công";
+                response.Payload.Data = data;
+            }
+            else
+            {
+                response.Status = StatusCode.NotFound;
+                response.Payload.Data = null;
+
+                if (order.UserId != userId)
+                {
+                    response.Payload.Message = "Id người dùng không tồn tại";
+                } else
+                {
+                    response.Payload.Message = "Lấy dữ liệu thất bại";
+                }
+            }
+
+            return response;
+        }
     }
 }

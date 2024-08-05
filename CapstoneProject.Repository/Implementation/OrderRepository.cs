@@ -88,5 +88,12 @@ namespace CapstoneProject.Repository.Repository
             double? money = await context.Set<Order>().Where(a => a.Status == OrderStatus.PAID).SumAsync(x => x.CurrentPrice);
             return money;
         }
+
+        public async Task<Order> GetByOrderId(Guid id)
+        {
+            using PetpalDbContext context = new(_contextOptions);
+            Order? order = await context.Set<Order>().FirstOrDefaultAsync(a => a.Id == id);
+            return order;
+        }
     }
 }

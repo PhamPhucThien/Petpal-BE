@@ -94,6 +94,21 @@ namespace CapstoneProject.Controllers
             }
         }
 
+        [HttpGet("get-order/{orderId}")]
+        public async Task<IActionResult> GetOrderById([FromQuery] Guid orderId)
+        {
+            try
+            {
+                Guid userId = Guid.Parse(HttpContext.GetName());
+                var response = await _orderService.GetById(orderId, userId);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
         [HttpGet("vnpay-payment")]
         public async Task<IActionResult> VNPAYPayment()
         {
