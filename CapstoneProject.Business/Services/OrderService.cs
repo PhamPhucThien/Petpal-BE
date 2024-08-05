@@ -285,7 +285,6 @@ namespace CapstoneProject.Business.Services
 
             vnp_Params.Add("vnp_TxnRef", vnp_TxnRef);
             vnp_Params.Add("vnp_OrderInfo", order.Id.ToString());
-            vnp_Params.Add("vnp_OrderInfo", "test");
             vnp_Params.Add("vnp_OrderType", orderType);
 
             string locate = "vn";
