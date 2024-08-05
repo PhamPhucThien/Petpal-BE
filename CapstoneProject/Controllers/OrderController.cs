@@ -116,12 +116,12 @@ namespace CapstoneProject.Controllers
             {
                 VNPAYRequest request = new()
                 {
-                    VnpSecureHash = Request.Form["vnp_SecureHash"],
-                    VnpOrderInfo = Request.Form["vnp_OrderInfo"],
-                    VnpAmount = Request.Form["vnp_Amount"],
-                    VnpTransactionNo = Request.Form["vnp_TransactionNo"],
-                    VnpCardType = Request.Form["vnp_CardType"],
-                    VnpTransactionStatus = Request.Form["vnp_TransactionStatus"]
+                    VnpSecureHash = Request.Query["vnp_SecureHash"],
+                    VnpOrderInfo = Request.Query["vnp_OrderInfo"],
+                    VnpAmount = Request.Query["vnp_Amount"],
+                    VnpTransactionNo = Request.Query["vnp_TransactionNo"],
+                    VnpCardType = Request.Query["vnp_CardType"],
+                    VnpTransactionStatus = Request.Query["vnp_TransactionStatus"]
                 };
 
                 string paymentStatus = await _orderService.VNPAYPayment(request);
