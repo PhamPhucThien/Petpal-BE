@@ -26,11 +26,7 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var listPetType = await _petTypeService.GetList(request);
-                var response = new ResponseObject<BaseListResponse<PetTypeDetailResponse>>();
-                response.Status = StatusCodes.Status200OK.ToString();
-                response.Payload.Message = "Get all pet type successfully";
-                response.Payload.Data = listPetType;
+                var response = await _petTypeService.GetList(request);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -44,11 +40,7 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var petTypeDetailResponse = await _petTypeService.GetById(petTypeId);
-                var response = new ResponseObject<PetTypeDetailResponse>();
-                response.Status = StatusCodes.Status200OK.ToString();
-                response.Payload.Message = "Get pet type successfully";
-                response.Payload.Data = petTypeDetailResponse;
+                var response = await _petTypeService.GetById(petTypeId);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -62,11 +54,7 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var petTypeDetailResponse = await _petTypeService.Create(request);
-                var response = new ResponseObject<PetTypeDetailResponse>();
-                response.Status = StatusCodes.Status200OK.ToString();
-                response.Payload.Message = "Create pet type successfully";
-                response.Payload.Data = petTypeDetailResponse;
+                var response = await _petTypeService.Create(request);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -80,11 +68,7 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var petTypeDetailResponse = await _petTypeService.Update(request);
-                var response = new ResponseObject<PetTypeDetailResponse>();
-                response.Status = StatusCodes.Status200OK.ToString();
-                response.Payload.Message = "Update pet type successfully";
-                response.Payload.Data = petTypeDetailResponse;
+                var response = await _petTypeService.Update(request);
                 return Ok(response);
             }
             catch (Exception ex)

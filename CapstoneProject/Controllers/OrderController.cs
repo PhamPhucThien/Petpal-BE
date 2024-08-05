@@ -94,6 +94,29 @@ namespace CapstoneProject.Controllers
             }
         }
 
+        [HttpGet("vnpay-payment")]
+        public async Task<IActionResult> VNPAYPayment()
+        {
+            try
+            {
+                VNPAYRequest request = new()
+                {
+                    VnpSecureHash = Request.Form["vnp_SecureHash"],
+                    VnpOrderInfo = Request.Form["vnp_OrderInfo"],
+                    VnpAmount = Request.Form["vnp_Amount"],
+                    VnpTransactionNo = Request.Form["vnp_TransactionNo"],
+                    VnpCardType = Request.Form["vnp_CardType"],
+                    VnpTransactionStatus = Request.Form["vnp_TransactionStatus"]
+                };
+
+                string paymentStatus = await _orderService.VNPAYPayment(request);
+                return Ok(paymentStatus);
+            } catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
         [HttpPost("get-order-request")]
         public async Task<IActionResult> GetOrderRequest(GetListOrderById request)
         {
