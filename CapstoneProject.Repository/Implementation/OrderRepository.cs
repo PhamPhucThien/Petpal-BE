@@ -89,10 +89,15 @@ namespace CapstoneProject.Repository.Repository
             return money;
         }
 
-        public async Task<Order> GetByOrderId(Guid id)
+        public async Task<Order?> GetByOrderId(Guid id)
         {
             using PetpalDbContext context = new(_contextOptions);
-            Order? order = await context.Set<Order>().FirstOrDefaultAsync(a => a.Id == id);
+            Order? order = await context.Set<Order>().Include(od => od.OrderDetail).
+                    ThenInclude(p => p.Package).
+                    ThenInclude(c => c.CareCenter).
+                Include(od => od.OrderDetail).
+                    ThenInclude(od => od.Pet).
+                    FirstOrDefaultAsync(a => a.Id == id);
             return order;
         }
     }

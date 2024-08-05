@@ -16,6 +16,6 @@ namespace CapstoneProject.Repository.Interface
         Task<List<Order>?> GetByManagerId(Guid userId, Paging paging);
         Task<List<Order>?> GetByPartnerId(Guid userId, Paging paging);
         Task<List<Order>?> GetByUserId(Guid userId, Paging paging);
-        Task<Order> GetByOrderId(Guid id);
+        Task<Order?> GetByOrderId(Guid id);
     }
 }
