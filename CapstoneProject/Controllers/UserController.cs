@@ -61,7 +61,7 @@ namespace CapstoneProject.Controllers
             }
         }
         
-        [HttpGet("get-user-by-id")]
+        [HttpGet("get-user/{userId}")]
         public async Task<IActionResult> GetUserById(Guid userId)
         {
             try
@@ -190,6 +190,21 @@ namespace CapstoneProject.Controllers
             try
             {
                 var response = await _userService.GetUser(request, UserStatus.PENDING, UserRole.PARTNER);
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpGet("get-pending-partner/{userId}")]
+        public async Task<IActionResult> GetPendingPartnerById(Guid userId)
+        {
+            try
+            {
+                var response = await _userService.GetUserById(userId);
+
                 return Ok(response);
             }
             catch (Exception ex)

@@ -388,5 +388,29 @@ namespace CapstoneProject.Business.Services
 
             return response;
         }
+
+        public async Task<ResponseObject<UserDetailResponse>> GetPendingPartnerById(Guid userId)
+        {
+            ResponseObject<UserDetailResponse> response = new();
+            UserDetailResponse data = new();
+            User? user = await _userRepository.GetByIdAsync(userId);
+
+            if (user != null && user.Status == UserStatus.PENDING && user.Role == UserRole.PARTNER)
+            {
+                response.Status = StatusCode.OK;
+                response.Payload.Message = "Truy vấn thông tin thành công";
+
+                data = _mapper.Map<UserDetailResponse>(user);
+                response.Payload.Data = data;
+            }
+            else
+            {
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Id người dùng không tồn tại";
+                response.Payload.Data = null;
+            }
+
+            return response;
+        }
     }
 }
