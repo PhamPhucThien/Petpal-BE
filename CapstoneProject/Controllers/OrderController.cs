@@ -95,7 +95,7 @@ namespace CapstoneProject.Controllers
         }
 
         [HttpGet("get-order/{orderId}")]
-        public async Task<IActionResult> GetOrderById([FromQuery] Guid orderId)
+        public async Task<IActionResult> GetOrderById(Guid orderId)
         {
             try
             {
