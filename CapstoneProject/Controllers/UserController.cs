@@ -203,7 +203,7 @@ namespace CapstoneProject.Controllers
         {
             try
             {
-                var response = await _userService.GetUserById(userId);
+                var response = await _userService.GetPendingPartnerById(userId);
 
                 return Ok(response);
             }
