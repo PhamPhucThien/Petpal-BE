@@ -39,7 +39,7 @@ namespace CapstoneProject.Controllers
             }
         }
         
-        [HttpGet("get-comment{commentId}")]
+        [HttpGet("get-comment/{commentId}")]
         public async Task<IActionResult> GetCommentById(string commentId)
         {
             try

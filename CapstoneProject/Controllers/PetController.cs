@@ -37,7 +37,7 @@ namespace CapstoneProject.Controllers
             }
         }
         
-        [HttpGet("get-pet{petId}")]
+        [HttpGet("get-pet/{petId}")]
         public async Task<IActionResult> GetPetById(string petId)
         {
             try
