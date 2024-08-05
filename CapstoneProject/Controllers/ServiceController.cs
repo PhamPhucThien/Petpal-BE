@@ -39,7 +39,7 @@ namespace CapstoneProject.Controllers
             }
         }
         
-        [HttpGet("get-service{serviceId}")]
+        [HttpGet("get-service/{serviceId}")]
         public async Task<IActionResult> GetServiceById(string serviceId)
         {
             try

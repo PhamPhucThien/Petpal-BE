@@ -35,7 +35,7 @@ namespace CapstoneProject.Controllers
             }
         }
         
-        [HttpGet("get-blog{blogId}")]
+        [HttpGet("get-blog/{blogId}")]
         public async Task<IActionResult> getBlogById(string blogId)
         {
             try
