@@ -10,7 +10,9 @@ using CapstoneProject.DTO.Response.Pet;
 using CapstoneProject.Repository.Interface;
 using Microsoft.IdentityModel.Protocols;
 using System.Globalization;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Transactions;
 using System.Web;
 using static Google.Apis.Requests.BatchRequest;
@@ -271,11 +273,10 @@ namespace CapstoneProject.Business.Services
             string vnp_IpAddr = "127.0.0.1";
             string orderType = "250000";
             double? money = order.CurrentPrice * 100;
-
             string totalPrice = money.ToString();
             
 
-            Dictionary<String, String> vnp_Params = new();
+            Dictionary<string, string> vnp_Params = new();
             vnp_Params.Add("vnp_Version", vnp_Version);
             vnp_Params.Add("vnp_Command", vnp_Command);
             vnp_Params.Add("vnp_TmnCode", vnp_TmnCode);
@@ -284,9 +285,10 @@ namespace CapstoneProject.Business.Services
 
             vnp_Params.Add("vnp_TxnRef", vnp_TxnRef);
             vnp_Params.Add("vnp_OrderInfo", order.Id.ToString());
+            vnp_Params.Add("vnp_OrderInfo", "test");
             vnp_Params.Add("vnp_OrderType", orderType);
 
-            String locate = "vn";
+            string locate = "vn";
             vnp_Params.Add("vnp_Locale", locate);
 
             urlReturn += vnp_ReturnUrl;
@@ -316,10 +318,10 @@ namespace CapstoneProject.Business.Services
                 {
                     hashData.Append(fieldName)
                             .Append('=')
-                            .Append(HttpUtility.UrlEncode(fieldValue, Encoding.ASCII));
-                    query.Append(HttpUtility.UrlEncode(fieldName, Encoding.ASCII))
+                            .Append(Uri.EscapeDataString(fieldValue));                               
+                    query.Append(Uri.EscapeDataString(fieldName))
                          .Append('=')
-                         .Append(HttpUtility.UrlEncode(fieldValue, Encoding.ASCII));
+                         .Append(Uri.EscapeDataString(fieldValue));
                     if (fieldNames.IndexOf(fieldName) != fieldNames.Count - 1)
                     {
                         query.Append('&');
@@ -327,6 +329,7 @@ namespace CapstoneProject.Business.Services
                     }
                 }
             }
+
 
             var queryUrl = query.ToString();
             var vnp_SecureHash = HmacSHA512(vnp_HashSecret, hashData.ToString());
@@ -348,15 +351,17 @@ namespace CapstoneProject.Business.Services
                 throw new ArgumentNullException();
             }
 
-            using (var hmac512 = new System.Security.Cryptography.HMACSHA512(Encoding.UTF8.GetBytes(key)))
+            try
             {
-                byte[] hashValue = hmac512.ComputeHash(Encoding.UTF8.GetBytes(data));
-                StringBuilder sb = new StringBuilder(2 * hashValue.Length);
-                foreach (byte b in hashValue)
+                using (var hmac = new HMACSHA512(Encoding.UTF8.GetBytes(key)))
                 {
-                    sb.Append(b.ToString("x2"));
+                    byte[] hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(data));
+                    return BitConverter.ToString(hash).Replace("-", "").ToLower();
                 }
-                return sb.ToString();
+            }
+            catch (Exception)
+            {
+                return "";
             }
         }
 
