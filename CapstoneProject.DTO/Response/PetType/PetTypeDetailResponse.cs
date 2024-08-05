@@ -2,9 +2,8 @@
 
 namespace CapstoneProject.DTO.Response.PetType;
 
-public class PetTypeDetailResponse : BaseResponse
+public class PetTypeDetailResponse
 {
-    public string Type { get; set; }
-    public string Category { get; set; }
-    public string Description { get; set; }
+    public Guid Id { get; set; }
+    public string? Type { get; set; }
 }

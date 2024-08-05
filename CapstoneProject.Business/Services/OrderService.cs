@@ -28,6 +28,16 @@ namespace CapstoneProject.Business.Services
         private readonly IPackageRepository _packageRepository = packageRepository;
         private readonly IOrderDetailRepository _orderDetailRepository = orderDetailRepository;
 
+        public string vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
+        public string vnp_ReturnUrl = "/api/v1/vnpay/vnpay-payment";
+        public string vnp_TmnCode = "NCLDLDTA";
+        public string vnp_HashSecret = "J4VTRXS61APKTX5M834JUSMXX3DR501C";
+        public string vnp_apiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
+        public string vnp_Version = "2.1.0";
+        public string vnp_Command = "pay";
+        public string vnp_IpAddr = "127.0.0.1";
+        public string orderType = "250000";
+
         public StatusCode StatusCode { get; set; } = new();
         public async Task<ResponseObject<ApproveOrderResponse>> ApproveRequest(Guid orderId)
         {
@@ -262,18 +272,10 @@ namespace CapstoneProject.Business.Services
                 return response;
             }
 
-            string vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-            string vnp_ReturnUrl = "/api/v1/vnpay/vnpay-payment";
-            string vnp_TmnCode = "NCLDLDTA";
-            string vnp_HashSecret = "J4VTRXS61APKTX5M834JUSMXX3DR501C";
-            string vnp_apiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
-            string vnp_Version = "2.1.0";
-            string vnp_Command = "pay";
+           
             string vnp_TxnRef = GetRandomNumber(8);
-            string vnp_IpAddr = "127.0.0.1";
-            string orderType = "250000";
             double? money = order.CurrentPrice * 100;
-            string totalPrice = money.ToString();
+            string totalPrice = money.ToString() ?? "000";
             
 
             Dictionary<string, string> vnp_Params = new();
@@ -418,5 +420,93 @@ namespace CapstoneProject.Business.Services
 
             return response;
         }
+
+        public async Task<string> VNPAYPayment(VNPAYRequest request)
+        {
+            var fields = new Dictionary<string, string>();
+
+            var vnpSecureHash = request.VnpSecureHash;
+            var id = request.VnpOrderInfo;
+            var totalPrice = request.VnpAmount;
+            var detail = request.VnpTransactionNo;
+            var method = request.VnpCardType;
+            var listMessage = request.VnpSecureHash;
+
+            var amount = double.Parse(totalPrice) / 100;
+            var returlUrl = $"https://bgss-dgrm.onrender.com/order-details/{id}";
+
+/*            var order = _orderRepository.FindById(Guid.Parse(id));
+*/
+            fields.Remove("vnp_SecureHashType");
+            fields.Remove("vnp_SecureHash");
+
+            /*var signValue = HashAllFields(fields);
+            if (signValue.Equals(vnpSecureHash))
+            {
+                *//*if ("00".Equals(request.VnpTransactionStatus))
+                {
+                    var transaction = new Transaction
+                    {
+                        Id = Guid.NewGuid(),
+                        Detail = detail,
+                        PaymentMethod = method,
+                        IsDeposit = !order.IsPayDeposit,
+                        Amount = amount,
+                        ListResponseMessage = listMessage,
+                        OrderId = order.Id,
+                        Status = TransactionStatus.Completed,
+                        CreatedAt = DateTimeOffset.Now,
+                        CreatedBy = "VNPAY"
+                    };
+
+                    if (order.IsPayDeposit)
+                    {
+                        order.Status = OrderStatus.Completed;
+                    }
+                    else
+                    {
+                        order.IsPayDeposit = true;
+                    }
+
+                    _transactionRepository.Save(transaction);
+                    _orderRepository.Save(order);*//*
+                }
+                else
+                {
+                    return returlUrl;
+                }
+
+                return order.Status == OrderStatus.PAID ? returlUrl : returlUrl;
+            }
+            else
+            {
+                return returlUrl;
+            }*/
+            return "";
+        }
+
+        public string HashAllFields(Dictionary<string, string> fields)
+        {
+            // Sort the field names
+            var sortedFieldNames = fields.Keys.OrderBy(k => k).ToList();
+            var sb = new StringBuilder();
+
+            foreach (var fieldName in sortedFieldNames)
+            {
+                if (fields.TryGetValue(fieldName, out var fieldValue) && !string.IsNullOrEmpty(fieldValue))
+                {
+                    if (sb.Length > 0)
+                    {
+                        sb.Append("&");
+                    }
+                    sb.Append(fieldName);
+                    sb.Append("=");
+                    sb.Append(fieldValue);
+                }
+            }
+
+            return HmacSHA512(vnp_HashSecret, sb.ToString());
+        }
+
     }
 }
