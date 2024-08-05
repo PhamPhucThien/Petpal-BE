@@ -433,7 +433,7 @@ namespace CapstoneProject.Business.Services
             var method = request.VnpCardType;
             var listMessage = request.VnpSecureHash;
 
-            if (totalPrice == null || double.TryParse(totalPrice, out _ ))
+            if (totalPrice == null || !double.TryParse(totalPrice, out _ ))
             {
                 return "Không tìm thấy giá trị đơn hàng";
             }
