@@ -5,11 +5,6 @@ using CapstoneProject.DTO.Request;
 using CapstoneProject.Repository.Generic;
 using CapstoneProject.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CapstoneProject.Repository.Repository
 {
@@ -47,6 +42,10 @@ namespace CapstoneProject.Repository.Repository
             if (role != null)
             {
                 query = query.Where(o => o.Role == role);
+            }
+            if (paging.Search != string.Empty)
+            {
+                query = query.Where(o => (o.Username != null && o.Username.Contains(paging.Search)) || (o.FullName != null && o.FullName.Contains(paging.Search)));
             }
 
             query = query.Skip(paging.Size * (paging.Page - 1))

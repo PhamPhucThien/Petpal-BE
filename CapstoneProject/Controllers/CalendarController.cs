@@ -41,7 +41,7 @@ namespace CapstoneProject.Controllers
             }
         }
         
-        [HttpGet("get-calendar{calendarId}")]
+        [HttpGet("get-calendar/{calendarId}")]
         public async Task<IActionResult> GetCalendarById(string calendarId)
         {
             try

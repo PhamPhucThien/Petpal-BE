@@ -8,4 +8,5 @@ public class ListRequest
     public int Page { get; set; }
     [Range(1, 20)]
     public int Size { get; set; }
+    public string? Search { get; set; }
 }

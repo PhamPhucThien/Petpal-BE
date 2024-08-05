@@ -199,11 +199,11 @@ namespace CapstoneProject.Controllers
         }
 
         [HttpPost("get-user")]
-        public async Task<IActionResult> GetUser(ListRequest request)
+        public async Task<IActionResult> GetUser(ListUserRequest request)
         {
             try
             {
-                var response = await _userService.GetUser(request, null, null);
+                var response = await _userService.GetUser(request.ListRequest, request.Status, request.Role);
                 return Ok(response);
             }
             catch (Exception ex)

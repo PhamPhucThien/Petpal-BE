@@ -31,7 +31,7 @@ namespace CapstoneProject.Controllers
             }
         }
         
-        [HttpGet("get-package-item{packageItemId}")]
+        [HttpGet("get-package-item/{packageItemId}")]
         public async Task<IActionResult> GetPackageItemById(string packageItemId)
         {
             try
