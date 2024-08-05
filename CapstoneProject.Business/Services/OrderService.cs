@@ -30,7 +30,7 @@ namespace CapstoneProject.Business.Services
         private readonly IInvoiceRepository _invoiceRepository = invoiceRepository;
 
         public string vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-        public string vnp_ReturnUrl = "/api/v1/Order/vnpay-payment";
+        public string vnp_ReturnUrl = "/api/Order/vnpay-payment";
         public string vnp_TmnCode = "NCLDLDTA";
         public string vnp_HashSecret = "J4VTRXS61APKTX5M834JUSMXX3DR501C";
         public string vnp_apiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
