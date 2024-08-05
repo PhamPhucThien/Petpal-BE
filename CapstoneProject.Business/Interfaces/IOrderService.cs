@@ -16,7 +16,7 @@ namespace CapstoneProject.Business.Interfaces
         Task<ResponseObject<GetListOrderResponse>> GetByUserId(Guid userId, GetListOrderById request);
         Task<ResponseObject<CountOrderResponse>> CountOrder();
         Task<ResponseObject<CountMoneyResponse>> CountMoney();
-        Task<string> VNPAYPayment(VNPAYRequest request);
+        Task<VNPAYResponse> VNPAYPayment(VNPAYRequest request);
         Task<ResponseObject<OrderResponseModel>> GetById(Guid orderId, Guid userId);
     }
 }

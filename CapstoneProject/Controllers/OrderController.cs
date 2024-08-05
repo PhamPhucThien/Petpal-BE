@@ -124,7 +124,13 @@ namespace CapstoneProject.Controllers
                     VnpTransactionStatus = Request.Query["vnp_TransactionStatus"]
                 };
 
-                string paymentStatus = await _orderService.VNPAYPayment(request);
+                var paymentStatus = await _orderService.VNPAYPayment(request);
+
+                if (paymentStatus.IsSucceed && paymentStatus.Text != null)
+                {
+                    Redirect(paymentStatus.Text);
+                }
+
                 return Ok(paymentStatus);
             } catch (Exception ex)
             {

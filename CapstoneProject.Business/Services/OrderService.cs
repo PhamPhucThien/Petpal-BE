@@ -168,6 +168,10 @@ namespace CapstoneProject.Business.Services
                 }
             }
 
+            pet.Status = PetStatus.ENROLLING;
+
+            _ = await _petRepository.EditAsync(pet);
+
             scope.Complete();
 
             return response;
@@ -400,30 +404,53 @@ namespace CapstoneProject.Business.Services
             ResponseObject<RejectOrderResponse> response = new();
             RejectOrderResponse data = new();
             Order? order = await _orderRepository.GetByIdAsync(orderId);
+            using TransactionScope scope = new(TransactionScopeAsyncFlowOption.Enabled);
 
             if (order != null)
             {
                 order.Status = OrderStatus.REJECTED;
-                bool check = await _orderRepository.EditAsync(order);
-                data.IsSucceed = check;
-                response.Payload.Data = data;
-                if (data.IsSucceed)
-                {
-                    response.Status = StatusCode.OK;
-                    response.Payload.Message = "Đơn hàng đã được từ chối";
-                }
-                else
+
+                if (order.OrderDetail == null || order.OrderDetail.PetId == null) 
                 {
                     response.Status = StatusCode.BadRequest;
-                    response.Payload.Message = "Hiện tại không thể từ chối đơn hàng";
+                    response.Payload.Message = "Không tìm thấy thông tin thú cưng";
+
+                    return response;
+                } else
+                {
+                    Pet? pet = await _petRepository.GetByIdAsync(order.OrderDetail.PetId.Value);
+
+                    if (pet != null)
+                    {
+                        pet.Status = PetStatus.ACTIVE;
+                        _ = await _petRepository.EditAsync(pet);
+                    }
+                    bool check = await _orderRepository.EditAsync(order);
+
+                    data.IsSucceed = check;
+                    response.Payload.Data = data;
+                    if (data.IsSucceed)
+                    {
+                        response.Status = StatusCode.OK;
+                        response.Payload.Message = "Đơn hàng đã được từ chối";
+                    }
+                    else
+                    {
+                        response.Status = StatusCode.BadRequest;
+                        response.Payload.Message = "Hiện tại không thể từ chối đơn hàng";
+                    }
                 }
             }
+
+            scope.Complete();
 
             return response;
         }
 
-        public async Task<string> VNPAYPayment(VNPAYRequest request)
+        public async Task<VNPAYResponse> VNPAYPayment(VNPAYRequest request)
         {
+            VNPAYResponse response = new VNPAYResponse();
+
             var fields = new Dictionary<string, string>();
 
             var vnpSecureHash = request.VnpSecureHash;
@@ -435,12 +462,16 @@ namespace CapstoneProject.Business.Services
 
             if (totalPrice == null || !double.TryParse(totalPrice, out _ ))
             {
-                return "Không tìm thấy giá trị đơn hàng";
+                response.IsSucceed = false;
+                response.Text = "Không tìm thấy giá trị đơn hàng";
+                return response;
             }
 
             if (id == null)
             {
-                return "Không tìm thấy Id đơn hàng";
+                response.IsSucceed = false;
+                response.Text = "Không tìm thấy Id đơn hàng";
+                return response;
             }
 
             var amount = double.Parse(totalPrice) / 100;
@@ -479,14 +510,20 @@ namespace CapstoneProject.Business.Services
                 }
                 else
                 {
-                    return returlUrl;
+                    response.IsSucceed = false;
+                    response.Text = "Xác nhận đơn hàng thất bại";
+                    return response;
                 }
 
-                return order.Status == OrderStatus.PAID ? returlUrl : returlUrl;
+                response.IsSucceed = true;
+                response.Text = order.Status == OrderStatus.PAID ? returlUrl : returlUrl;
+                return response;
             }
             else
             {
-                return returlUrl;
+                response.IsSucceed = false;
+                response.Text = "Xác nhận đơn hàng thất bại";
+                return response;
             }
         }
 
@@ -522,6 +559,33 @@ namespace CapstoneProject.Business.Services
 
             if (order != null && order.UserId == userId)
             {
+                data = new()
+                {
+                    Id = order.Id,
+                    CurrentPrice = order.CurrentPrice,
+                    Detail = order.Detail,
+                    FromDate = (order.OrderDetail?.FromDate),
+                    ToDate = (order.OrderDetail?.ToDate),
+                    ReceiveTime = (order.OrderDetail?.ReceiveTime),
+                    ReturnTime = (order.OrderDetail?.ReturnTime),
+                    Status = order.Status,
+                    Pet = new PetModel
+                    {
+                        Id = order.OrderDetail?.Pet?.Id,
+                        FullName = order.OrderDetail?.Pet?.FullName,
+                        ProfileImage = order.OrderDetail?.Pet?.ProfileImage,
+                        Description = order.OrderDetail?.Pet?.Description
+                    },
+                    Package = new PackageResponseModel
+                    {
+                        Id = order.OrderDetail?.Package?.Id,
+                        Description = order.OrderDetail?.Package?.Description,
+                        Duration = order.OrderDetail?.Package?.Duration,
+                        Type = order.OrderDetail?.Package?.Type,
+                        TotalPrice = order.OrderDetail?.Package?.TotalPrice
+                    }
+                };
+
                 response.Status = StatusCode.OK;
                 response.Payload.Message = "Lấy dữ liệu thành công";
                 response.Payload.Data = data;
