@@ -362,6 +362,7 @@ namespace CapstoneProject.Business.Services
                 {
                     UserModel model = new()
                     {
+                        Id = item.Id,
                         Username = item.Username,
                         FullName = item.FullName,
                         Address = item.Address,
