@@ -453,13 +453,19 @@ namespace CapstoneProject.Business.Services
 
             var fields = new Dictionary<string, string>();
 
-            var vnpSecureHash = request.VnpSecureHash;
-            var id = request.VnpOrderInfo;
             var totalPrice = request.VnpAmount;
-            var detail = request.VnpTransactionNo;
-            var method = request.VnpCardType;
-            var listMessage = request.VnpSecureHash;
-
+            var bankCode = request.VnpBankCode;
+            var bankTranNo = request.VnpBankTranNo;
+            var cardType = request.VnpCardType;
+            var orderInfo = request.VnpOrderInfo;
+            var payDate = request.VnpPayDate;
+            var responseCode = request.VnpResponseCode;
+            var tmnCode = request.VnpTmnCode;
+            var transactionNo = request.VnpTransactionNo;
+            var transactionStatus = request.VnpTransactionStatus;
+            var vnpSecureHash = request.VnpSecureHash;
+            var tnxRef = request.VnpTxnRef;
+            
             if (totalPrice == null || !double.TryParse(totalPrice, out _ ))
             {
                 response.IsSucceed = false;
@@ -467,7 +473,7 @@ namespace CapstoneProject.Business.Services
                 return response;
             }
 
-            if (id == null)
+            if (orderInfo == null)
             {
                 response.IsSucceed = false;
                 response.Text = "Không tìm thấy Id đơn hàng";
@@ -475,12 +481,21 @@ namespace CapstoneProject.Business.Services
             }
 
             var amount = double.Parse(totalPrice) / 100;
-            var returlUrl = $"https://petpal.up.railway.app/get-order/{id}";
+            var returnUrl = $"https://petpal.up.railway.app/get-order/{orderInfo}";
 
-            Order? order = await _orderRepository.GetByIdAsync(Guid.Parse(id));
+            Order? order = await _orderRepository.GetByIdAsync(Guid.Parse(orderInfo));
 
-            fields.Remove("vnp_SecureHashType");
-            fields.Remove("vnp_SecureHash");
+            fields.Add("vnp_Amount", totalPrice ?? string.Empty);
+            fields.Add("vnp_BankCode", bankCode ?? string.Empty);
+            fields.Add("vnp_BankTranNo", bankTranNo ?? string.Empty);
+            fields.Add("vnp_CardType", cardType ?? string.Empty);
+            fields.Add("vnp_OrderInfo", orderInfo ?? string.Empty);
+            fields.Add("vnp_PayDate", payDate ?? string.Empty);
+            fields.Add("vnp_ResponseCode", responseCode ?? string.Empty);
+            fields.Add("vnp_TmnCode", tmnCode ?? string.Empty);
+            fields.Add("vnp_TransactionNo", transactionNo ?? string.Empty);
+            fields.Add("vnp_TransactionStatus", transactionStatus ?? string.Empty);
+            fields.Add("vnp_TxnRef", tnxRef ?? string.Empty);
 
             var signValue = HashAllFields(fields);
             if (signValue.Equals(vnpSecureHash))
@@ -490,8 +505,8 @@ namespace CapstoneProject.Business.Services
                     var invoice = new Invoice
                     {
                         Id = Guid.NewGuid(),
-                        Detail = detail,
-                        PaymentMethod = method,
+                        Detail = tnxRef,
+                        PaymentMethod = "VNPAY",
                         Amount = amount,
                         OrderId = order.Id,
                         Status = BaseStatus.ACTIVE,
@@ -503,8 +518,8 @@ namespace CapstoneProject.Business.Services
 
                     using TransactionScope scope = new(TransactionScopeAsyncFlowOption.Enabled);
 
-                    await _invoiceRepository.AddAsync(invoice);
-                    await _orderRepository.EditAsync(order);
+                    _ = await _invoiceRepository.AddAsync(invoice);
+                    _ = await _orderRepository.EditAsync(order);
 
                     scope.Complete();
                 }
@@ -516,7 +531,7 @@ namespace CapstoneProject.Business.Services
                 }
 
                 response.IsSucceed = true;
-                response.Text = order.Status == OrderStatus.PAID ? returlUrl : returlUrl;
+                response.Text = order.Status == OrderStatus.PAID ? returnUrl : returnUrl;
                 return response;
             }
             else

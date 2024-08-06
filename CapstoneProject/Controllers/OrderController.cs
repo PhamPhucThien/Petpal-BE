@@ -121,7 +121,13 @@ namespace CapstoneProject.Controllers
                     VnpAmount = Request.Query["vnp_Amount"],
                     VnpTransactionNo = Request.Query["vnp_TransactionNo"],
                     VnpCardType = Request.Query["vnp_CardType"],
-                    VnpTransactionStatus = Request.Query["vnp_TransactionStatus"]
+                    VnpTransactionStatus = Request.Query["vnp_TransactionStatus"],
+                    VnpBankCode = Request.Query["vnp_BankCode"],
+                    VnpBankTranNo = Request.Query["vnp_BankTranNo"],
+                    VnpTxnRef = Request.Query["vnp_TxnRef"],
+                    VnpPayDate = Request.Query["vnp_PayDate"],
+                    VnpResponseCode = Request.Query["vnp_ResponseCode"],
+                    VnpTmnCode = Request.Query["vnp_TmnCode"]
                 };
 
                 var paymentStatus = await _orderService.VNPAYPayment(request);
