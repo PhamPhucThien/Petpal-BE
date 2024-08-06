@@ -541,7 +541,7 @@ namespace CapstoneProject.Business.Services
                     {
                         sb.Append("&");
                     }
-                    sb.Append(Uri.EscapeDataString(fieldName));
+                    sb.Append(fieldName);
                     sb.Append("=");
                     sb.Append(Uri.EscapeDataString(fieldValue));
                 }
