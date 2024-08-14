@@ -32,9 +32,9 @@ namespace CapstoneProject.Business.Services
                 Size = request.Size,
                 MaxPage = 1
             };
-            List<Calendar> listCalendar = await _calendarRepository.GetWithPaging(paging);
-            List<CalendarResponse> listCalendarResponse = _mapper.Map<List<CalendarResponse>>(listCalendar);
-            paging.Total = listCalendarResponse.Count;
+            Tuple<List<Calendar>, int> listCalendar = await _calendarRepository.GetWithPaging(paging);
+            List<CalendarResponse> listCalendarResponse = _mapper.Map<List<CalendarResponse>>(listCalendar.Item1);
+            paging.MaxPage = listCalendar.Item2;
             BaseListResponse<CalendarResponse> response = new()
             {
                 List = listCalendarResponse,

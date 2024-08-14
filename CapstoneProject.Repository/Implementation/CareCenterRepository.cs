@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,17 +25,28 @@ namespace CapstoneProject.Repository.Repository
             return careCenter;
         }
 
-        public async Task<List<CareCenter>?> GetByPartnerId(Guid partnerId, Paging pagingRequest)
+        public async Task<Tuple<List<CareCenter>, int>> GetByPartnerId(Guid partnerId, Paging pagingRequest)
         {
             ArgumentNullException.ThrowIfNull(pagingRequest);
 
             using PetpalDbContext context = new(_contextOptions);
-            IQueryable<CareCenter> query = context.Set<CareCenter>().Include(m => m.Partner).Include(n => n.Manager).Where(x => x.PartnerId == partnerId).AsQueryable();
+
+            IQueryable<CareCenter> query = context.Set<CareCenter>().AsQueryable();
+
+            int count = await query.CountAsync();
+
+            count = count % pagingRequest.Size == 0 ? count / pagingRequest.Size : count / pagingRequest.Size + 1;
+
+            query = query.Include(m => m.Partner).Include(n => n.Manager).Where(x => x.PartnerId == partnerId).AsQueryable();
 
             query = query.Skip(pagingRequest.Size * (pagingRequest.Page - 1))
                          .Take(pagingRequest.Size);
 
-            return await query.ToListAsync();
+            List<CareCenter> list = await query.ToListAsync();
+
+            Tuple<List<CareCenter>, int> data = new(list, count);
+
+            return data;
         }
 
         public async Task<CareCenter?> GetCareCenterByIdAsync(Guid careCenterId)
@@ -44,17 +56,28 @@ namespace CapstoneProject.Repository.Repository
             return careCenter;
         }
 
-        public async Task<List<CareCenter>> GetWithPagingCustom(Paging pagingRequest)
+        public async Task<Tuple<List<CareCenter>, int>> GetWithPagingCustom(Paging pagingRequest)
         {
             ArgumentNullException.ThrowIfNull(pagingRequest);
 
             using PetpalDbContext context = new(_contextOptions);
-            IQueryable<CareCenter> query = context.Set<CareCenter>().Where(x => x.Status == CareCenterStatus.ACTIVE).AsQueryable();
+
+            IQueryable<CareCenter> query = context.Set<CareCenter>().AsQueryable();
+
+            int count = await query.CountAsync();
+
+            count = count % pagingRequest.Size == 0 ? count / pagingRequest.Size : count / pagingRequest.Size + 1;
+
+            query = query.Where(x => x.Status == CareCenterStatus.ACTIVE).AsQueryable();
 
             query = query.Skip(pagingRequest.Size * (pagingRequest.Page - 1))
                          .Take(pagingRequest.Size);
 
-            return await query.ToListAsync();
+            List<CareCenter> list = await query.ToListAsync();
+
+            Tuple<List<CareCenter>, int> data = new(list, count);
+
+            return data;
         }
     }
 }

@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CapstoneProject.DTO.Request;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CapstoneProject.Repository.Repository
 {
@@ -30,36 +31,28 @@ namespace CapstoneProject.Repository.Repository
             return entity;
         }
 
-        public async Task<List<Package>> GetWithPagingByCareCenterId(Guid careCenterId, Paging pagingRequest)
+        public async Task<Tuple<List<Package>, int>> GetWithPagingByCareCenterId(Guid careCenterId, Paging pagingRequest)
         {
             using PetpalDbContext context = new(_contextOptions);
 
             ArgumentNullException.ThrowIfNull(pagingRequest);
 
-            IQueryable<Package> query = context.Set<Package>().Where(x => x.CareCenterId == careCenterId).AsQueryable();
+            IQueryable<Package> query = context.Set<Package>().AsQueryable();
+
+            int count = await query.CountAsync();
+
+            count = count % pagingRequest.Size == 0 ? count / pagingRequest.Size : count / pagingRequest.Size + 1;
+
+            query = query.Where(x => x.CareCenterId == careCenterId);
 
             query = query.Skip(pagingRequest.Size * (pagingRequest.Page - 1))
                          .Take(pagingRequest.Size);
 
-            return await query.ToListAsync();
-        }
+            List<Package> list = await query.ToListAsync();
 
-        public async Task<List<Package>> GetWithPaging(Paging pagingRequest)
-        {
-            if (pagingRequest == null)
-            {
-                throw new ArgumentNullException(nameof(pagingRequest));
-            }
-            
-            IQueryable<Package> query = _dbContext.Set<Package>() 
-                    .Include(o => o.CareCenter)
-                    .AsQueryable()
-                ;
+            Tuple<List<Package>, int> data = new(list, count);
 
-            query = query.Skip(pagingRequest.Size * (pagingRequest.Page - 1))
-                .Take(pagingRequest.Size);
-
-            return await query.ToListAsync();
+            return data;
         }
     }
 }

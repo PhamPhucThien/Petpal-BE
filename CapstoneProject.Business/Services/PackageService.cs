@@ -31,9 +31,9 @@ namespace CapstoneProject.Business.Services
                 Size = request.Size,
                 MaxPage = 1
             };
-            List<Package> listPackage = await _packageRepository.GetWithPaging(paging);
-            List<PackageResponse> listPackageResponse = _mapper.Map<List<PackageResponse>>(listPackage);
-            paging.Total = listPackageResponse.Count;
+            Tuple<List<Package>, int> listPackage = await _packageRepository.GetWithPaging(paging);
+            List<PackageResponse> listPackageResponse = _mapper.Map<List<PackageResponse>>(listPackage.Item1);
+            paging.MaxPage = listPackage.Item2;
             BaseListResponse<PackageResponse> response = new()
             {
                 List = listPackageResponse,
@@ -155,9 +155,9 @@ namespace CapstoneProject.Business.Services
                 MaxPage = 1
             };
 
-            List<Package> list = await _packageRepository.GetWithPagingByCareCenterId(request.CareCenterId, paging);
+            Tuple<List<Package>, int> list = await _packageRepository.GetWithPagingByCareCenterId(request.CareCenterId, paging);
 
-            if (list == null || list.Count == 0)
+            if (list.Item1 == null || list.Item1.Count == 0)
             {
                 response.Status = StatusCode.NotFound;
                 response.Payload.Message = "Dữ liệu không tồn tại";
@@ -167,7 +167,7 @@ namespace CapstoneProject.Business.Services
                 ListPackageResponse data = new();
                 List<PackageResponseModel> listModel = [];
 
-                foreach (Package item in list)
+                foreach (Package item in list.Item1)
                 {
                     PackageResponseModel model = new()
                     {
@@ -188,7 +188,7 @@ namespace CapstoneProject.Business.Services
                 response.Payload.Message = "Lấy dữ liệu thành công";
 
                 data.Paging = paging;
-                data.Paging.Total = paging.Total;
+                data.Paging.MaxPage = list.Item2;
 
                 response.Payload.Data = data;
             }

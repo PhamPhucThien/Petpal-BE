@@ -14,6 +14,6 @@ namespace CapstoneProject.Repository.Interface
     {
         Task<int> Count();
         public User GetUserByUsername(string username);
-        Task<List<User>?> GetWithPagingAndStatusAndRole(Paging paging, UserStatus? status, UserRole? role);
+        Task<Tuple<List<User>, int>> GetWithPagingAndStatusAndRole(Paging paging, UserStatus? status, UserRole? role);
     }
 }

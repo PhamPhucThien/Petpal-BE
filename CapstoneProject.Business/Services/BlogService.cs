@@ -24,9 +24,9 @@ namespace CapstoneProject.Business.Services
                 Size = request.Size,
                 MaxPage = 1
             };
-            List<Blog> listBlog = await _blogRepository.GetWithPaging(paging);
-            List<BlogResponse> listBlogResponse = _mapper.Map<List<BlogResponse>>(listBlog);
-            paging.Total = listBlogResponse.Count;
+            Tuple<List<Blog>, int> listBlog = await _blogRepository.GetWithPaging(paging);
+            List<BlogResponse> listBlogResponse = _mapper.Map<List<BlogResponse>>(listBlog.Item1);
+            paging.MaxPage = listBlog.Item2;
             BaseListResponse<BlogResponse> response = new()
             {
                 List = listBlogResponse,

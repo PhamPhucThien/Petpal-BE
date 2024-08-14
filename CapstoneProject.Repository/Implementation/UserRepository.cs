@@ -5,6 +5,7 @@ using CapstoneProject.DTO.Request;
 using CapstoneProject.Repository.Generic;
 using CapstoneProject.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
+using System.Numerics;
 
 namespace CapstoneProject.Repository.Repository
 {
@@ -27,12 +28,18 @@ namespace CapstoneProject.Repository.Repository
                 .FirstOrDefault();
         }
 
-        public async Task<List<User>?> GetWithPagingAndStatusAndRole(Paging paging, UserStatus? status, UserRole? role)
+        public async Task<Tuple<List<User>, int>> GetWithPagingAndStatusAndRole(Paging paging, UserStatus? status, UserRole? role)
         {
             ArgumentNullException.ThrowIfNull(paging);
 
             using PetpalDbContext context = new(_contextOptions);
             IQueryable<User> query = context.Set<User>().AsQueryable();
+
+            int count = await query.CountAsync();
+
+            count = count % paging.Size == 0 ? count / paging.Size : count / paging.Size + 1;
+
+            if (paging.Size <= 0) { paging.Size = 1; }
 
             if (status != null)
             {
@@ -51,7 +58,11 @@ namespace CapstoneProject.Repository.Repository
             query = query.Skip(paging.Size * (paging.Page - 1))
                          .Take(paging.Size);
 
-            return await query.ToListAsync();
+            List<User> users = await query.ToListAsync();
+
+            Tuple<List<User>, int> data = new(users, count);
+
+            return data;
         }
     }
 }

@@ -16,12 +16,18 @@ namespace CapstoneProject.Repository.Repository
     public class OrderRepository(DbContextOptions<PetpalDbContext> contextOptions) : RepositoryGeneric<Order>(contextOptions), IOrderRepository
     {
         private readonly DbContextOptions<PetpalDbContext> _contextOptions = contextOptions;
-        public async Task<List<Order>?> GetByUserId(Guid userId, Paging paging)
+        public async Task<Tuple<List<Order>, int>> GetByUserId(Guid userId, Paging paging)
         {
             ArgumentNullException.ThrowIfNull(paging);
-
             using PetpalDbContext context = new(_contextOptions);
-            IQueryable<Order> query = context.Set<Order>().
+
+            IQueryable<Order> query = context.Set<Order>().AsQueryable();
+
+            int count = await query.CountAsync();
+
+            count = count % paging.Size == 0 ? count / paging.Size : count / paging.Size + 1;
+
+            query = query.
                 Include(od => od.OrderDetail).
                     ThenInclude(p => p.Package).         
                     ThenInclude(c => c.CareCenter).
@@ -33,15 +39,26 @@ namespace CapstoneProject.Repository.Repository
             query = query.Skip(paging.Size * (paging.Page - 1))
                          .Take(paging.Size);
 
-            return await query.ToListAsync();
+            List<Order> list = await query.ToListAsync();
+
+            Tuple<List<Order>, int> data = new(list, count);
+
+            return data;
         }
 
-        public async Task<List<Order>?> GetByPartnerId(Guid userId, Paging paging)
+        public async Task<Tuple<List<Order>, int>> GetByPartnerId(Guid userId, Paging paging)
         {
             ArgumentNullException.ThrowIfNull(paging);
 
             using PetpalDbContext context = new(_contextOptions);
-            IQueryable<Order> query = context.Set<Order>().
+
+            IQueryable<Order> query = context.Set<Order>().AsQueryable();
+
+            int count = await query.CountAsync();
+
+            count = count % paging.Size == 0 ? count / paging.Size : count / paging.Size + 1;
+
+            query = query.
                 Include(od => od.OrderDetail).
                     ThenInclude(p => p.Package).
                     ThenInclude(c => c.CareCenter).
@@ -53,14 +70,25 @@ namespace CapstoneProject.Repository.Repository
             query = query.Skip(paging.Size * (paging.Page - 1))
                          .Take(paging.Size);
 
-            return await query.ToListAsync();
+            List<Order> list = await query.ToListAsync();
+
+            Tuple<List<Order>, int> data = new(list, count);
+
+            return data;
         }
-        public async Task<List<Order>?> GetByManagerId(Guid userId, Paging paging)
+        public async Task<Tuple<List<Order>, int>> GetByManagerId(Guid userId, Paging paging)
         {
             ArgumentNullException.ThrowIfNull(paging);
 
             using PetpalDbContext context = new(_contextOptions);
-            IQueryable<Order> query = context.Set<Order>().
+
+            IQueryable<Order> query = context.Set<Order>().AsQueryable();
+
+            int count = await query.CountAsync();
+
+            count = count % paging.Size == 0 ? count / paging.Size : count / paging.Size + 1;
+
+            query = query.
                 Include(od => od.OrderDetail).
                     ThenInclude(p => p.Package).
                     ThenInclude(c => c.CareCenter).
@@ -72,7 +100,11 @@ namespace CapstoneProject.Repository.Repository
             query = query.Skip(paging.Size * (paging.Page - 1))
                          .Take(paging.Size);
 
-            return await query.ToListAsync();
+            List<Order> list = await query.ToListAsync();
+
+            Tuple<List<Order>, int> data = new(list, count);
+
+            return data;
         }
 
         public async Task<int> Count()
