@@ -2,6 +2,7 @@
 using CapstoneProject.Business.Services;
 using CapstoneProject.Database.Model.Meta;
 using CapstoneProject.DTO;
+using CapstoneProject.DTO.Request.Base;
 using CapstoneProject.DTO.Request.CareCenters;
 using CapstoneProject.DTO.Request.User;
 using CapstoneProject.Infrastructure.Extension;
@@ -21,7 +22,7 @@ namespace CapstoneProject.Controllers
         private readonly ICareCenterService _careCenterService = careCenterService;
 
         [HttpPost("get-list")]
-        public async Task<IActionResult> GetList(GetCareCenterListRequest request)
+        public async Task<IActionResult> GetList(ListRequest request)
         {
             try
             {
@@ -133,7 +134,7 @@ namespace CapstoneProject.Controllers
 
         [HttpPost("get-carecenter-by-role")]
         [Authorize(Roles = "PARTNER,MANAGER")]
-        public async Task<IActionResult> GetCareCenterByRole(GetCareCenterListRequest request)
+        public async Task<IActionResult> GetCareCenterByRole(ListRequest request)
         {
             try
             {

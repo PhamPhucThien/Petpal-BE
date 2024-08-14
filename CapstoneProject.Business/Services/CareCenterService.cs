@@ -4,6 +4,7 @@ using CapstoneProject.Database.Model;
 using CapstoneProject.Database.Model.Meta;
 using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request;
+using CapstoneProject.DTO.Request.Base;
 using CapstoneProject.DTO.Request.CareCenters;
 using CapstoneProject.DTO.Request.User;
 using CapstoneProject.DTO.Response.Account;
@@ -103,7 +104,7 @@ namespace CapstoneProject.Business.Services
             return response;
         }
 
-        public async Task<ResponseObject<GetCareCenterListResponse>> GetList(GetCareCenterListRequest request)
+        public async Task<ResponseObject<GetCareCenterListResponse>> GetList(ListRequest request)
         {
             ResponseObject<GetCareCenterListResponse> response = new();
 
@@ -111,6 +112,7 @@ namespace CapstoneProject.Business.Services
             {
                 Page = request.Page,
                 Size = request.Size,
+                Search = request.Search ?? string.Empty,
                 MaxPage = 1
             };
 
@@ -186,7 +188,7 @@ namespace CapstoneProject.Business.Services
             return response;
         }
 
-        public async Task<ResponseObject<GetCareCenterListResponse>> GetCareCenterByRole(Guid userId, GetCareCenterListRequest request)
+        public async Task<ResponseObject<GetCareCenterListResponse>> GetCareCenterByRole(Guid userId, ListRequest request)
         {
             ResponseObject<GetCareCenterListResponse> response = new();
             GetCareCenterListResponse data = new();
@@ -194,6 +196,7 @@ namespace CapstoneProject.Business.Services
             {
                 Page = request.Page,
                 Size = request.Size,
+                Search = request.Search ?? string.Empty,
                 MaxPage = 1
             };
             CareCenter? manager = await _careCenterRepository.GetByManagerId(userId);
