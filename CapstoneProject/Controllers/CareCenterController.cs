@@ -1,4 +1,5 @@
-﻿using CapstoneProject.Business.Interfaces;
+﻿using CapstoneProject.Business;
+using CapstoneProject.Business.Interfaces;
 using CapstoneProject.Business.Services;
 using CapstoneProject.Database.Model.Meta;
 using CapstoneProject.DTO;
@@ -21,6 +22,8 @@ namespace CapstoneProject.Controllers
     {
         private readonly ICareCenterService _careCenterService = careCenterService;
 
+        public new StatusCode StatusCode { get; set; } = new();
+
         [HttpPost("get-list")]
         public async Task<IActionResult> GetList(ListRequest request)
         {
@@ -29,9 +32,21 @@ namespace CapstoneProject.Controllers
                 var response = await _careCenterService.GetList(request);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
 
@@ -96,9 +111,21 @@ namespace CapstoneProject.Controllers
                 var response = await _careCenterService.CreateCareCenterAndManager(userId, request, front_image, back_image, carecenter_image);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
 
@@ -111,9 +138,21 @@ namespace CapstoneProject.Controllers
                 var response = await _careCenterService.EditCareCenterRegistration(request, CareCenterStatus.ACTIVE, UserStatus.ACTIVE);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
 
@@ -126,9 +165,21 @@ namespace CapstoneProject.Controllers
                 var response = await _careCenterService.EditCareCenterRegistration(request, CareCenterStatus.REJECTED, UserStatus.REJECTED);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
 
@@ -142,9 +193,21 @@ namespace CapstoneProject.Controllers
                 var response = await _careCenterService.GetCareCenterByRole(userId, request);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
     }

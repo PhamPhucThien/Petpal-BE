@@ -1,6 +1,8 @@
-﻿using CapstoneProject.Business.Interfaces;
+﻿using CapstoneProject.Business;
+using CapstoneProject.Business.Interfaces;
 using CapstoneProject.Business.Services;
 using CapstoneProject.Database.Model;
+using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request.Order;
 using CapstoneProject.Infrastructure.Extension;
 using Microsoft.AspNetCore.Authorization;
@@ -14,6 +16,8 @@ namespace CapstoneProject.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
+
+        public new StatusCode StatusCode { get; set; } = new();
 
         public OrderController(IOrderService orderService)
         {
@@ -29,9 +33,21 @@ namespace CapstoneProject.Controllers
                 var response = await _orderService.CreateOrderRequest(userId, request);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
 
@@ -43,9 +59,21 @@ namespace CapstoneProject.Controllers
                 var response = await _orderService.ApproveRequest(orderId);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
 
@@ -57,9 +85,21 @@ namespace CapstoneProject.Controllers
                 var response = await _orderService.RejectRequest(orderId);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
 
@@ -71,9 +111,21 @@ namespace CapstoneProject.Controllers
                 var response = await _orderService.PerformTransaction(orderId);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
 
@@ -88,9 +140,21 @@ namespace CapstoneProject.Controllers
                 var response = await _orderService.GetTransactionStatusVNPay(orderId, userId, baseUrl);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
 
@@ -103,9 +167,21 @@ namespace CapstoneProject.Controllers
                 var response = await _orderService.GetById(orderId, userId);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
 
@@ -138,9 +214,22 @@ namespace CapstoneProject.Controllers
                 }
 
                 return Ok(paymentStatus);
-            } catch (Exception ex)
+            }
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
 
@@ -153,9 +242,21 @@ namespace CapstoneProject.Controllers
                 var response = await _orderService.GetByUserId(userId, request);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
 
@@ -167,9 +268,21 @@ namespace CapstoneProject.Controllers
                 var response = await _orderService.CountOrder();
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
 
@@ -181,9 +294,21 @@ namespace CapstoneProject.Controllers
                 var response = await _orderService.CountMoney();
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
     }

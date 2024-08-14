@@ -1,4 +1,5 @@
-﻿using CapstoneProject.Business.Interfaces;
+﻿using CapstoneProject.Business;
+using CapstoneProject.Business.Interfaces;
 using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request.Base;
 using CapstoneProject.DTO.Request.Pet;
@@ -16,6 +17,8 @@ namespace CapstoneProject.Controllers
     {
         private readonly IPetTypeService _petTypeService;
 
+        public new StatusCode StatusCode { get; set; } = new();
+
         public PetTypeController(IPetTypeService petTypeService)
         {
             _petTypeService = petTypeService;
@@ -29,9 +32,21 @@ namespace CapstoneProject.Controllers
                 var response = await _petTypeService.GetList(request);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
         
@@ -43,9 +58,21 @@ namespace CapstoneProject.Controllers
                 var response = await _petTypeService.GetById(petTypeId);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
         
@@ -57,9 +84,21 @@ namespace CapstoneProject.Controllers
                 var response = await _petTypeService.Create(request);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
         
@@ -71,9 +110,21 @@ namespace CapstoneProject.Controllers
                 var response = await _petTypeService.Update(request);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
     }

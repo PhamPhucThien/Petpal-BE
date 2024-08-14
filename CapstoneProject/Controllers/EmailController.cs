@@ -1,3 +1,4 @@
+﻿using CapstoneProject.Business;
 using CapstoneProject.Business.Interfaces;
 using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request.Email;
@@ -10,7 +11,8 @@ namespace CapstoneProject.Controllers
     public class EmailController : ControllerBase
     {
         private readonly IEmailService _emailService;
-    
+
+        public new StatusCode StatusCode { get; set; } = new();
         public EmailController(IEmailService emailService)
         {
             _emailService = emailService;
@@ -28,13 +30,22 @@ namespace CapstoneProject.Controllers
                 response.Payload.Data = null;
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
-        
-        
-
     }
 }
