@@ -132,5 +132,36 @@ namespace CapstoneProject.Repository.Repository
                     FirstOrDefaultAsync(a => a.Id == id);
             return order;
         }
+
+        public async Task<Tuple<List<Order>, int>> GetPendingByManagerId(Guid userId, Paging paging)
+        {
+            ArgumentNullException.ThrowIfNull(paging);
+
+            using PetpalDbContext context = new(_contextOptions);
+
+            IQueryable<Order> query = context.Set<Order>().AsQueryable();
+
+            int count = await query.CountAsync();
+
+            count = count % paging.Size == 0 ? count / paging.Size : count / paging.Size + 1;
+
+            query = query.
+                Include(od => od.OrderDetail).
+                    ThenInclude(p => p.Package).
+                    ThenInclude(c => c.CareCenter).
+                Include(od => od.OrderDetail).
+                    ThenInclude(od => od.Pet).
+                Where(x => x.OrderDetail != null && x.OrderDetail.Package != null && x.OrderDetail.Package.CareCenter != null && x.OrderDetail.Package.CareCenter.ManagerId == userId && x.Status == OrderStatus.CREATED).
+                AsQueryable();
+
+            query = query.Skip(paging.Size * (paging.Page - 1))
+                         .Take(paging.Size);
+
+            List<Order> list = await query.ToListAsync();
+
+            Tuple<List<Order>, int> data = new(list, count);
+
+            return data;
+        }
     }
 }

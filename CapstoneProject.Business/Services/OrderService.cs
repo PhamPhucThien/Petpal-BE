@@ -635,5 +635,88 @@ namespace CapstoneProject.Business.Services
 
             return response;
         }
+
+        public async Task<ResponseObject<GetListOrderResponse>> GetPendingByUserId(Guid userId, GetListOrderById request)
+        {
+            ResponseObject<GetListOrderResponse> response = new();
+            GetListOrderResponse data = new();
+
+            User? user = await _userRepository.GetByIdAsync(userId);
+
+            if (user == null)
+            {
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Không thể tìm thấy người dùng";
+            }
+            else
+            {
+                Tuple<List<Order>, int> list = new Tuple<List<Order>, int>([], 0);
+
+                Paging paging = new()
+                {
+                    Page = request.Page,
+                    Size = request.Size,
+                    MaxPage = 1
+                };
+
+                
+                if (user.Role == UserRole.MANAGER)
+                {
+                    list = await _orderRepository.GetPendingByManagerId(userId, paging);
+                }
+               
+
+                if (list == null)
+                {
+                    response.Status = StatusCode.OK;
+                    response.Payload.Message = "Hiện không có đơn hàng nào";
+                }
+                else
+                {
+                    response.Status = StatusCode.OK;
+                    response.Payload.Message = "Lấy danh sách đơn hàng thành công";
+                    List<OrderResponseModel> orders = [];
+
+                    foreach (Order item in list.Item1)
+                    {
+                        OrderResponseModel model = new()
+                        {
+                            Id = item.Id,
+                            CurrentPrice = item.CurrentPrice,
+                            Detail = item.Detail,
+                            FromDate = (item.OrderDetail?.FromDate),
+                            ToDate = (item.OrderDetail?.ToDate),
+                            ReceiveTime = (item.OrderDetail?.ReceiveTime),
+                            ReturnTime = (item.OrderDetail?.ReturnTime),
+                            Status = item.Status,
+                            Pet = new PetModel
+                            {
+                                Id = item.OrderDetail?.Pet?.Id,
+                                FullName = item.OrderDetail?.Pet?.FullName,
+                                ProfileImage = item.OrderDetail?.Pet?.ProfileImage,
+                                Description = item.OrderDetail?.Pet?.Description
+                            },
+                            Package = new PackageResponseModel
+                            {
+                                Id = item.OrderDetail?.Package?.Id,
+                                Description = item.OrderDetail?.Package?.Description,
+                                Duration = item.OrderDetail?.Package?.Duration,
+                                Type = item.OrderDetail?.Package?.Type,
+                                TotalPrice = item.OrderDetail?.Package?.TotalPrice
+                            }
+                        };
+
+                        orders.Add(model);
+                    }
+
+                    data.Orders = orders;
+                    data.Paging = paging;
+                    data.Paging.MaxPage = list.Item2;
+                    response.Payload.Data = data;
+                }
+            }
+
+            return response;
+        }
     }
 }
