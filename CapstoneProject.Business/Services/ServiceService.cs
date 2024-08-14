@@ -27,6 +27,7 @@ namespace CapstoneProject.Business.Services
             {
                 Page = request.Page,
                 Size = request.Size,
+                Search = request.Search ?? string.Empty,
                 MaxPage = 1
             };
             Tuple<List<Service>, int> listService = await _serviceRepository.GetWithPaging(paging);

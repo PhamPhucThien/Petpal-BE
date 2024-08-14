@@ -70,6 +70,11 @@ namespace CapstoneProject.Repository.Repository
 
             query = query.Where(x => x.Status == CareCenterStatus.ACTIVE).AsQueryable();
 
+            if (pagingRequest.Search != null && pagingRequest.Search.Length > 0)
+            {
+                query = query.Where(x => x.CareCenterName != null && x.CareCenterName.Contains(pagingRequest.Search));
+            }
+
             query = query.Skip(pagingRequest.Size * (pagingRequest.Page - 1))
                          .Take(pagingRequest.Size);
 

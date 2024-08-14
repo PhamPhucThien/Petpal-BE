@@ -28,6 +28,7 @@ namespace CapstoneProject.Business.Services
             {
                 Page = request.Page,
                 Size = request.Size,
+                Search = request.Search ?? string.Empty,
                 MaxPage = 1
             };
             Tuple<List<Comment>, int> listComment = await _commentRepository.GetWithPaging(paging);

@@ -41,6 +41,7 @@ namespace CapstoneProject.Business.Services
             {
                 Page = request.Page,
                 Size = request.Size,
+                Search = request.Search ?? string.Empty,
                 MaxPage = 1
             };
             Tuple<List<User>, int> listUser = await _userRepository.GetWithPaging(paging);
