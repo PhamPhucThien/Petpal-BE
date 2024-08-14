@@ -38,7 +38,7 @@ namespace CapstoneProject.Controllers
             {
                 return Unauthorized(new ResponseObject<string>()
                 {
-                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Payload = new Payload<string>(string.Empty, "Bạn chưa đăng nhập"),
                     Status = StatusCode.Unauthorized
                 });
             }
@@ -46,7 +46,7 @@ namespace CapstoneProject.Controllers
             {
                 return BadRequest(new ResponseObject<string>()
                 {
-                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Payload = new Payload<string>(string.Empty, "Lỗi hệ thống"),
                     Status = StatusCode.BadRequest
                 });
             }
@@ -68,7 +68,7 @@ namespace CapstoneProject.Controllers
             {
                 return Unauthorized(new ResponseObject<string>()
                 {
-                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Payload = new Payload<string>(string.Empty, "Bạn chưa đăng nhập"),
                     Status = StatusCode.Unauthorized
                 });
             }
@@ -76,7 +76,7 @@ namespace CapstoneProject.Controllers
             {
                 return BadRequest(new ResponseObject<string>()
                 {
-                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Payload = new Payload<string>(string.Empty, "Lỗi hệ thống"),
                     Status = StatusCode.BadRequest
                 });
             }
@@ -98,7 +98,7 @@ namespace CapstoneProject.Controllers
             {
                 return Unauthorized(new ResponseObject<string>()
                 {
-                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Payload = new Payload<string>(string.Empty, "Bạn chưa đăng nhập"),
                     Status = StatusCode.Unauthorized
                 });
             }
@@ -106,7 +106,7 @@ namespace CapstoneProject.Controllers
             {
                 return BadRequest(new ResponseObject<string>()
                 {
-                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Payload = new Payload<string>(string.Empty, "Lỗi hệ thống"),
                     Status = StatusCode.BadRequest
                 });
             }
@@ -128,7 +128,7 @@ namespace CapstoneProject.Controllers
             {
                 return Unauthorized(new ResponseObject<string>()
                 {
-                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Payload = new Payload<string>(string.Empty, "Bạn chưa đăng nhập"),
                     Status = StatusCode.Unauthorized
                 });
             }
@@ -136,7 +136,7 @@ namespace CapstoneProject.Controllers
             {
                 return BadRequest(new ResponseObject<string>()
                 {
-                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Payload = new Payload<string>(string.Empty, "Lỗi hệ thống"),
                     Status = StatusCode.BadRequest
                 });
             }

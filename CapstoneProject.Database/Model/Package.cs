@@ -14,6 +14,8 @@ namespace CapstoneProject.Database.Model
     {
         [Column("carecenter_id")]
         public Guid? CareCenterId { get; set; }
+        [Column("pet_type_id")]
+        public Guid? PetTypeId { get; set; }
         [Column("description")]
         public string? Description { get; set; }
         [Column("duration")]
@@ -29,6 +31,8 @@ namespace CapstoneProject.Database.Model
 
         [ForeignKey("CareCenterId")]
         public CareCenter? CareCenter { get; set; }
+        [ForeignKey("PetTypeId")]
+        public PetType? PetType { get; set; }
         public virtual List<PackageItem> PackageItems { get; set; } = [];
         public virtual List<OrderDetail> OrderDetails { get; set; } = []; 
     }

@@ -11,6 +11,6 @@ namespace CapstoneProject.Business.Interfaces
         Task<PetResponse> GetPetById(string petId);
         Task<ResponseObject<CreatePetResponse>> CreatePet(Guid userId, PetCreateRequest request, FileDetails fileDetails);
         Task<ResponseObject<GetCareCenterPetListResponse>> GetCareCenterPetList(Guid userId, ListRequest request);
-        Task<ResponseObject<ListPetModel>> GetActiveList(Guid userId, ListRequest request);
+        Task<ResponseObject<ListPetModel>> GetActiveByUserIdAndPetTypeId(Guid userId, Guid packageId, ListRequest request);
     }
 }

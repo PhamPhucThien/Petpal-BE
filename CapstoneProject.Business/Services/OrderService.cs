@@ -376,12 +376,12 @@ namespace CapstoneProject.Business.Services
                 using (var hmac = new HMACSHA512(Encoding.UTF8.GetBytes(key)))
                 {
                     byte[] hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(data));
-                    return BitConverter.ToString(hash).Replace("-", "").ToLower();
+                    return BitConverter.ToString(hash).Replace("-", string.Empty).ToLower();
                 }
             }
             catch (Exception)
             {
-                return "";
+                return string.Empty;
             }
         }
 

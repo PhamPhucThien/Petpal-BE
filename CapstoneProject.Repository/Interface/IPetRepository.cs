@@ -11,7 +11,7 @@ namespace CapstoneProject.Repository.Interface
 {
     public interface IPetRepository : IRepository<Pet>
     {
-        Task<List<Pet>?> GetActiveByUserId(Guid userId, Paging paging);
+        Task<List<Pet>?> GetActiveByUserIdAndPetTypeId(Guid userId, Guid petTypeId, Paging paging);
         Task<List<Pet>?> GetByUserId(Guid userId, Paging paging);
     }
 }
