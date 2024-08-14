@@ -7,5 +7,6 @@
         public string Created = "202";
         public string NotFound = "404";
         public string Redirect = "302";
+        public string Unauthorized = "401";
     }
 }

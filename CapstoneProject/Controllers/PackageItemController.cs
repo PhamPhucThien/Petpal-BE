@@ -1,4 +1,6 @@
-﻿using CapstoneProject.Business.Interfaces;
+﻿using CapstoneProject.Business;
+using CapstoneProject.Business.Interfaces;
+using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request.Base;
 using CapstoneProject.DTO.Request.Package;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +14,7 @@ namespace CapstoneProject.Controllers
     {
         private readonly IPackageItemService _packageItemService;
 
+        public new StatusCode StatusCode { get; set; } = new();
         public PackageItemController(IPackageItemService packageItemService)
         {
             _packageItemService = packageItemService;
@@ -25,9 +28,21 @@ namespace CapstoneProject.Controllers
                 var response = await _packageItemService.GetList(request);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
         
@@ -39,9 +54,21 @@ namespace CapstoneProject.Controllers
                 var response = await _packageItemService.GetById(packageItemId);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
         
@@ -53,9 +80,21 @@ namespace CapstoneProject.Controllers
                 var response = await _packageItemService.Create(request);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
         
@@ -67,9 +106,21 @@ namespace CapstoneProject.Controllers
                 var response = await _packageItemService.Update(request);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
     }

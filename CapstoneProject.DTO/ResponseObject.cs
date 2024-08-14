@@ -16,5 +16,12 @@ namespace CapstoneProject.DTO
     {
         public string Message { get; set; } = string.Empty;
         public T? Data { get; set; } 
+        public Payload() { }
+
+        public Payload(string message, T? data)
+        {
+            Message = message;
+            Data = data;
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using CapstoneProject.Business.Interfaces;
+﻿using CapstoneProject.Business;
+using CapstoneProject.Business.Interfaces;
 using CapstoneProject.Database.Model.Meta;
 using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request.Base;
@@ -16,6 +17,8 @@ namespace CapstoneProject.Controllers
     {
         private readonly IPetService _petService;
 
+        public new StatusCode StatusCode { get; set; } = new();
+
         public PetController(IPetService petService)
         {
             _petService = petService;
@@ -31,9 +34,21 @@ namespace CapstoneProject.Controllers
                 var response = await _petService.GetList(userId, request);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
         
@@ -45,9 +60,21 @@ namespace CapstoneProject.Controllers
                 var response = await _petService.GetPetById(petId);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
         
@@ -76,9 +103,21 @@ namespace CapstoneProject.Controllers
                 var response = await _petService.CreatePet(userId, request, filesDetail);
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (FormatException)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
             }
         }
         
