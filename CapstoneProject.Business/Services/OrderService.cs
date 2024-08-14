@@ -163,16 +163,29 @@ namespace CapstoneProject.Business.Services
 
                 if (existedOrderDetail != null)
                 {
-                    isSucceed.IsSucceed = true;
-                    response.Payload.Data = isSucceed;
+                    pet.Status = PetStatus.ENROLLING;
+
+                    bool isPetUpdated = await _petRepository.EditAsync(pet);
+
+                    if (isPetUpdated)
+                    {
+                        isSucceed.IsSucceed = true;
+                        response.Payload.Data = isSucceed;
+
+                        scope.Complete();
+                    } 
+                    else
+                    {
+                        response.Status = StatusCode.NotFound;
+                        response.Payload.Message = "Không đổi được trạng thái thú cưng";
+                    }
+                } 
+                else
+                {
+                    response.Status = StatusCode.NotFound;
+                    response.Payload.Message = "Không thể tạo mới yêu cầu";
                 }
             }
-
-            pet.Status = PetStatus.ENROLLING;
-
-            _ = await _petRepository.EditAsync(pet);
-
-            scope.Complete();
 
             return response;
         }

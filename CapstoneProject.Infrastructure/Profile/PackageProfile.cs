@@ -12,5 +12,6 @@ public class PackageProfile : AutoMapper.Profile
         CreateMap<Package, PackageResponse>();
         CreateMap<PackageCreareRequest, Package>();
         CreateMap<PackageUpdateRequest, Package>();
+        CreateMap<Package, PackageResponseModel>();
     }
 }

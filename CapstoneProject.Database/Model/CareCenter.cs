@@ -37,5 +37,6 @@ namespace CapstoneProject.Database.Model
         public User? Partner { get; set; }
         [ForeignKey("ManagerId")]
         public User? Manager { get; set; }
+        public virtual List<CareCenterStaff> Staffs { get; set; } = [];
     }
 }

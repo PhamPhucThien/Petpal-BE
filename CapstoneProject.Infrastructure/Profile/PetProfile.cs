@@ -15,5 +15,6 @@ public class PetProfile : AutoMapper.Profile
         CreateMap<PetType, PetTypeInforResponse>();
         CreateMap<PetCreateRequest, Pet>();
         CreateMap<PetUpdateRequest, Pet>();
+        CreateMap<Pet, PetModel>();
     }
 }

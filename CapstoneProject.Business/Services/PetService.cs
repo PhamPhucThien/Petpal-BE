@@ -6,16 +6,19 @@ using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request;
 using CapstoneProject.DTO.Request.Base;
 using CapstoneProject.DTO.Request.Pet;
+using CapstoneProject.DTO.Response.Package;
 using CapstoneProject.DTO.Response.Pet;
 using CapstoneProject.Repository.Interface;
+using CapstoneProject.Repository.Repository;
 
 namespace CapstoneProject.Business.Services
 {
-    public class PetService(IPetRepository petRepository, IMapper mapper, IUserRepository userRepository, IPetTypeRepository petTypeRepository) : IPetService
+    public class PetService(IPetRepository petRepository, IPackageRepository packageRepository, IMapper mapper, IUserRepository userRepository, IPetTypeRepository petTypeRepository) : IPetService
     {
         private readonly IPetRepository _petRepository = petRepository;
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IPetTypeRepository _petTypeRepository = petTypeRepository;
+        private readonly IPackageRepository _packageRepository = packageRepository;
         private readonly IMapper _mapper = mapper;
         public UploadImageService uploadImage = new();
         public StatusCode StatusCode { get; set; } = new();
@@ -203,6 +206,170 @@ namespace CapstoneProject.Business.Services
             petUpdate.User = petCheck.User;
             petUpdate.PetType = petCheck.PetType;
             return result ? _mapper.Map<PetResponse>(petUpdate) : null;
+        }
+
+        public async Task<ResponseObject<GetCareCenterPetListResponse>> GetCareCenterPetList(Guid userId, ListRequest request)
+        {
+            ResponseObject<GetCareCenterPetListResponse> response = new();
+            GetCareCenterPetListResponse data = new();
+
+            Paging paging = new()
+            {
+                Page = request.Page,
+                Size = request.Size,
+                MaxPage = 1
+            };
+
+            User? user = await _userRepository.GetByIdAsync(userId);
+            
+            if (user != null)
+            {
+                if (user.Role == UserRole.CUSTOMER)
+                {
+                    Tuple<List<Package>, int> list = await _packageRepository.GetByCustomerId(userId, paging);
+
+                    List<PetModel> petModels = [];
+
+                    foreach (var item in list.Item1)
+                    {
+                        item.OrderDetails.ForEach(x =>
+                        {
+                            PetModel newPet = _mapper.Map<PetModel>(x.Pet);
+                            petModels.Add(newPet);
+                        });
+
+                        PackageResponseModel packageResponseModel = _mapper.Map<PackageResponseModel>(item);
+
+                        GetCareCenterPetListModel model = new();
+
+                        model.Pet = petModels;
+                        model.Model = packageResponseModel;
+
+                        data.List.Add(model);
+
+                        paging.MaxPage = list.Item2;
+
+                        data.Paging = paging;
+
+                        response.Status = StatusCode.OK;
+                        response.Payload.Message = "Lấy dữ liệu thành công";
+                        response.Payload.Data = data;
+                    }
+                } 
+                else if (user.Role == UserRole.STAFF)
+                {
+                    Tuple<List<Package>, int> list = await _packageRepository.GetByStaffId(userId, paging);
+
+                    List<PetModel> petModels = [];
+
+                    foreach (var item in list.Item1)
+                    {
+                        item.OrderDetails.ForEach(x =>
+                        {
+                            PetModel newPet = _mapper.Map<PetModel>(x.Pet);
+                            petModels.Add(newPet);
+                        });
+
+                        PackageResponseModel packageResponseModel = _mapper.Map<PackageResponseModel>(item);
+
+                        GetCareCenterPetListModel model = new();
+
+                        model.Pet = petModels;
+                        model.Model = packageResponseModel;
+
+                        data.List.Add(model);
+
+                        paging.MaxPage = list.Item2;
+
+                        data.Paging = paging;
+
+                        response.Status = StatusCode.OK;
+                        response.Payload.Message = "Lấy dữ liệu thành công";
+                        response.Payload.Data = data;
+                    }
+                }
+                else
+                {
+                    response.Status = StatusCode.BadRequest;
+                    response.Payload.Message = "Bạn không có quyền truy cập dịch vụ này";
+                }
+            }
+            else
+            {
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Không thể tìm thấy người dùng";
+            }
+
+            return response;
+        }
+
+        public async Task<ResponseObject<ListPetModel>> GetActiveList(Guid userId, ListRequest request)
+        {
+            ResponseObject<ListPetModel> response = new();
+            ListPetModel data = new();
+
+            User? user = await _userRepository.GetByIdAsync(userId);
+
+            if (user == null)
+            {
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Không thể tìm thấy người dùng";
+            }
+            else
+            {
+                List<PetModel> petList = [];
+
+                Paging paging = new()
+                {
+                    Page = request.Page,
+                    Size = request.Size,
+                    MaxPage = 1
+                };
+
+                if (user.Role == UserRole.CUSTOMER)
+                {
+                    List<Pet>? list = await _petRepository.GetActiveByUserId(userId, paging);
+
+                    if (list != null && list.Count != 0)
+                    {
+                        foreach (Pet item in list)
+                        {
+                            PetModel model = new()
+                            {
+                                Id = item.Id,
+                                FullName = item.FullName,
+                                Birthday = item.Birthday,
+                                Weight = item.Weight,
+                                Breed = item.Breed,
+                                Sterilise = item.Sterilise,
+                                Gender = item.Gender,
+                                ProfileImage = item.ProfileImage,
+                                Description = item.Description,
+                                Status = item.Status
+                            };
+                            petList.Add(model);
+                        }
+                        data.List = petList;
+                        data.Paging = paging;
+
+                        response.Status = StatusCode.OK;
+                        response.Payload.Message = "Lấy dữ liệu thành công";
+                        response.Payload.Data = data;
+                    }
+                    else
+                    {
+                        response.Status = StatusCode.OK;
+                        response.Payload.Message = "Bạn chưa có thú cưng nào";
+                    }
+                }
+                else
+                {
+                    response.Status = StatusCode.BadRequest;
+                    response.Payload.Message = "Chỉ khách hàng mới có thú cưng";
+                }
+            }
+
+            return response;
         }
     }
 }

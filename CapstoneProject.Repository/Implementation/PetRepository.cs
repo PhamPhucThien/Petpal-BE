@@ -16,6 +16,21 @@ namespace CapstoneProject.Repository.Repository
     {
         private readonly DbContextOptions<PetpalDbContext> _contextOptions = contextOptions;
 
+        public async Task<List<Pet>?> GetActiveByUserId(Guid userId, Paging paging)
+        {
+            ArgumentNullException.ThrowIfNull(paging);
+
+            using PetpalDbContext context = new(_contextOptions);
+            IQueryable<Pet> query = context.Set<Pet>().
+                Where(x => x.UserId == userId && x.Status == Database.Model.Meta.PetStatus.ACTIVE).
+                AsQueryable();
+
+            query = query.Skip(paging.Size * (paging.Page - 1))
+                         .Take(paging.Size);
+
+            return await query.ToListAsync();
+        }
+
         public async Task<Pet?> GetByIdAsync(Guid id)
         {
             using PetpalDbContext context = new(_contextOptions);
@@ -41,11 +56,11 @@ namespace CapstoneProject.Repository.Repository
             return await query.ToListAsync();
         }
 
-        public async Task<List<Pet>> GetWithPaging(Paging pagingRequest)
+        public async Task<List<Pet>> GetWithPaging(Paging paging)
         {
-            if (pagingRequest == null)
+            if (paging == null)
             {
-                throw new ArgumentNullException(nameof(pagingRequest));
+                throw new ArgumentNullException(nameof(paging));
             }
             using PetpalDbContext context = new(_contextOptions);
 
@@ -55,8 +70,8 @@ namespace CapstoneProject.Repository.Repository
                     .AsQueryable()
                ;
 
-            query = query.Skip(pagingRequest.Size * (pagingRequest.Page - 1))
-                .Take(pagingRequest.Size);
+            query = query.Skip(paging.Size * (paging.Page - 1))
+                .Take(paging.Size);
 
             return await query.ToListAsync();
         }
