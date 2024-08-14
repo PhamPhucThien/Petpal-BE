@@ -16,13 +16,13 @@ namespace CapstoneProject.Repository.Repository
     {
         private readonly DbContextOptions<PetpalDbContext> _contextOptions = contextOptions;
 
-        public async Task<List<Pet>?> GetActiveByUserId(Guid userId, Paging paging)
+        public async Task<List<Pet>?> GetActiveByUserIdAndPetTypeId(Guid userId, Guid petTypeId, Paging paging)
         {
             ArgumentNullException.ThrowIfNull(paging);
 
             using PetpalDbContext context = new(_contextOptions);
             IQueryable<Pet> query = context.Set<Pet>().
-                Where(x => x.UserId == userId && x.Status == Database.Model.Meta.PetStatus.ACTIVE).
+                Where(x => x.UserId == userId && x.Status == Database.Model.Meta.PetStatus.ACTIVE && x.PetType != null && x.PetType.Id == petTypeId).
                 AsQueryable();
 
             query = query.Skip(paging.Size * (paging.Page - 1))

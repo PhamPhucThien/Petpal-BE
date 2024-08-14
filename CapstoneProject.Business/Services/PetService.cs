@@ -303,19 +303,30 @@ namespace CapstoneProject.Business.Services
             return response;
         }
 
-        public async Task<ResponseObject<ListPetModel>> GetActiveList(Guid userId, ListRequest request)
+        public async Task<ResponseObject<ListPetModel>> GetActiveByUserIdAndPetTypeId(Guid userId, Guid packageId, ListRequest request)
         {
             ResponseObject<ListPetModel> response = new();
             ListPetModel data = new();
 
             User? user = await _userRepository.GetByIdAsync(userId);
+            Package? package = await _packageRepository.GetByIdAsync(packageId);
 
             if (user == null)
             {
                 response.Status = StatusCode.BadRequest;
                 response.Payload.Message = "Không thể tìm thấy người dùng";
             }
-            else
+            else if (package == null)
+            {
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Không thể tìm thấy gói dịch vụ";
+            } 
+            else if (package.PetTypeId == null)
+            {
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Không thể tìm thấy gói dịch vụ";
+            } 
+            else 
             {
                 List<PetModel> petList = [];
 
@@ -328,7 +339,7 @@ namespace CapstoneProject.Business.Services
 
                 if (user.Role == UserRole.CUSTOMER)
                 {
-                    List<Pet>? list = await _petRepository.GetActiveByUserId(userId, paging);
+                    List<Pet>? list = await _petRepository.GetActiveByUserIdAndPetTypeId(userId, package.PetTypeId.Value, paging);
 
                     if (list != null && list.Count != 0)
                     {

@@ -142,7 +142,7 @@ namespace CapstoneProject.Business.Services
                     Id = Guid.NewGuid(),
                     Username = request.Manager.Username,
                     Password = request.Manager.Password,
-                    FullName = "",
+                    FullName = string.Empty,
                     Role = Database.Model.Meta.UserRole.MANAGER,
                     Status = Database.Model.Meta.UserStatus.PENDING,
                     CreatedAt = DateTime.UtcNow,
