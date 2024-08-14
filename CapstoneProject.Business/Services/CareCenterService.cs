@@ -1,4 +1,5 @@
-﻿using CapstoneProject.Business.Interfaces;
+﻿using AutoMapper;
+using CapstoneProject.Business.Interfaces;
 using CapstoneProject.Database.Model;
 using CapstoneProject.Database.Model.Meta;
 using CapstoneProject.DTO;
@@ -12,11 +13,12 @@ using System.Transactions;
 
 namespace CapstoneProject.Business.Services
 {
-    public class CareCenterService(ICareCenterRepository careCenterRepository, IUserRepository userRepository, IAuthRepository authRepository) : ICareCenterService
+    public class CareCenterService(ICareCenterRepository careCenterRepository, IUserRepository userRepository, IAuthRepository authRepository, IMapper mapper) : ICareCenterService
     {
         private readonly ICareCenterRepository _careCenterRepository = careCenterRepository;
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IAuthRepository _authRepository = authRepository;
+        private readonly IMapper _mapper = mapper;
         public UploadImageService uploadImage = new();
         public StatusCode StatusCode { get; set; } = new();
 
@@ -112,11 +114,11 @@ namespace CapstoneProject.Business.Services
                 MaxPage = 1
             };
 
-            List<CareCenter> list = await _careCenterRepository.GetWithPagingCustom(paging);
+            Tuple<List<CareCenter>, int> list = await _careCenterRepository.GetWithPagingCustom(paging);
 
             GetCareCenterListResponse listModel = new();
 
-            foreach (CareCenter item in list)
+            foreach (CareCenter item in list.Item1)
             {
                 CareCenterListModel model = new()
                 {
@@ -131,7 +133,7 @@ namespace CapstoneProject.Business.Services
             }
 
             listModel.Paging = paging;
-            listModel.Paging.Total = paging.Total;
+            listModel.Paging.MaxPage = list.Item2;
 
             response.Status = StatusCode.OK;
             response.Payload.Data = listModel;
@@ -195,7 +197,7 @@ namespace CapstoneProject.Business.Services
                 MaxPage = 1
             };
             CareCenter? manager = await _careCenterRepository.GetByManagerId(userId);
-            List<CareCenter>? partner = await _careCenterRepository.GetByPartnerId(userId, paging);
+            Tuple<List<CareCenter>, int> partner = await _careCenterRepository.GetByPartnerId(userId, paging);
 
             if (manager != null && partner != null)
             {
@@ -219,7 +221,9 @@ namespace CapstoneProject.Business.Services
                 {
                     
 
-                    List<CareCenter> list = await _careCenterRepository.GetWithPaging(paging);
+                    Tuple<List<CareCenter>, int> listItem = await _careCenterRepository.GetWithPaging(paging);
+
+                    List<CareCenter> list = _mapper.Map<List<CareCenter>>(listItem.Item1);
 
 
                     foreach (CareCenter item in list)
@@ -236,7 +240,7 @@ namespace CapstoneProject.Business.Services
                     }
 
                     data.Paging = paging;
-                    data.Paging.Total = paging.Total;
+                    data.Paging.MaxPage = listItem.Item2;
 
                     response.Status = StatusCode.OK;
                     response.Payload.Data = data;

@@ -191,7 +191,7 @@ namespace CapstoneProject.Business.Services
             }
             else
             {
-                List<Order>? list = [];
+                Tuple<List<Order>, int> list = new Tuple<List<Order>, int>([], 0);
 
                 Paging paging = new()
                 {
@@ -224,7 +224,7 @@ namespace CapstoneProject.Business.Services
                     response.Payload.Message = "Lấy danh sách đơn hàng thành công";
                     List<OrderResponseModel> orders = [];
 
-                    foreach (Order item in list)
+                    foreach (Order item in list.Item1)
                     {
                         OrderResponseModel model = new()
                         {
@@ -258,6 +258,7 @@ namespace CapstoneProject.Business.Services
 
                     data.Orders = orders;
                     data.Paging = paging;
+                    data.Paging.MaxPage = list.Item2;
                     response.Payload.Data = data;
                 }
             }

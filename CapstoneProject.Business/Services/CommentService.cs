@@ -30,9 +30,9 @@ namespace CapstoneProject.Business.Services
                 Size = request.Size,
                 MaxPage = 1
             };
-            List<Comment> listComment = await _commentRepository.GetWithPaging(paging);
-            List<CommentResponse> listCommentResponse = _mapper.Map<List<CommentResponse>>(listComment);
-            paging.Total = listCommentResponse.Count;
+            Tuple<List<Comment>, int> listComment = await _commentRepository.GetWithPaging(paging);
+            List<CommentResponse> listCommentResponse = _mapper.Map<List<CommentResponse>>(listComment.Item1);
+            paging.MaxPage = listComment.Item2;
             BaseListResponse<CommentResponse> response = new()
             {
                 List = listCommentResponse,

@@ -43,9 +43,9 @@ namespace CapstoneProject.Business.Services
                 Size = request.Size,
                 MaxPage = 1
             };
-            List<User> listUser = await _userRepository.GetWithPaging(paging);
-            List<UserDetailResponse> listUserResponse = _mapper.Map<List<UserDetailResponse>>(listUser);
-            paging.Total = listUserResponse.Count;
+            Tuple<List<User>, int> listUser = await _userRepository.GetWithPaging(paging);
+            List<UserDetailResponse> listUserResponse = _mapper.Map<List<UserDetailResponse>>(listUser.Item1);
+            paging.MaxPage = listUser.Item2;
             BaseListResponse<UserDetailResponse> response = new()
             {
                 List = listUserResponse,
@@ -354,12 +354,14 @@ namespace CapstoneProject.Business.Services
                 MaxPage = 1
             };
 
-            List<User>? list = await _userRepository.GetWithPagingAndStatusAndRole(paging, status, role);
+            Tuple<List<User>, int> list = await _userRepository.GetWithPagingAndStatusAndRole(paging, status, role);
             List<UserModel> modelList = [];
 
             if (list != null)
             {
-                foreach (User item in list)
+
+
+                foreach (User item in list.Item1)
                 {
                     UserModel model = new()
                     {
@@ -378,6 +380,7 @@ namespace CapstoneProject.Business.Services
                 response.Payload.Message = "Lấy dữ liệu thành công";
                 data.List = modelList;
                 data.Paging = paging;
+                data.Paging.MaxPage = list.Item2;
                 response.Payload.Data = data;
             }
             else

@@ -11,7 +11,7 @@ namespace CapstoneProject.Repository.Interface
 {
     public interface IPackageRepository : IRepository<Package>
     {
-        Task<List<Package>> GetWithPagingByCareCenterId(Guid careCenterId, Paging paging);
+        Task<Tuple<List<Package>, int>> GetWithPagingByCareCenterId(Guid careCenterId, Paging paging);
         Task<Package?> GetByIdIncludePackageItem(Guid packageId);
     }
 }

@@ -36,8 +36,9 @@ namespace CapstoneProject.Business.Services
                 MaxPage = 1
             };
 
-            List<PetType> listPetType = await _petTypeRepository.GetWithPaging(paging);
-            List<PetTypeDetailResponse> listPetTypeResponse = _mapper.Map<List<PetTypeDetailResponse>>(listPetType);
+            Tuple<List<PetType>, int> listPetType = await _petTypeRepository.GetWithPaging(paging);
+            List<PetTypeDetailResponse> listPetTypeResponse = _mapper.Map<List<PetTypeDetailResponse>>(listPetType.Item1);
+            paging.MaxPage = listPetType.Item2;
 
             response.Status = StatusCode.OK;
             response.Payload.Message = "Lấy dữ liệu thành công";

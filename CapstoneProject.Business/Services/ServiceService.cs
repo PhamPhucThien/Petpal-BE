@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CapstoneProject.Business.Interfaces;
+using CapstoneProject.Database.Model;
 using CapstoneProject.DTO.Request;
 using CapstoneProject.DTO.Request.Base;
 using CapstoneProject.DTO.Request.Service;
@@ -28,9 +29,9 @@ namespace CapstoneProject.Business.Services
                 Size = request.Size,
                 MaxPage = 1
             };
-            List<Database.Model.Service> listService = await _serviceRepository.GetWithPaging(paging);
-            List<ServiceResponse> listServiceResponse = _mapper.Map<List<ServiceResponse>>(listService);
-            paging.Total = listServiceResponse.Count;
+            Tuple<List<Service>, int> listService = await _serviceRepository.GetWithPaging(paging);
+            List<ServiceResponse> listServiceResponse = _mapper.Map<List<ServiceResponse>>(listService.Item1);
+            paging.MaxPage = listService.Item2;
             BaseListResponse<ServiceResponse> response = new()
             {
                 List = listServiceResponse,

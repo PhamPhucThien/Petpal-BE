@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -67,17 +68,26 @@ namespace CapstoneProject.Repository.Generic
             return entity;
         }
 
-        public async Task<List<T>> GetWithPaging(Paging pagingRequest)
+        public async Task<Tuple<List<T>, int>> GetWithPaging(Paging pagingRequest)
         {
             ArgumentNullException.ThrowIfNull(pagingRequest);
 
             using PetpalDbContext context = new(_contextOptions);
             IQueryable<T> query = context.Set<T>().AsQueryable();
+            if (pagingRequest.Size <= 0) { pagingRequest.Size = 1; }
+
+            int count = await query.CountAsync();
 
             query = query.Skip(pagingRequest.Size * (pagingRequest.Page - 1))
                          .Take(pagingRequest.Size);
 
-            return await query.ToListAsync();
+            List<T> result = await query.ToListAsync();
+
+            count = count % pagingRequest.Size == 0 ? count / pagingRequest.Size : count / pagingRequest.Size + 1;
+
+            Tuple<List<T>, int> data = new(result, count);
+
+            return data;
         }
     }
 }

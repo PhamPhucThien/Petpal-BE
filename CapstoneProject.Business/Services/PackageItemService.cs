@@ -34,9 +34,9 @@ namespace CapstoneProject.Business.Services
                 Size = request.Size,
                 MaxPage = 1
             };
-            List<PackageItem> listPackageItem = await _packageItemRepository.GetWithPaging(paging);
-            List<ListPackageItemResponse> listPackageItemResponse = _mapper.Map<List<ListPackageItemResponse>>(listPackageItem);
-            paging.Total = listPackageItemResponse.Count;
+            Tuple<List<PackageItem>, int> listPackageItem = await _packageItemRepository.GetWithPaging(paging);
+            List<ListPackageItemResponse> listPackageItemResponse = _mapper.Map<List<ListPackageItemResponse>>(listPackageItem.Item1);
+            paging.MaxPage = listPackageItem.Item2;
             BaseListResponse<ListPackageItemResponse> response = new()
             {
                 List = listPackageItemResponse,

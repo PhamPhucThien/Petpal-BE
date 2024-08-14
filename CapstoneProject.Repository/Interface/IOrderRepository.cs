@@ -13,9 +13,9 @@ namespace CapstoneProject.Repository.Interface
     {
         Task<int> Count();
         Task<double?> CountMoney();
-        Task<List<Order>?> GetByManagerId(Guid userId, Paging paging);
-        Task<List<Order>?> GetByPartnerId(Guid userId, Paging paging);
-        Task<List<Order>?> GetByUserId(Guid userId, Paging paging);
+        Task<Tuple<List<Order>, int>> GetByManagerId(Guid userId, Paging paging);
+        Task<Tuple<List<Order>, int>> GetByPartnerId(Guid userId, Paging paging);
+        Task<Tuple<List<Order>, int>> GetByUserId(Guid userId, Paging paging);
         Task<Order?> GetByOrderId(Guid id);
     }
 }
