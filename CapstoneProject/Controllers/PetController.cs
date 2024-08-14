@@ -51,7 +51,63 @@ namespace CapstoneProject.Controllers
                 });
             }
         }
-        
+
+        [HttpPost("get-active-list")]
+        [Authorize(Roles = "CUSTOMER")]
+        public async Task<IActionResult> GetActiveList(ListRequest request)
+        {
+            try
+            {
+                Guid userId = Guid.Parse(HttpContext.GetName());
+                var response = await _petService.GetActiveList(userId, request);
+                return Ok(response);
+            }
+            catch (FormatException)
+            {
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
+            }
+        }
+
+        [HttpPost("get-care-center-pet-list")]
+        [Authorize(Roles = "CUSTOMER,STAFF")]
+        public async Task<IActionResult> GetCareCenterPetList(ListRequest request)
+        {
+            try
+            {
+                Guid userId = Guid.Parse(HttpContext.GetName());
+                var response = await _petService.GetCareCenterPetList(userId, request);
+                return Ok(response);
+            }
+            catch (FormatException)
+            {
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>("", "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
+            }
+        }
+
         [HttpGet("get-pet/{petId}")]
         public async Task<IActionResult> GetPetById(string petId)
         {

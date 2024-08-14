@@ -68,22 +68,22 @@ namespace CapstoneProject.Repository.Generic
             return entity;
         }
 
-        public async Task<Tuple<List<T>, int>> GetWithPaging(Paging pagingRequest)
+        public async Task<Tuple<List<T>, int>> GetWithPaging(Paging paging)
         {
-            ArgumentNullException.ThrowIfNull(pagingRequest);
+            ArgumentNullException.ThrowIfNull(paging);
 
             using PetpalDbContext context = new(_contextOptions);
             IQueryable<T> query = context.Set<T>().AsQueryable();
-            if (pagingRequest.Size <= 0) { pagingRequest.Size = 1; }
+            if (paging.Size <= 0) { paging.Size = 1; }
 
             int count = await query.CountAsync();
 
-            query = query.Skip(pagingRequest.Size * (pagingRequest.Page - 1))
-                         .Take(pagingRequest.Size);
+            query = query.Skip(paging.Size * (paging.Page - 1))
+                         .Take(paging.Size);
 
             List<T> result = await query.ToListAsync();
 
-            count = count % pagingRequest.Size == 0 ? count / pagingRequest.Size : count / pagingRequest.Size + 1;
+            count = count % paging.Size == 0 ? count / paging.Size : count / paging.Size + 1;
 
             Tuple<List<T>, int> data = new(result, count);
 

@@ -29,11 +29,11 @@ namespace CapstoneProject.Repository.Repository
                 .FirstOrDefault();
         }
 
-        public async Task<List<PackageItem>> GetWithPaging(Paging pagingRequest)
+        public async Task<List<PackageItem>> GetWithPaging(Paging paging)
         {
-            if (pagingRequest == null)
+            if (paging == null)
             {
-                throw new ArgumentNullException(nameof(pagingRequest));
+                throw new ArgumentNullException(nameof(paging));
             }
             
             IQueryable<PackageItem> query = _dbContext.Set<PackageItem>()
@@ -42,8 +42,8 @@ namespace CapstoneProject.Repository.Repository
                     .AsQueryable()
                 ;
 
-            query = query.Skip(pagingRequest.Size * (pagingRequest.Page - 1))
-                .Take(pagingRequest.Size);
+            query = query.Skip(paging.Size * (paging.Page - 1))
+                .Take(paging.Size);
 
             return await query.ToListAsync();
         }

@@ -25,9 +25,9 @@ namespace CapstoneProject.Repository.Repository
             return careCenter;
         }
 
-        public async Task<Tuple<List<CareCenter>, int>> GetByPartnerId(Guid partnerId, Paging pagingRequest)
+        public async Task<Tuple<List<CareCenter>, int>> GetByPartnerId(Guid partnerId, Paging paging)
         {
-            ArgumentNullException.ThrowIfNull(pagingRequest);
+            ArgumentNullException.ThrowIfNull(paging);
 
             using PetpalDbContext context = new(_contextOptions);
 
@@ -35,12 +35,12 @@ namespace CapstoneProject.Repository.Repository
 
             int count = await query.CountAsync();
 
-            count = count % pagingRequest.Size == 0 ? count / pagingRequest.Size : count / pagingRequest.Size + 1;
+            count = count % paging.Size == 0 ? count / paging.Size : count / paging.Size + 1;
 
             query = query.Include(m => m.Partner).Include(n => n.Manager).Where(x => x.PartnerId == partnerId).AsQueryable();
 
-            query = query.Skip(pagingRequest.Size * (pagingRequest.Page - 1))
-                         .Take(pagingRequest.Size);
+            query = query.Skip(paging.Size * (paging.Page - 1))
+                         .Take(paging.Size);
 
             List<CareCenter> list = await query.ToListAsync();
 
@@ -56,9 +56,9 @@ namespace CapstoneProject.Repository.Repository
             return careCenter;
         }
 
-        public async Task<Tuple<List<CareCenter>, int>> GetWithPagingCustom(Paging pagingRequest)
+        public async Task<Tuple<List<CareCenter>, int>> GetWithPagingCustom(Paging paging)
         {
-            ArgumentNullException.ThrowIfNull(pagingRequest);
+            ArgumentNullException.ThrowIfNull(paging);
 
             using PetpalDbContext context = new(_contextOptions);
 
@@ -66,17 +66,17 @@ namespace CapstoneProject.Repository.Repository
 
             int count = await query.CountAsync();
 
-            count = count % pagingRequest.Size == 0 ? count / pagingRequest.Size : count / pagingRequest.Size + 1;
+            count = count % paging.Size == 0 ? count / paging.Size : count / paging.Size + 1;
 
             query = query.Where(x => x.Status == CareCenterStatus.ACTIVE).AsQueryable();
 
-            if (pagingRequest.Search != null && pagingRequest.Search.Length > 0)
+            if (paging.Search != null && paging.Search.Length > 0)
             {
-                query = query.Where(x => x.CareCenterName != null && x.CareCenterName.Contains(pagingRequest.Search));
+                query = query.Where(x => x.CareCenterName != null && x.CareCenterName.Contains(paging.Search));
             }
 
-            query = query.Skip(pagingRequest.Size * (pagingRequest.Page - 1))
-                         .Take(pagingRequest.Size);
+            query = query.Skip(paging.Size * (paging.Page - 1))
+                         .Take(paging.Size);
 
             List<CareCenter> list = await query.ToListAsync();
 

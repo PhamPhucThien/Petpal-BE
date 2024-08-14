@@ -14,6 +14,6 @@ namespace CapstoneProject.Repository.Generic
         Task<T?> AddAsync(T entity);
         Task<bool> EditAsync(T entity);
         Task<bool> DeleteByIdAsync(Guid id);
-        Task<Tuple<List<T>, int>> GetWithPaging(Paging pagingRequest);
+        Task<Tuple<List<T>, int>> GetWithPaging(Paging paging);
     }
 }

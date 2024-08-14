@@ -20,11 +20,11 @@ namespace CapstoneProject.Repository.Repository
             _dbContext = new PetpalDbContext(contextOptions);
         }
 
-        public async Task<List<Comment>> GetWithPaging(Paging pagingRequest)
+        public async Task<List<Comment>> GetWithPaging(Paging paging)
         {
-            if (pagingRequest == null)
+            if (paging == null)
             {
-                throw new ArgumentNullException(nameof(pagingRequest));
+                throw new ArgumentNullException(nameof(paging));
             }
             
             IQueryable<Comment> query = _dbContext.Set<Comment>() 
@@ -33,8 +33,8 @@ namespace CapstoneProject.Repository.Repository
                     .AsQueryable()
                 ;
 
-            query = query.Skip(pagingRequest.Size * (pagingRequest.Page - 1))
-                .Take(pagingRequest.Size);
+            query = query.Skip(paging.Size * (paging.Page - 1))
+                .Take(paging.Size);
 
             return await query.ToListAsync();
         }

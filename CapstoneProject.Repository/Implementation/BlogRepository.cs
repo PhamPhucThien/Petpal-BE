@@ -24,17 +24,17 @@ namespace CapstoneProject.Repository.Repository
         }
         
 
-        public async Task<List<Blog>> GetWithPaging(Paging pagingRequest)
+        public async Task<List<Blog>> GetWithPaging(Paging paging)
         {
-            ArgumentNullException.ThrowIfNull(pagingRequest);
+            ArgumentNullException.ThrowIfNull(paging);
 
             IQueryable<Blog> query = _dbContext.Set<Blog>() 
                     .Include(o => o.User)
                     .AsQueryable()
                 ;
 
-            query = query.Skip(pagingRequest.Size * (pagingRequest.Page - 1))
-                .Take(pagingRequest.Size);
+            query = query.Skip(paging.Size * (paging.Page - 1))
+                .Take(paging.Size);
 
             return await query.ToListAsync();
         }

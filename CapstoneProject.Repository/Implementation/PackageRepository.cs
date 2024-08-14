@@ -20,6 +20,33 @@ namespace CapstoneProject.Repository.Repository
         private readonly DbContextOptions<PetpalDbContext> _contextOptions = contextOptions;
         private PetpalDbContext _dbContext;
 
+        public async Task<Tuple<List<Package>, int>> GetByCustomerId(Guid userId, Paging paging)
+        {
+            using PetpalDbContext context = new(_contextOptions);
+
+            ArgumentNullException.ThrowIfNull(paging);
+
+            IQueryable<Package> query = context.Set<Package>().AsQueryable();
+
+            int count = await query.CountAsync();
+
+            count = count % paging.Size == 0 ? count / paging.Size : count / paging.Size + 1;
+
+            query = query.
+                Include(p => p.OrderDetails).
+                ThenInclude(or => or.Pet).
+                Where(x => x.OrderDetails != null && x.OrderDetails.Any(p => p.Pet != null && p.Pet.UserId == userId));
+
+            query = query.Skip(paging.Size * (paging.Page - 1))
+                         .Take(paging.Size);
+
+            List<Package> list = await query.ToListAsync();
+
+            Tuple<List<Package>, int> data = new(list, count);
+
+            return data;
+        }
+
         public async Task<Package?> GetByIdIncludePackageItem(Guid packageId)
         {
             using PetpalDbContext context = new(_contextOptions);
@@ -31,22 +58,51 @@ namespace CapstoneProject.Repository.Repository
             return entity;
         }
 
-        public async Task<Tuple<List<Package>, int>> GetWithPagingByCareCenterId(Guid careCenterId, Paging pagingRequest)
+        public async Task<Tuple<List<Package>, int>> GetByStaffId(Guid userId, Paging paging)
         {
             using PetpalDbContext context = new(_contextOptions);
 
-            ArgumentNullException.ThrowIfNull(pagingRequest);
+            ArgumentNullException.ThrowIfNull(paging);
 
             IQueryable<Package> query = context.Set<Package>().AsQueryable();
 
             int count = await query.CountAsync();
 
-            count = count % pagingRequest.Size == 0 ? count / pagingRequest.Size : count / pagingRequest.Size + 1;
+            count = count % paging.Size == 0 ? count / paging.Size : count / paging.Size + 1;
+
+            query = query.
+                Include(p => p.CareCenter).
+                ThenInclude(cc => cc!.Staffs).
+                Include(p => p.OrderDetails).
+                ThenInclude(or => or.Pet).
+                Where(x => x.CareCenter != null && x.CareCenter.Staffs != null && x.CareCenter.Staffs.Any(y => y.UserId == userId));
+
+            query = query.Skip(paging.Size * (paging.Page - 1))
+                         .Take(paging.Size);
+
+            List<Package> list = await query.ToListAsync();
+
+            Tuple<List<Package>, int> data = new(list, count);
+
+            return data;
+        }
+
+        public async Task<Tuple<List<Package>, int>> GetWithPagingByCareCenterId(Guid careCenterId, Paging paging)
+        {
+            using PetpalDbContext context = new(_contextOptions);
+
+            ArgumentNullException.ThrowIfNull(paging);
+
+            IQueryable<Package> query = context.Set<Package>().AsQueryable();
+
+            int count = await query.CountAsync();
+
+            count = count % paging.Size == 0 ? count / paging.Size : count / paging.Size + 1;
 
             query = query.Where(x => x.CareCenterId == careCenterId);
 
-            query = query.Skip(pagingRequest.Size * (pagingRequest.Page - 1))
-                         .Take(pagingRequest.Size);
+            query = query.Skip(paging.Size * (paging.Page - 1))
+                         .Take(paging.Size);
 
             List<Package> list = await query.ToListAsync();
 
