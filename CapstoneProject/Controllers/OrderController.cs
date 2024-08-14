@@ -234,12 +234,41 @@ namespace CapstoneProject.Controllers
         }
 
         [HttpPost("get-order-request")]
+        [Authorize(Roles = "PARTNER,MANAGER,CUSTOMER")]
         public async Task<IActionResult> GetOrderRequest(GetListOrderById request)
         {
             try
             {
                 Guid userId = Guid.Parse(HttpContext.GetName());
                 var response = await _orderService.GetByUserId(userId, request);
+                return Ok(response);
+            }
+            catch (FormatException)
+            {
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
+            }
+        }
+
+        [HttpPost("get-pending-request")]
+        [Authorize(Roles = "MANAGER")]
+        public async Task<IActionResult> GetPedingRequest(GetListOrderById request)
+        {
+            try
+            {
+                Guid userId = Guid.Parse(HttpContext.GetName());
+                var response = await _orderService.GetPendingByUserId(userId, request);
                 return Ok(response);
             }
             catch (FormatException)
