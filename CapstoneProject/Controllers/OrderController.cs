@@ -158,6 +158,32 @@ namespace CapstoneProject.Controllers
             }
         }
 
+        [HttpGet("list-checkin-demo")]
+        public async Task<IActionResult> Demo()
+        {
+            try
+            {
+                var response = await _orderService.Demo();
+                return Ok(response);
+            }
+            catch (FormatException)
+            {
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
+            }
+        }
+
         [HttpGet("get-order/{orderId}")]
         public async Task<IActionResult> GetOrderById(Guid orderId)
         {
