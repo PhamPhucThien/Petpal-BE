@@ -9,6 +9,7 @@ using CapstoneProject.DTO.Response.Package;
 using CapstoneProject.DTO.Response.Pet;
 using CapstoneProject.Repository.Interface;
 using Microsoft.IdentityModel.Protocols;
+using Newtonsoft.Json;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
@@ -577,6 +578,31 @@ namespace CapstoneProject.Business.Services
             }
 
             return HmacSHA512(vnp_HashSecret, sb.ToString());
+        }
+
+        public async Task<string> Demo()
+        {
+            string response = "";
+
+            List<Dictionary<int, List<string>>> model = new();
+
+            for (int i = 0; i < 10; i++)
+            {
+                Dictionary<int, List<string>> key = new();
+                List<string> fields = new List<string>();
+                fields.Add("Checkin");
+                fields.Add("Checkout");
+                key.Add(i, fields);
+                model.Add(key);
+            }
+
+            response = JsonConvert.SerializeObject(model);
+
+            model.Clear();
+
+            model = JsonConvert.DeserializeObject<List<Dictionary<int, List<string>>>>(response) ?? [];
+
+            return response;
         }
 
         public async Task<ResponseObject<OrderResponseModel>> GetById(Guid orderId, Guid userId)
