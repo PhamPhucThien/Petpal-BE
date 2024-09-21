@@ -9,15 +9,10 @@ namespace CapstoneProject.DTO.Request.Service
 {
     public class ServiceCreateRequest
     {
-        [Required(ErrorMessage = "Service Name is required")]
-        public string Name { get; set; }
-        [Required(ErrorMessage = "Description is required")]
-        public string Description { get; set; }
-        [Required(ErrorMessage = "Base Price is required")]
-        public double BasePrice { get; set; }
-        [Required(ErrorMessage = "Is Required")]
-        public bool IsRequired { get; set; }
-        [Required(ErrorMessage = "CreateBy is Required")]
-        public string CreatedBy { get; set; }
+        [Required(ErrorMessage = "Tên dịch vụ không được bỏ trống")]
+        [MaxLength(30, ErrorMessage = "Tên dịch vụ không được quá 30 ký tự")]
+        public string Name { get; set; } = string.Empty;
+        [MaxLength(100, ErrorMessage = "Mô tả dịch vụ không được quá 100 ký tự")]
+        public string Description { get; set; } = string.Empty;
     }
 }

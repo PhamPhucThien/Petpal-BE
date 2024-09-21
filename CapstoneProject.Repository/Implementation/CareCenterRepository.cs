@@ -18,6 +18,20 @@ namespace CapstoneProject.Repository.Repository
     {
         private readonly DbContextOptions<PetpalDbContext> _contextOptions = contextOptions;
 
+        public async Task<int> CountActiveCareCenter()
+        {
+            using PetpalDbContext context = new(_contextOptions);
+            int count = await context.Set<CareCenter>().Where(x => x.Status == CareCenterStatus.ACTIVE).CountAsync();
+            return count;
+        }
+
+        public async Task<int> CountActiveCareCenterByPartnerId(Guid userId)
+        {
+            using PetpalDbContext context = new(_contextOptions);
+            int count = await context.Set<CareCenter>().Where(x => x.PartnerId == userId && x.Status == CareCenterStatus.ACTIVE).CountAsync();
+            return count;
+        }
+
         public async Task<CareCenter?> GetByManagerId(Guid managerId)
         {
             using PetpalDbContext context = new(_contextOptions);
@@ -33,11 +47,13 @@ namespace CapstoneProject.Repository.Repository
 
             IQueryable<CareCenter> query = context.Set<CareCenter>().AsQueryable();
 
+            if (paging.Size <= 0) { paging.Size = 1; }
+
+            query = query.Include(m => m.Partner).Include(n => n.Manager).Where(x => x.PartnerId == partnerId).AsQueryable();
+
             int count = await query.CountAsync();
 
             count = count % paging.Size == 0 ? count / paging.Size : count / paging.Size + 1;
-
-            query = query.Include(m => m.Partner).Include(n => n.Manager).Where(x => x.PartnerId == partnerId).AsQueryable();
 
             query = query.Skip(paging.Size * (paging.Page - 1))
                          .Take(paging.Size);

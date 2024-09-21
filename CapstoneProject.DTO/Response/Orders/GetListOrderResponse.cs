@@ -14,7 +14,7 @@ namespace CapstoneProject.DTO.Response.Orders
 {
     public class GetListOrderResponse
     {
-        public List<OrderResponseModel> Orders { get; set; } = [];
+        public List<OrderResponseModel> List { get; set; } = [];
         public Paging Paging { get; set; } = new();
     }
 

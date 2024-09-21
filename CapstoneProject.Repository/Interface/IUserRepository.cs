@@ -13,6 +13,9 @@ namespace CapstoneProject.Repository.Interface
     public interface IUserRepository : IRepository<User>
     {
         Task<int> Count();
+        Task<int> CountActivePartner();
+        Task<int> CountActiveUser();
+        Task<int> CountCustomerByPartnerId(Guid userId);
         public User GetUserByUsername(string username);
         Task<Tuple<List<User>, int>> GetWithPagingAndStatusAndRole(Paging paging, UserStatus? status, UserRole? role);
     }

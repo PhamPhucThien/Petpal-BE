@@ -18,5 +18,6 @@ namespace CapstoneProject.Repository.Interface
         Task<Tuple<List<Order>, int>> GetByUserId(Guid userId, Paging paging);
         Task<Order?> GetByOrderId(Guid id);
         Task<Tuple<List<Order>, int>> GetPendingByManagerId(Guid userId, Paging paging);
+        Task<int> CountOrderByPartnerId(Guid userId);
     }
 }

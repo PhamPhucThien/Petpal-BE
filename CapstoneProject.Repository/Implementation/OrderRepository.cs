@@ -23,10 +23,8 @@ namespace CapstoneProject.Repository.Repository
 
             IQueryable<Order> query = context.Set<Order>().AsQueryable();
 
-            int count = await query.CountAsync();
-
-            count = count % paging.Size == 0 ? count / paging.Size : count / paging.Size + 1;
-
+            if (paging.Size <= 0) { paging.Size = 1; }
+            
             query = query.
                 Include(od => od.OrderDetail).
                     ThenInclude(p => p.Package).         
@@ -35,6 +33,10 @@ namespace CapstoneProject.Repository.Repository
                     ThenInclude(od => od.Pet).
                 Where(x => x.UserId == userId).
                 AsQueryable();
+
+            int count = await query.CountAsync();
+
+            count = count % paging.Size == 0 ? count / paging.Size : count / paging.Size + 1;
 
             query = query.Skip(paging.Size * (paging.Page - 1))
                          .Take(paging.Size);
@@ -54,10 +56,8 @@ namespace CapstoneProject.Repository.Repository
 
             IQueryable<Order> query = context.Set<Order>().AsQueryable();
 
-            int count = await query.CountAsync();
-
-            count = count % paging.Size == 0 ? count / paging.Size : count / paging.Size + 1;
-
+            if (paging.Size <= 0) { paging.Size = 1; }
+                        
             query = query.
                 Include(od => od.OrderDetail).
                     ThenInclude(p => p.Package).
@@ -66,6 +66,10 @@ namespace CapstoneProject.Repository.Repository
                     ThenInclude(od => od.Pet).
                 Where(x => x.OrderDetail != null && x.OrderDetail.Package != null && x.OrderDetail.Package.CareCenter != null && x.OrderDetail.Package.CareCenter.PartnerId == userId).
                 AsQueryable();
+
+            int count = await query.CountAsync();
+
+            count = count % paging.Size == 0 ? count / paging.Size : count / paging.Size + 1;
 
             query = query.Skip(paging.Size * (paging.Page - 1))
                          .Take(paging.Size);
@@ -84,10 +88,8 @@ namespace CapstoneProject.Repository.Repository
 
             IQueryable<Order> query = context.Set<Order>().AsQueryable();
 
-            int count = await query.CountAsync();
-
-            count = count % paging.Size == 0 ? count / paging.Size : count / paging.Size + 1;
-
+            if (paging.Size <= 0) { paging.Size = 1; }
+            
             query = query.
                 Include(od => od.OrderDetail).
                     ThenInclude(p => p.Package).
@@ -96,6 +98,10 @@ namespace CapstoneProject.Repository.Repository
                     ThenInclude(od => od.Pet).
                 Where(x => x.OrderDetail != null && x.OrderDetail.Package != null && x.OrderDetail.Package.CareCenter != null && x.OrderDetail.Package.CareCenter.ManagerId == userId).
                 AsQueryable();
+
+            int count = await query.CountAsync();
+
+            count = count % paging.Size == 0 ? count / paging.Size : count / paging.Size + 1;
 
             query = query.Skip(paging.Size * (paging.Page - 1))
                          .Take(paging.Size);
@@ -141,10 +147,8 @@ namespace CapstoneProject.Repository.Repository
 
             IQueryable<Order> query = context.Set<Order>().AsQueryable();
 
-            int count = await query.CountAsync();
-
-            count = count % paging.Size == 0 ? count / paging.Size : count / paging.Size + 1;
-
+            if (paging.Size <= 0) { paging.Size = 1; }
+            
             query = query.
                 Include(od => od.OrderDetail).
                     ThenInclude(p => p.Package).
@@ -154,6 +158,10 @@ namespace CapstoneProject.Repository.Repository
                 Where(x => x.OrderDetail != null && x.OrderDetail.Package != null && x.OrderDetail.Package.CareCenter != null && x.OrderDetail.Package.CareCenter.ManagerId == userId && x.Status == OrderStatus.CREATED).
                 AsQueryable();
 
+            int count = await query.CountAsync();
+
+            count = count % paging.Size == 0 ? count / paging.Size : count / paging.Size + 1;
+
             query = query.Skip(paging.Size * (paging.Page - 1))
                          .Take(paging.Size);
 
@@ -162,6 +170,33 @@ namespace CapstoneProject.Repository.Repository
             Tuple<List<Order>, int> data = new(list, count);
 
             return data;
+        }
+
+        public async Task<int> CountOrderByPartnerId(Guid userId)
+        {
+            using PetpalDbContext context = new(_contextOptions);
+
+            List<CareCenter> careCenters = await context.Set<CareCenter>().Where(x => x.PartnerId == userId).ToListAsync();
+
+            List<Guid> listIds = [];
+
+            foreach (CareCenter item in careCenters)
+            {
+                listIds.Add(item.Id);
+            }
+
+            List<Package> packages = await context.Set<Package>().Where(x => x.CareCenter != null && listIds.Any(y => y == x.CareCenter.Id)).ToListAsync();
+
+            listIds.Clear();
+
+            foreach (Package item in packages)
+            {
+                listIds.Add(item.Id);
+            }
+
+            int count = await context.Set<OrderDetail>().Where(x => x.Package != null && listIds.Any(y => y == x.Package.Id)).CountAsync();
+
+            return count;
         }
     }
 }

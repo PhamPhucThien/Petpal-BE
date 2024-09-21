@@ -70,7 +70,7 @@ namespace CapstoneProject.Business.Services
                     PhoneNumber = request.PhoneNumber,
                     Email = request.Email,
                     Role = Database.Model.Meta.UserRole.CUSTOMER,
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.UtcNow.AddHours(7),
                     CreatedBy = request.Username
                 };
 
@@ -133,7 +133,7 @@ namespace CapstoneProject.Business.Services
                     Email = request.Partner.Email,
                     Role = Database.Model.Meta.UserRole.PARTNER,
                     Status = Database.Model.Meta.UserStatus.PENDING,
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.UtcNow.AddHours(7),
                     CreatedBy = request.Partner.Username
                 };
 
@@ -145,7 +145,7 @@ namespace CapstoneProject.Business.Services
                     FullName = string.Empty,
                     Role = Database.Model.Meta.UserRole.MANAGER,
                     Status = Database.Model.Meta.UserStatus.PENDING,
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.UtcNow.AddHours(7),
                     CreatedBy = request.Partner.Username
                 };
 
@@ -158,7 +158,7 @@ namespace CapstoneProject.Business.Services
                     Address = request.CareCenter.Address,
                     Description = request.CareCenter.Description,
                     Status = Database.Model.Meta.CareCenterStatus.PENDING,
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.UtcNow.AddHours(7),
                     CreatedBy = request.Partner.Username
                 };*/
 

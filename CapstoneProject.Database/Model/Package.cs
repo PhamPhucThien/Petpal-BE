@@ -18,8 +18,6 @@ namespace CapstoneProject.Database.Model
         public Guid? PetTypeId { get; set; }
         [Column("description")]
         public string? Description { get; set; }
-        [Column("duration")]
-        public string? Duration { get; set; }
         [Column("type")]
         public string? Type { get; set; }
         [Column("total_price")]

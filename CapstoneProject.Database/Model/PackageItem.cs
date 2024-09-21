@@ -19,7 +19,9 @@ namespace CapstoneProject.Database.Model
         [Column("current_price")]
         public double? CurrentPrice { get; set; }
         [Column("detail")]
-        public string? Detail { get; set; } 
+        public string? Detail { get; set; }
+        [Column("service_name")]
+        public string? ServiceName { get; set; }
 
         [ForeignKey("PackageId")]
         public Package? Package { get; set; }

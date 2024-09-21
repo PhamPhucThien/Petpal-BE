@@ -8,6 +8,8 @@ using CapstoneProject.Infrastructure.Extension;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Mvc.DataAnnotations;
 
 namespace CapstoneProject.Controllers
 {
@@ -60,6 +62,94 @@ namespace CapstoneProject.Controllers
             {
                 Guid userId = Guid.Parse(HttpContext.GetName());
                 var response = await _petService.GetActiveByUserIdAndPetTypeId(userId, packageId, request);
+                return Ok(response);
+            }
+            catch (FormatException)
+            {
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
+            }
+        }
+
+        [HttpPost("check-in")]
+        [Authorize(Roles = "STAFF")]
+        public async Task<IActionResult> CheckIn(Guid petId, bool isCheckIn, IFormFile? file)
+        {
+            try
+            {
+                Guid userId = Guid.Parse(HttpContext.GetName());
+
+                FileDetails filesDetail = new();
+
+                if (file != null && file.Length != 0)
+                {
+                    using var stream = new MemoryStream();
+                    await file.CopyToAsync(stream);
+                    filesDetail.FileName = Path.GetFileName(file.FileName);
+                    filesDetail.TempPath = Path.GetTempFileName();
+                    filesDetail.FileData = stream.ToArray();
+                }
+                else
+                {
+                    filesDetail.IsContain = false;
+                }
+
+                var response = await _petService.CheckIn(userId, petId, isCheckIn, filesDetail);
+                return Ok(response);
+            }
+            catch (FormatException)
+            {
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
+            }
+        }
+
+        [HttpPost("check-out")]
+        [Authorize(Roles = "STAFF")]
+        public async Task<IActionResult> CheckOut(Guid petId, bool isCheckOut, IFormFile? file)
+        {
+            try
+            {
+                Guid userId = Guid.Parse(HttpContext.GetName());
+
+                FileDetails filesDetail = new();
+
+                if (file != null && file.Length != 0)
+                {
+                    using var stream = new MemoryStream();
+                    await file.CopyToAsync(stream);
+                    filesDetail.FileName = Path.GetFileName(file.FileName);
+                    filesDetail.TempPath = Path.GetTempFileName();
+                    filesDetail.FileData = stream.ToArray();
+                }
+                else
+                {
+                    filesDetail.IsContain = false;
+                }
+
+                var response = await _petService.CheckOut(userId, petId, isCheckOut, filesDetail);
                 return Ok(response);
             }
             catch (FormatException)
@@ -176,19 +266,20 @@ namespace CapstoneProject.Controllers
                 });
             }
         }
-        
-       /* [HttpPut("update-pet")]
-        public async Task<IActionResult> UpdatePet(PetUpdateRequest request)
-        {
-            try
-            {
-                var response = await _petService.UpdatePet(request);
-                return Ok(response);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
-            }
-        }*/
+
+
+        /* [HttpPut("update-pet")]
+         public async Task<IActionResult> UpdatePet(PetUpdateRequest request)
+         {
+             try
+             {
+                 var response = await _petService.UpdatePet(request);
+                 return Ok(response);
+             }
+             catch (Exception ex)
+             {
+                 return StatusCode(500, $"An error occurred: {ex.Message}");
+             }
+         }*/
     }
 }

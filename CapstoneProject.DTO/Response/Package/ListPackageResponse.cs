@@ -20,7 +20,6 @@ namespace CapstoneProject.DTO.Response.Package
         public string? Title {  get; set; }
         public string? Description { get; set; }
         public string? Image {  get; set; }
-        public string? Duration { get; set; }
         public string? Type { get; set; }
         public double? TotalPrice { get; set; }
         public List<ListPackageItemResponseModel>? Items { get; set; } = [];
@@ -31,5 +30,6 @@ namespace CapstoneProject.DTO.Response.Package
         public Guid? Id { get; set; }
         public double? CurrentPrice { get; set; }
         public string? Detail { get; set; }
+        public string? ServiceName { get; set; }
     }
 }

@@ -10,15 +10,19 @@ using CapstoneProject.DTO.Response.Package;
 using CapstoneProject.DTO.Response.Pet;
 using CapstoneProject.Repository.Interface;
 using CapstoneProject.Repository.Repository;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Newtonsoft.Json;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CapstoneProject.Business.Services
 {
-    public class PetService(IPetRepository petRepository, IPackageRepository packageRepository, IMapper mapper, IUserRepository userRepository, IPetTypeRepository petTypeRepository) : IPetService
+    public class PetService(IPetRepository petRepository, IPackageRepository packageRepository, IMapper mapper, IUserRepository userRepository, IPetTypeRepository petTypeRepository, IOrderDetailRepository orderDetailRepository) : IPetService
     {
         private readonly IPetRepository _petRepository = petRepository;
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IPetTypeRepository _petTypeRepository = petTypeRepository;
         private readonly IPackageRepository _packageRepository = packageRepository;
+        private readonly IOrderDetailRepository _orderDetailRepository = orderDetailRepository;
         private readonly IMapper _mapper = mapper;
         public UploadImageService uploadImage = new();
         public StatusCode StatusCode { get; set; } = new();
@@ -138,7 +142,7 @@ namespace CapstoneProject.Business.Services
                         Gender = request.Gender,
                         Breed = request.Breed,
                         Sterilise = request.Sterilise,
-                        CreatedAt = DateTime.UtcNow,
+                        CreatedAt = DateTime.UtcNow.AddHours(7),
                         CreatedBy = user.Username
                     };
 
@@ -165,7 +169,7 @@ namespace CapstoneProject.Business.Services
                     {
                         response.Status = StatusCode.BadRequest;
                         response.Payload.Message = "Tạo thú cưng thất bại";
-                    }
+                    }   
                 }
                 else
                 {
@@ -235,6 +239,39 @@ namespace CapstoneProject.Business.Services
                         item.OrderDetails.ForEach(x =>
                         {
                             PetModel newPet = _mapper.Map<PetModel>(x.Pet);
+
+                            List<Dictionary<int, List<string>>> model = [];
+
+                            model = JsonConvert.DeserializeObject<List<Dictionary<int, List<string>>>>(x.AttendanceList ?? "") ?? [];
+
+                            int dayDif = (DateTimeOffset.UtcNow.AddHours(7) - x.FromDate).Days;
+
+                            if (model[dayDif][dayDif][0] == "0")
+                            {
+                                newPet.IsCheckIn = false;
+                            }
+                            else
+                            {
+                                newPet.IsCheckIn = true;
+                                if (model[dayDif][dayDif][0] != "1")
+                                {
+                                    newPet.CheckInImg = model[dayDif][dayDif][0];
+                                }
+                            }
+
+                            if (model[dayDif][dayDif][1] == "0")
+                            {
+                                newPet.IsCheckOut = false;
+                            }
+                            else
+                            {
+                                newPet.IsCheckOut = true;
+                                if (model[dayDif][dayDif][1] != "1")
+                                {
+                                    newPet.CheckOutImg = model[dayDif][dayDif][1];
+                                }
+                            }
+
                             petModels.Add(newPet);
                         });
 
@@ -267,6 +304,39 @@ namespace CapstoneProject.Business.Services
                         item.OrderDetails.ForEach(x =>
                         {
                             PetModel newPet = _mapper.Map<PetModel>(x.Pet);
+
+                            List<Dictionary<int, List<string>>> model = [];
+
+                            model = JsonConvert.DeserializeObject<List<Dictionary<int, List<string>>>>(x.AttendanceList ?? "") ?? [];
+
+                            int dayDif = (DateTimeOffset.UtcNow.AddHours(7) - x.FromDate).Days;
+
+                            if (model[dayDif][dayDif][0] == "0")
+                            {
+                                newPet.IsCheckIn = false;
+                            }
+                            else
+                            {
+                                newPet.IsCheckIn = true;
+                                if (model[dayDif][dayDif][0] != "1")
+                                {
+                                    newPet.CheckInImg = model[dayDif][dayDif][0];
+                                }
+                            }
+
+                            if (model[dayDif][dayDif][1] == "0")
+                            {
+                                newPet.IsCheckOut = false;
+                            }
+                            else
+                            {
+                                newPet.IsCheckOut = true;
+                                if (model[dayDif][dayDif][1] != "1")
+                                {
+                                    newPet.CheckOutImg = model[dayDif][dayDif][1];
+                                }
+                            }
+
                             petModels.Add(newPet);
                         });
 
@@ -378,6 +448,263 @@ namespace CapstoneProject.Business.Services
                     response.Status = StatusCode.BadRequest;
                     response.Payload.Message = "Chỉ khách hàng mới có thú cưng";
                 }
+            }
+
+            return response;
+        }
+
+        public async Task<ResponseObject<CheckInAndOutResponse>> CheckIn(Guid userId, Guid petId, bool isCheckIn, FileDetails filesDetail)
+        {
+            ResponseObject<CheckInAndOutResponse> response = new();
+            CheckInAndOutResponse data = new();
+            data.IsSucceed = false;
+
+            User? staff = await _userRepository.GetByIdAsync(userId);
+            Pet? pet = await _petRepository.GetByIdAsync(petId);
+
+            if (staff != null && staff.Role == UserRole.STAFF) 
+            {
+                if (pet != null) 
+                {
+                    OrderDetail? orderDetail = await _orderDetailRepository.GetByIdAsyncCustom(petId);
+
+                    if (orderDetail != null)
+                    {
+                        if (orderDetail.Package != null)
+                        {
+                            if (orderDetail.Package.CareCenter != null)
+                            {
+                                if (orderDetail.Package.CareCenter.Staffs != null && orderDetail.Package.CareCenter.Staffs.Where(x => x.UserId == userId).FirstOrDefault() != null)  {
+                                    if (orderDetail.AttendanceList != null)
+                                    {
+                                        List<Dictionary<int, List<string>>> model = [];
+
+                                        model = JsonConvert.DeserializeObject<List<Dictionary<int, List<string>>>>(orderDetail.AttendanceList) ?? [];
+
+                                        int dayDif = (DateTimeOffset.UtcNow.AddHours(7) - orderDetail.FromDate).Days;
+
+                                        if (dayDif <= model.Count)
+                                        {
+                                            string addText = "1";
+
+                                            if (!isCheckIn)
+                                            {
+                                                addText = "0";
+                                            }
+                                            else if (filesDetail.IsContain)
+                                            {
+                                                List<FileDetails> images = [filesDetail];
+
+                                                List<string> fileName = await uploadImage.UploadImage(images);
+
+                                                addText = String.Join(",", fileName);
+                                            }
+
+
+                                            if (!isCheckIn && model[dayDif][dayDif][1] != "0")
+                                            {
+                                                response.Status = StatusCode.BadRequest;
+                                                response.Payload.Message = "Không thể thực hiện khi thú cưng đã trả về cho chủ sở hũu";
+                                                response.Payload.Data = data;
+                                            }
+                                            else
+                                            {
+                                                model[dayDif][dayDif][0] = addText;
+                                                data.IsSucceed = true;
+                                                orderDetail.AttendanceList = JsonConvert.SerializeObject(model);
+                                                //orderDetail.UpdatedAt = DateTimeOffset.UtcNow.AddHours(7);
+                                                //orderDetail.UpdatedBy = staff.Username;
+
+                                                await _orderDetailRepository.EditAsync(orderDetail);
+
+                                                response.Status = StatusCode.OK;
+
+                                                if (isCheckIn)
+                                                {
+                                                    response.Payload.Message = "Xác nhận nhận thú thành công";
+                                                }
+                                                else 
+                                                {
+                                                    response.Payload.Message = "Gỡ xác nhận nhận thú thành công";
+                                                }
+                                            
+                                                response.Payload.Data = data;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            response.Status = StatusCode.BadRequest;
+                                            response.Payload.Message = "Không thể điểm danh do đã quá ngày sử dụng dịch vụ";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        response.Status = StatusCode.BadRequest;
+                                        response.Payload.Message = "Không tìm thấy danh sách điểm danh";
+                                    }
+                                } 
+                                else
+                                {
+                                    response.Status = StatusCode.BadRequest;
+                                    response.Payload.Message = "Không tìm thấy thông tin nhân viên";
+                                }
+                            }
+                            else
+                            {
+                                response.Status = StatusCode.BadRequest;
+                                response.Payload.Message = "Không tìm thấy thông tin trung tâm chăm sóc thú cưng";
+                            }
+                        }
+                        else
+                        {
+                            response.Status = StatusCode.BadRequest;
+                            response.Payload.Message = "Không tìm thấy thông tin gói hàng đã mua";
+                        }
+                    }
+                    else
+                    {
+                        response.Status = StatusCode.BadRequest;
+                        response.Payload.Message = "Không tìm thấy đơn hàng";
+                    }
+                }
+                else
+                {
+                    response.Status = StatusCode.BadRequest;
+                    response.Payload.Message = "Không tìm thấy thú cưng";
+                }
+            }
+            else
+            {
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Không tìm thấy nhân viên";
+            }
+
+            return response;
+        }
+
+        public async Task<ResponseObject<CheckInAndOutResponse>> CheckOut(Guid userId, Guid petId, bool isCheckOut, FileDetails filesDetail)
+        {
+            ResponseObject<CheckInAndOutResponse> response = new();
+            CheckInAndOutResponse data = new();
+            data.IsSucceed = false;
+
+            User? staff = await _userRepository.GetByIdAsync(userId);
+            Pet? pet = await _petRepository.GetByIdAsync(petId);
+
+            if (staff != null && staff.Role == UserRole.STAFF)
+            {
+                if (pet != null)
+                {
+                    OrderDetail? orderDetail = await _orderDetailRepository.GetByIdAsyncCustom(petId);
+
+                    if (orderDetail != null)
+                    {
+                        if (orderDetail.Package != null)
+                        {
+                            if (orderDetail.Package.CareCenter != null)
+                            {
+                                if (orderDetail.Package.CareCenter.Staffs != null && orderDetail.Package.CareCenter.Staffs.Where(x => x.UserId == userId).FirstOrDefault() != null)
+                                {
+                                    if (orderDetail.AttendanceList != null)
+                                    {
+                                        List<Dictionary<int, List<string>>> model = [];
+
+                                        model = JsonConvert.DeserializeObject<List<Dictionary<int, List<string>>>>(orderDetail.AttendanceList) ?? [];
+
+                                        int dayDif = (DateTimeOffset.UtcNow.AddHours(7) - orderDetail.FromDate).Days;
+
+                                        if (dayDif <= model.Count)
+                                        {
+                                            string addText = "1";
+
+                                            if (!isCheckOut)
+                                            {
+                                                addText = "0";
+                                            }
+                                            else if (filesDetail.IsContain)
+                                            {
+                                                List<FileDetails> images = [filesDetail];
+
+                                                List<string> fileName = await uploadImage.UploadImage(images);
+
+                                                addText = String.Join(",", fileName);
+                                            }
+
+                                            if (model[dayDif][dayDif][0] == "0")
+                                            {
+                                                response.Status = StatusCode.BadRequest;
+                                                response.Payload.Message = "Không thể thực hiện khi thú cưng chưa có mặt ở trung tâm";
+                                                response.Payload.Data = data;
+                                            }
+                                            else
+                                            {
+                                                model[dayDif][dayDif][1] = addText;
+                                                data.IsSucceed = true;
+                                                orderDetail.AttendanceList = JsonConvert.SerializeObject(model);
+                                                //orderDetail.UpdatedAt = DateTimeOffset.UtcNow.AddHours(7);
+                                                //orderDetail.UpdatedBy = staff.Username;
+
+                                                await _orderDetailRepository.EditAsync(orderDetail);
+
+                                                response.Status = StatusCode.OK;
+
+                                                if (isCheckOut)
+                                                {
+                                                    response.Payload.Message = "Xác nhận trả thú thành công";
+                                                }
+                                                else
+                                                {
+                                                    response.Payload.Message = "Gỡ xác nhận trả thú thành công";
+                                                }
+                                                response.Payload.Data = data;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            response.Status = StatusCode.BadRequest;
+                                            response.Payload.Message = "Không thể điểm danh do đã quá ngày sử dụng dịch vụ";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        response.Status = StatusCode.BadRequest;
+                                        response.Payload.Message = "Không tìm thấy danh sách điểm danh";
+                                    }
+                                }
+                                else
+                                {
+                                    response.Status = StatusCode.BadRequest;
+                                    response.Payload.Message = "Không tìm thấy thông tin nhân viên";
+                                }
+                            }
+                            else
+                            {
+                                response.Status = StatusCode.BadRequest;
+                                response.Payload.Message = "Không tìm thấy thông tin trung tâm chăm sóc thú cưng";
+                            }
+                        }
+                        else
+                        {
+                            response.Status = StatusCode.BadRequest;
+                            response.Payload.Message = "Không tìm thấy thông tin gói hàng đã mua";
+                        }
+                    }
+                    else
+                    {
+                        response.Status = StatusCode.BadRequest;
+                        response.Payload.Message = "Không tìm thấy đơn hàng";
+                    }
+                }
+                else
+                {
+                    response.Status = StatusCode.BadRequest;
+                    response.Payload.Message = "Không tìm thấy thú cưng";
+                }
+            }
+            else
+            {
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Không tìm thấy nhân viên";
             }
 
             return response;

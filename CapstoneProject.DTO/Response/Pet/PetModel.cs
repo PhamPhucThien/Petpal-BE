@@ -20,6 +20,10 @@ namespace CapstoneProject.DTO.Response.Pet
         public bool? Sterilise { get; set; }
         public string? Description { get; set; }
         public PetStatus Status { get; set; }
+        public bool? IsCheckIn { get; set; }
+        public bool? IsCheckOut { get; set; }
+        public string? CheckInImg { get; set; }
+        public string? CheckOutImg { get; set; }
     }
 
     public class ListPetModel
