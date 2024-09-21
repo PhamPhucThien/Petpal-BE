@@ -6,6 +6,8 @@ using CapstoneProject.DTO.Request.PetType;
 using CapstoneProject.DTO.Request.Service;
 using CapstoneProject.DTO.Response.Base;
 using CapstoneProject.DTO.Response.Service;
+using CapstoneProject.Infrastructure.Extension;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,15 +25,15 @@ namespace CapstoneProject.Controllers
         }
         
         [HttpPost("get-list")]
+        [Authorize(Roles = "ADMIN,PARTNER,MANAGER")]
         public async Task<IActionResult> GetList(ListRequest request)
         {
             try
             {
-                var serviceList = await _serviceService.GetList(request);
-                var response = new ResponseObject<BaseListResponse<ServiceResponse>>();
-                response.Status = StatusCodes.Status200OK.ToString();
-                response.Payload.Message = "Get all service successfully";
-                response.Payload.Data = serviceList;
+                Guid userId = Guid.Parse(HttpContext.GetName());
+
+                var response = await _serviceService.GetList(request, userId);
+
                 return Ok(response);
             }
             catch (FormatException)
@@ -53,15 +55,15 @@ namespace CapstoneProject.Controllers
         }
         
         [HttpGet("get-service/{serviceId}")]
-        public async Task<IActionResult> GetServiceById(string serviceId)
+        [Authorize(Roles = "PARTNER,MANAGER,ADMIN")]
+        public async Task<IActionResult> GetServiceById(Guid serviceId)
         {
             try
             {
-                var serviceResponse = await _serviceService.GetById(serviceId);
-                var response = new ResponseObject<ServiceResponse>();
-                response.Status = StatusCodes.Status200OK.ToString();
-                response.Payload.Message = "Get service successfully";
-                response.Payload.Data = serviceResponse;
+                Guid userId = Guid.Parse(HttpContext.GetName());
+
+                var response = await _serviceService.GetById(serviceId, userId);
+
                 return Ok(response);
             }
             catch (FormatException)
@@ -82,16 +84,16 @@ namespace CapstoneProject.Controllers
             }
         }
         
-        [HttpPost("create-service")]
-        public async Task<IActionResult> CreateService(ServiceCreateRequest request)
+        [HttpPost("create")]
+        [Authorize(Roles = "PARTNER,ADMIN")]
+        public async Task<IActionResult> Create(ServiceCreateRequest request)
         {
             try
             {
-                var serviceResponse = await _serviceService.Create(request);
-                var response = new ResponseObject<ServiceResponse>();
-                response.Status = StatusCodes.Status200OK.ToString();
-                response.Payload.Message = "Create service successfully";
-                response.Payload.Data = serviceResponse;
+                Guid userId = Guid.Parse(HttpContext.GetName());
+
+                var response = await _serviceService.Create(request, userId);
+               
                 return Ok(response);
             }
             catch (FormatException)
@@ -112,7 +114,7 @@ namespace CapstoneProject.Controllers
             }
         }
         
-        [HttpPut("update-service")]
+        [HttpPut("update")]
         public async Task<IActionResult> UpdateService(ServiceUpdateRequest request)
         {
             try

@@ -11,6 +11,8 @@ namespace CapstoneProject.Repository.Interface
 {
     public interface ICareCenterRepository : IRepository<CareCenter>
     {
+        Task<int> CountActiveCareCenter();
+        Task<int> CountActiveCareCenterByPartnerId(Guid userId);
         Task<CareCenter?> GetByManagerId(Guid managerId);
         Task<Tuple<List<CareCenter>, int>> GetByPartnerId(Guid partnerId, Paging paging);
         Task<CareCenter?> GetCareCenterByIdAsync(Guid careCenterId);

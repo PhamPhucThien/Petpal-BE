@@ -10,5 +10,6 @@ namespace CapstoneProject.Repository.Interface
 {
     public interface IInvoiceRepository : IRepository<Invoice>
     {
+        Task<int> CountActiveInvoice();
     }
 }

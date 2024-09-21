@@ -10,7 +10,7 @@ public class PackageProfile : AutoMapper.Profile
     public PackageProfile()
     {
         CreateMap<Package, PackageResponse>();
-        CreateMap<PackageCreareRequest, Package>();
+        CreateMap<PackageCreateRequest, Package>();
         CreateMap<PackageUpdateRequest, Package>();
         CreateMap<Package, PackageResponseModel>();
     }

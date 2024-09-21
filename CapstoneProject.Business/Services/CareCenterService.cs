@@ -48,7 +48,7 @@ namespace CapstoneProject.Business.Services
                         IdentityCreatedAt = request.ManagerIdentity.CreatedAt,
                         IdentityCreatedLocation = request.ManagerIdentity.CreatedLocation,
                         Status = Database.Model.Meta.UserStatus.PENDING,
-                        CreatedAt = DateTime.UtcNow,
+                        CreatedAt = DateTime.UtcNow.AddHours(7),
                         CreatedBy = user.Username
                     };
 
@@ -67,7 +67,7 @@ namespace CapstoneProject.Business.Services
                         Hotline = request.CareCenter.Hotline,
                         CareCenterName = request.CareCenter.CareCenterName,
                         Status = Database.Model.Meta.CareCenterStatus.PENDING,
-                        CreatedAt = DateTime.UtcNow,
+                        CreatedAt = DateTime.UtcNow.AddHours(7),
                         CreatedBy = user.Username
                     };
 

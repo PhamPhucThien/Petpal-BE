@@ -16,9 +16,7 @@ namespace CapstoneProject.Database.Model
         public string? Name { get; set; }
         [Column("description")]
         public string? Description { get; set; }
-        [Column("base_price")]
-        public double? BasePrice { get; set; }
-        [Column("is_required")]
-        public bool? IsRequired { get; set; }
+        [Column("is_base")]
+        public bool? IsBase { get; set; }
     }
 }

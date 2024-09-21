@@ -38,6 +38,7 @@ namespace CapstoneProject.Infrastructure
             _ = services.AddScoped<IPackageService, PackageService>();
             _ = services.AddScoped<IOrderDetailService, OrderDetailService>();
             _ = services.AddScoped<IEmailService, EmailService>();
+            _ = services.AddScoped<IDashboardService, DashboardService>();
 
             _ = services.AddScoped<IUserRepository, UserRepository>();
             _ = services.AddScoped<IBlogRepository, BlogRepository>();

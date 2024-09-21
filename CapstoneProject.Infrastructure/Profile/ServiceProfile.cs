@@ -11,5 +11,6 @@ public class ServiceProfile : AutoMapper.Profile
         CreateMap<Service, ServiceResponse>();
         CreateMap<ServiceCreateRequest, Service>();
         CreateMap<ServiceUpdateRequest, Service>();
+        CreateMap<Service, ServiceResponseModel>();
     }
 }

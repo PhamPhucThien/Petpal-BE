@@ -129,6 +129,12 @@ namespace CapstoneProject.Business.Services
                 response.Payload.Message = "Không tìm thấy gói dịch vụ";
                 return response;
             }
+            if (pet != null && pet.Status != PetStatus.ACTIVE)
+            {
+                response.Status = StatusCode.NotFound;
+                response.Payload.Message = "Thú cưng đang sử dụng dịch vụ khác";
+                return response;
+            }
 
             Order order = new()
             {
@@ -136,7 +142,7 @@ namespace CapstoneProject.Business.Services
                 UserId = user.Id,
                 CurrentPrice = package.TotalPrice,
                 Detail = request.Detail,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.UtcNow.AddHours(7),
                 CreatedBy = user.Username
             };
 
@@ -146,17 +152,30 @@ namespace CapstoneProject.Business.Services
 
             if (existedOrder != null)
             {
+                List<Dictionary<int, List<string>>> model = new();
+
+                for (int i = 0; i < request.TotalWeek*7; i++)
+                {
+                    Dictionary<int, List<string>> key = new();
+                    List<string> fields = ["None", "None"];
+                    key.Add(i, fields);
+                    model.Add(key);
+                }
+
+                string modelJson = JsonConvert.SerializeObject(model);
+
                 OrderDetail detail = new()
                 {
                     Id = Guid.NewGuid(),
                     OrderId = existedOrder.Id,
                     PetId = request.PetId,
                     FromDate = request.FromDate,
-                    ToDate = request.ToDate,
+                    ToDate = request.FromDate.AddDays(7*request.TotalWeek - 1),
+                    AttendanceList = modelJson,
                     ReceiveTime = request.ReceiveTime,
                     ReturnTime = request.ReturnTime,
                     PackageId = request.PackageId,
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.UtcNow.AddHours(7),
                     CreatedBy = user.Username
                 };
 
@@ -171,6 +190,8 @@ namespace CapstoneProject.Business.Services
                     if (isPetUpdated)
                     {
                         isSucceed.IsSucceed = true;
+                        response.Status = StatusCode.OK;
+                        response.Payload.Message = "Đơn hàng đã tạo thành công, hãy chờ bên cung cấp dịch vụ duyệt đơn hàng.";
                         response.Payload.Data = isSucceed;
 
                         scope.Complete();
@@ -261,7 +282,6 @@ namespace CapstoneProject.Business.Services
                             {
                                 Id = item.OrderDetail?.Package?.Id,
                                 Description = item.OrderDetail?.Package?.Description,
-                                Duration = item.OrderDetail?.Package?.Duration,
                                 Type = item.OrderDetail?.Package?.Type,
                                 TotalPrice = item.OrderDetail?.Package?.TotalPrice
                             }
@@ -270,7 +290,7 @@ namespace CapstoneProject.Business.Services
                         orders.Add(model);
                     }
 
-                    data.Orders = orders;
+                    data.List = orders;
                     data.Paging = paging;
                     data.Paging.MaxPage = list.Item2;
                     response.Payload.Data = data;
@@ -318,7 +338,7 @@ namespace CapstoneProject.Business.Services
 
 
             var formatter = "yyyyMMddHHmmss";
-            var now = DateTime.UtcNow.AddHours(7); // GMT+7
+            var now = DateTime.UtcNow.AddHours(7).AddHours(7); // GMT+7
             var vnp_CreateDate = now.ToString(formatter, CultureInfo.InvariantCulture);
             vnp_Params["vnp_CreateDate"] = vnp_CreateDate;
 
@@ -635,7 +655,6 @@ namespace CapstoneProject.Business.Services
                     {
                         Id = order.OrderDetail?.Package?.Id,
                         Description = order.OrderDetail?.Package?.Description,
-                        Duration = order.OrderDetail?.Package?.Duration,
                         Type = order.OrderDetail?.Package?.Type,
                         TotalPrice = order.OrderDetail?.Package?.TotalPrice
                     }
@@ -726,7 +745,6 @@ namespace CapstoneProject.Business.Services
                             {
                                 Id = item.OrderDetail?.Package?.Id,
                                 Description = item.OrderDetail?.Package?.Description,
-                                Duration = item.OrderDetail?.Package?.Duration,
                                 Type = item.OrderDetail?.Package?.Type,
                                 TotalPrice = item.OrderDetail?.Package?.TotalPrice
                             }
@@ -735,7 +753,7 @@ namespace CapstoneProject.Business.Services
                         orders.Add(model);
                     }
 
-                    data.Orders = orders;
+                    data.List = orders;
                     data.Paging = paging;
                     data.Paging.MaxPage = list.Item2;
                     response.Payload.Data = data;
