@@ -114,6 +114,8 @@ namespace CapstoneProject.Repository.Repository
                 query = query.Where(o => (o.Username != null && o.Username.Contains(paging.Search)) || (o.FullName != null && o.FullName.Contains(paging.Search)));
             }
 
+            query = query.OrderByDescending(o => o.CreatedAt);
+
             int count = await query.CountAsync();
 
             count = count % paging.Size == 0 ? count / paging.Size : count / paging.Size + 1;

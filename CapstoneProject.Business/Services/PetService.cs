@@ -246,29 +246,32 @@ namespace CapstoneProject.Business.Services
 
                             int dayDif = (DateTimeOffset.UtcNow.AddHours(7) - x.FromDate).Days;
 
-                            if (model[dayDif][dayDif][0] == "0")
+                            if (model.Count > dayDif)
                             {
-                                newPet.IsCheckIn = false;
-                            }
-                            else
-                            {
-                                newPet.IsCheckIn = true;
-                                if (model[dayDif][dayDif][0] != "1")
+                                if (model[dayDif][dayDif][0] == "0")
                                 {
-                                    newPet.CheckInImg = model[dayDif][dayDif][0];
+                                    newPet.IsCheckIn = false;
                                 }
-                            }
-
-                            if (model[dayDif][dayDif][1] == "0")
-                            {
-                                newPet.IsCheckOut = false;
-                            }
-                            else
-                            {
-                                newPet.IsCheckOut = true;
-                                if (model[dayDif][dayDif][1] != "1")
+                                else
                                 {
-                                    newPet.CheckOutImg = model[dayDif][dayDif][1];
+                                    newPet.IsCheckIn = true;
+                                    if (model[dayDif][dayDif][0] != "1")
+                                    {
+                                        newPet.CheckInImg = model[dayDif][dayDif][0];
+                                    }
+                                }
+
+                                if (model[dayDif][dayDif][1] == "0")
+                                {
+                                    newPet.IsCheckOut = false;
+                                }
+                                else
+                                {
+                                    newPet.IsCheckOut = true;
+                                    if (model[dayDif][dayDif][1] != "1")
+                                    {
+                                        newPet.CheckOutImg = model[dayDif][dayDif][1];
+                                    }
                                 }
                             }
 
@@ -311,33 +314,36 @@ namespace CapstoneProject.Business.Services
 
                             int dayDif = (DateTimeOffset.UtcNow.AddHours(7) - x.FromDate).Days;
 
-                            if (model[dayDif][dayDif][0] == "0")
+                            if (model.Count > dayDif) 
                             {
-                                newPet.IsCheckIn = false;
-                            }
-                            else
-                            {
-                                newPet.IsCheckIn = true;
-                                if (model[dayDif][dayDif][0] != "1")
+                                if (model[dayDif][dayDif][0] == "0")
                                 {
-                                    newPet.CheckInImg = model[dayDif][dayDif][0];
+                                    newPet.IsCheckIn = false;
                                 }
-                            }
-
-                            if (model[dayDif][dayDif][1] == "0")
-                            {
-                                newPet.IsCheckOut = false;
-                            }
-                            else
-                            {
-                                newPet.IsCheckOut = true;
-                                if (model[dayDif][dayDif][1] != "1")
+                                else
                                 {
-                                    newPet.CheckOutImg = model[dayDif][dayDif][1];
+                                    newPet.IsCheckIn = true;
+                                    if (model[dayDif][dayDif][0] != "1")
+                                    {
+                                        newPet.CheckInImg = model[dayDif][dayDif][0];
+                                    }
                                 }
-                            }
 
-                            petModels.Add(newPet);
+                                if (model[dayDif][dayDif][1] == "0")
+                                {
+                                    newPet.IsCheckOut = false;
+                                }
+                                else
+                                {
+                                    newPet.IsCheckOut = true;
+                                    if (model[dayDif][dayDif][1] != "1")
+                                    {
+                                        newPet.CheckOutImg = model[dayDif][dayDif][1];
+                                    }
+                                }
+
+                                petModels.Add(newPet);
+                            } 
                         });
 
                         PackageResponseModel packageResponseModel = _mapper.Map<PackageResponseModel>(item);
@@ -483,7 +489,7 @@ namespace CapstoneProject.Business.Services
 
                                         int dayDif = (DateTimeOffset.UtcNow.AddHours(7) - orderDetail.FromDate).Days;
 
-                                        if (dayDif <= model.Count)
+                                        if (model.Count > dayDif)
                                         {
                                             string addText = "1";
 
@@ -613,7 +619,7 @@ namespace CapstoneProject.Business.Services
 
                                         int dayDif = (DateTimeOffset.UtcNow.AddHours(7) - orderDetail.FromDate).Days;
 
-                                        if (dayDif <= model.Count)
+                                        if (model.Count > dayDif)
                                         {
                                             string addText = "1";
 
