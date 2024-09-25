@@ -25,9 +25,7 @@ namespace CapstoneProject.Infrastructure
             _ = services.AddScoped<IAuthService, AuthService>();
             _ = services.AddScoped<IUserService, UserService>();
             _ = services.AddScoped<IBlogService, BlogService>();
-            _ = services.AddScoped<ICalendarService, CalendarService>();
             _ = services.AddScoped<ICareCenterService, CareCenterService>();
-            _ = services.AddScoped<ICommentService, CommentService>();
             _ = services.AddScoped<IInvoiceService, InvoiceService>();
             _ = services.AddScoped<INotificationService, NotificationService>();
             _ = services.AddScoped<IOrderService, OrderService>();
@@ -42,9 +40,7 @@ namespace CapstoneProject.Infrastructure
 
             _ = services.AddScoped<IUserRepository, UserRepository>();
             _ = services.AddScoped<IBlogRepository, BlogRepository>();
-            _ = services.AddScoped<ICalendarRepository, CalendarRepository>();
             _ = services.AddScoped<ICareCenterRepository, CareCenterRepository>();
-            _ = services.AddScoped<ICommentRepository, CommentRepository>();
             _ = services.AddScoped<IInvoiceRepository, InvoiceRepository>();
             _ = services.AddScoped<INotificationRepository, NotificationRepository>();
             _ = services.AddScoped<IOrderRepository, OrderRepository>();
@@ -58,7 +54,7 @@ namespace CapstoneProject.Infrastructure
             _ = services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
             
             //add auto mapper
-            _ = services.AddAutoMapper(typeof(UserProfle), typeof(BlogProfile), typeof(CalendarProfile),  typeof(CommentProfile), typeof(PackageProfile)
+            _ = services.AddAutoMapper(typeof(UserProfle), typeof(BlogProfile), typeof(PackageProfile)
             , typeof(PackageItemProfile), typeof(PetProfile), typeof(PetTypeProfile), typeof(ServiceProfile));
         }
 

@@ -30,5 +30,6 @@ namespace CapstoneProject.DTO.Response.Orders
         public TimeSpan? ReceiveTime { get; set; }
         public TimeSpan? ReturnTime { get; set; }
         public OrderStatus Status { get; set; }
+        public DateTimeOffset? CreatedAt { get; set; }
     }
 }

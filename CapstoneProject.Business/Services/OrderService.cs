@@ -126,7 +126,7 @@ namespace CapstoneProject.Business.Services
             if (package == null)
             {
                 response.Status = StatusCode.NotFound;
-                response.Payload.Message = "Không tìm thấy gói dịch vụ";
+                response.Payload.Message = "    ";
                 return response;
             }
             if (pet != null && pet.Status != PetStatus.ACTIVE)
@@ -284,7 +284,8 @@ namespace CapstoneProject.Business.Services
                                 Description = item.OrderDetail?.Package?.Description,
                                 Type = item.OrderDetail?.Package?.Type,
                                 TotalPrice = item.OrderDetail?.Package?.TotalPrice
-                            }
+                            },
+                            CreatedAt = item.CreatedAt
                         };
 
                         orders.Add(model);
@@ -632,7 +633,7 @@ namespace CapstoneProject.Business.Services
 
             Order? order = await _orderRepository.GetByOrderId(orderId);
 
-            if (order != null && order.UserId == userId)
+            if (order != null && (order.UserId == userId || (order.OrderDetail != null && order.OrderDetail.Package != null && order.OrderDetail.Package.CareCenter != null && order.OrderDetail.Package.CareCenter.ManagerId == userId)))
             {
                 data = new()
                 {

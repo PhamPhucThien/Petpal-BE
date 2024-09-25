@@ -8,10 +8,8 @@ namespace CapstoneProject.Database
     {
         public DbSet<User>? Users { get; set; }
         public DbSet<Blog>? Blogs { get; set; }
-        public DbSet<Calendar>? Calendars { get; set; }
         public DbSet<CareCenter>? CareCenters { get; set; }
         public DbSet<CareCenterStaff>? CareCenterStaffs { get; set; }
-        public DbSet<Comment>? Comments { get; set; }
         public DbSet<Invoice>? Invoices { get; set; }
         public DbSet<Notification>? Notifications { get; set; }
         public DbSet<Order>? Orders { get; set; }
