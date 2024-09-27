@@ -14,6 +14,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Diagnostics.CodeAnalysis;
+using CapstoneProject.Database.Model;
+using CapstoneProject.DTO.Response.Account;
+using CapstoneProject.Repository.Interface;
+using CapstoneProject.Repository.Generic;
 
 namespace CapstoneProject.Controllers
 {
@@ -22,11 +26,13 @@ namespace CapstoneProject.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IRepository<User> _userRepository;
         public new StatusCode StatusCode { get; set; } = new();
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService,IUserRepository userRepository)
         {
             _userService = userService;
+            _userRepository = userRepository;
         }
 
         /*[HttpPost("UploadImage")]
@@ -346,5 +352,37 @@ namespace CapstoneProject.Controllers
                 });
             }
         }
+        [HttpDelete("delete-user")]
+        public async Task<IActionResult> DeleteUser(Guid userId)
+        {
+            ResponseObject<DeleteAccountResponse> response = new();
+            DeleteAccountResponse data = new();
+                
+            User? user = await _userRepository.GetByIdAsync(userId);
+
+            if (user != null)
+            {
+                user.Status = UserStatus.DISABLE;
+
+                await _userRepository.EditAsync(user);
+
+                data.IsSucceed = true;
+
+                response.Status = StatusCode.NotFound;
+                response.Payload.Message = "Xóa người dùng thành công";
+                response.Payload.Data = data;
+            }
+            else
+            {
+                data.IsSucceed = false;
+
+                response.Status = StatusCode.NotFound;
+                response.Payload.Message = "Không thể tìm thấy người dùng";
+                response.Payload.Data = data;
+            }
+
+            return Ok(response);
+        }
+
     }
 }

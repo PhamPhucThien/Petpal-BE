@@ -9,15 +9,20 @@ using CapstoneProject.DTO;
 using CapstoneProject.Infrastructure.Extension;
 using Microsoft.AspNetCore.Authorization;
 using System.Diagnostics.CodeAnalysis;
+using CapstoneProject.Database.Model.Meta;
+using CapstoneProject.DTO.Response.Account;
+using CapstoneProject.Database.Model;
+using CapstoneProject.Repository.Interface;
+using CapstoneProject.DTO.Response.Package;
 
 namespace CapstoneProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PackageController(IPackageService packageService) : ControllerBase
+    public class PackageController(IPackageService packageService,IPackageRepository packageRepository) : ControllerBase
     {
         private readonly IPackageService _packageService = packageService;
-
+        private readonly IPackageRepository _packageRepository = packageRepository;
         public new StatusCode StatusCode { get; set; } = new();
 
         [HttpPost("get-list-by-carecenter-id")]
@@ -226,6 +231,37 @@ namespace CapstoneProject.Controllers
                     Status = StatusCode.BadRequest
                 });
             }
+        }
+        [HttpDelete("delete-package")]
+        public async Task<IActionResult> DeletePackage(Guid packageId)
+        {
+            ResponseObject<DeletePackageResponse> response = new();
+            DeletePackageResponse data = new();
+
+            Package? package = await _packageRepository.GetByIdAsync(packageId);
+
+            if (package != null)
+            {
+                package.Status = BaseStatus.DISABLE;    
+
+                await _packageRepository.EditAsync(package);
+
+                data.IsSucceed = true;
+
+                response.Status = StatusCode.NotFound;
+                response.Payload.Message = "Xóa gói thành công";
+                response.Payload.Data = data;
+            }
+            else
+            {
+                data.IsSucceed = false;
+
+                response.Status = StatusCode.NotFound;
+                response.Payload.Message = "Không thể tìm thấy gói";
+                response.Payload.Data = data;
+            }
+
+            return Ok(response);
         }
     }
 }

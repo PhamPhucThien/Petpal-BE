@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc.DataAnnotations;
+using CapstoneProject.Database.Model;
+using CapstoneProject.DTO.Response.Package;
+using CapstoneProject.Repository.Interface;
 
 namespace CapstoneProject.Controllers
 {
@@ -18,12 +21,15 @@ namespace CapstoneProject.Controllers
     public class PetController : ControllerBase
     {
         private readonly IPetService _petService;
+        private readonly IPetRepository _petRepository;
+
 
         public new StatusCode StatusCode { get; set; } = new();
 
-        public PetController(IPetService petService)
+        public PetController(IPetService petService,IPetRepository petRepository)
         {
             _petService = petService;
+            _petRepository = petRepository;
         }        
         
         [HttpPost("get-list")]
@@ -266,7 +272,37 @@ namespace CapstoneProject.Controllers
                 });
             }
         }
+        [HttpDelete("delete-package")]
+        public async Task<IActionResult> DeletePackage(Guid petId)
+        {
+            ResponseObject<DeletePackageResponse> response = new();
+            DeletePackageResponse data = new();
 
+            Pet? pet = await _petRepository.GetByIdAsync(petId);
+
+            if (pet != null)
+            {
+                pet.Status = PetStatus.DISABLE;
+
+                await _petRepository.EditAsync(pet);
+
+                data.IsSucceed = true;
+
+                response.Status = StatusCode.NotFound;
+                response.Payload.Message = "Xóa thú cưng thành công";
+                response.Payload.Data = data;
+            }
+            else
+            {
+                data.IsSucceed = false;
+
+                response.Status = StatusCode.NotFound;
+                response.Payload.Message = "Không thể tìm thấy thú cưng";
+                response.Payload.Data = data;
+            }
+
+            return Ok(response);
+        }
 
         /* [HttpPut("update-pet")]
          public async Task<IActionResult> UpdatePet(PetUpdateRequest request)
