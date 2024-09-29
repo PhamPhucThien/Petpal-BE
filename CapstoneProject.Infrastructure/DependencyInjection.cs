@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CapstoneProject.Infrastructure.Profile;
 using CapstoneProject.Infrastructure.Jwt;
+using CapstoneProject.Repository.Implementation;
 
 namespace CapstoneProject.Infrastructure
 {
@@ -46,6 +47,7 @@ namespace CapstoneProject.Infrastructure
             _ = services.AddScoped<IOrderRepository, OrderRepository>();
             _ = services.AddScoped<IPackageItemRepository, PackageItemRepository>();
             _ = services.AddScoped<IPetRepository, PetRepository>();
+            _ = services.AddScoped<ICareCenterStaffRepository, CareCenterStaffRepository>();
             _ = services.AddScoped<IServiceRepository, ServiceRepository>();
             _ = services.AddScoped<IPetTypeRepository, PetTypeRepository>();
             _ = services.AddScoped<IPackageRepository, PackageRepository>();

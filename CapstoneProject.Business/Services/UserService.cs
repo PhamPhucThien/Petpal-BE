@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CapstoneProject.Business.Interfaces;
+using CapstoneProject.Database.Model;
 using CapstoneProject.Database.Model.Meta;
 using CapstoneProject.DTO;
 using CapstoneProject.DTO.Request;
@@ -9,15 +10,18 @@ using CapstoneProject.DTO.Response.Account;
 using CapstoneProject.DTO.Response.Base;
 using CapstoneProject.DTO.Response.User;
 using CapstoneProject.Repository.Interface;
+using CapstoneProject.Repository.Repository;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using System.Transactions;
 using User = CapstoneProject.Database.Model.User;
 
 namespace CapstoneProject.Business.Services
 {
-    public class UserService(IUserRepository userRepository, ICareCenterRepository careCenterRepository, IMapper mapper) : IUserService
+    public class UserService(ICareCenterStaffRepository careCenterStaffRepository, IAuthRepository authRepository, IUserRepository userRepository, ICareCenterRepository careCenterRepository, IMapper mapper) : IUserService
     {
         private readonly IUserRepository _userRepository = userRepository;
+        private readonly IAuthRepository _authRepository = authRepository;
+        private readonly ICareCenterStaffRepository _careCenterStaffRepository = careCenterStaffRepository;
         private readonly ICareCenterRepository _careCenterRepository = careCenterRepository;
         private readonly IMapper _mapper = mapper;
         public UploadImageService uploadImage = new();
@@ -414,6 +418,53 @@ namespace CapstoneProject.Business.Services
                 response.Payload.Data = null;
             }
 
+            return response;
+        }
+
+        public async Task<ResponseObject<LoginResponse>> CreateStaff(Guid userId, CreateStaffRequest request)
+        {
+            ResponseObject<LoginResponse> response = new();
+            LoginResponse data = new();
+            User? user = await _authRepository.GetByUsername(request.Username);
+            CareCenter? careCenter = await _careCenterRepository.GetByManagerId(userId);
+
+            if (user != null)
+            {
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Đã tồn tại tên tài khoản, xin vui lòng nhập lại";
+                response.Payload.Data = null;
+            }
+            else if (careCenter == null)
+            {
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Không thể tìm thấy trung tâm chăm sóc";
+                response.Payload.Data = null;
+            }
+            else
+            {
+                response.Status = StatusCode.OK;
+                response.Payload.Message = "Tạo tài khoản thành công";
+
+                User newUser = new()
+                {
+                    Id = Guid.NewGuid(),
+                    Username = request.Username,
+                    Password = request.Password,
+                    FullName = request.FullName,
+                    Address = request.Address,
+                    PhoneNumber = request.PhoneNumber,
+                    Role = Database.Model.Meta.UserRole.STAFF,
+                    CreatedAt = DateTime.UtcNow.AddHours(7),
+                    CreatedBy = request.Username
+                };
+
+                User? checkUser = await _userRepository.AddAsync(newUser);
+                CareCenterStaff careCenterStaff = new CareCenterStaff();
+                careCenterStaff.Id = Guid.NewGuid();
+                careCenterStaff.UserId = newUser.Id;
+                careCenterStaff.CareCenterId = careCenter.Id;
+                await _careCenterStaffRepository.AddAsync(careCenterStaff);
+            }
             return response;
         }
     }

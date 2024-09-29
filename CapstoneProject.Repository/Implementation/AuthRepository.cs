@@ -29,5 +29,12 @@ namespace CapstoneProject.Repository.Repository
             return user;
 
         }
+
+        public async Task<User?> GetByEmail(string? email)
+        {
+            using PetpalDbContext context = new(_contextOptions);
+            User? user = await context.Set<User>().FirstOrDefaultAsync(x => x.Email == email);
+            return user;
+        }
     }
 }

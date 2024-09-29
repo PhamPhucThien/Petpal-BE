@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CapstoneProject.DTO.Request.Account
+namespace CapstoneProject.DTO.Request.User
 {
-    public class RegisterRequest
+    public class CreateStaffRequest
     {
         [Required]
         [StringLength(15, MinimumLength = 8, ErrorMessage = "Độ dài tên tài khoản phải từ 8 đến 15 ký tự")]
@@ -26,9 +25,5 @@ namespace CapstoneProject.DTO.Request.Account
         [StringLength(10, MinimumLength = 10, ErrorMessage = "Độ dài số điện thoại phải là 10 số")]
         [RegularExpression("^[0-9]*$", ErrorMessage = "Chỉ được nhập số")]
         public string? PhoneNumber { get; set; }
-        [Required]
-        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@gmail\.com$", ErrorMessage = "Sai định dạng gmail")]
-        [StringLength(50, ErrorMessage = "Độ dài gmail không quá 50 ký tự")]
-        public string? Email { get; set; }
     }
 }

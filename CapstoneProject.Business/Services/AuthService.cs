@@ -49,10 +49,18 @@ namespace CapstoneProject.Business.Services
             ResponseObject<LoginResponse> response = new();
             LoginResponse data = new();
             User? user = await _authRepository.GetByUsername(request.Username);
+            User? check = await _authRepository.GetByEmail(request.Email);
+
             if (user != null)
             {
                 response.Status = StatusCode.BadRequest;
                 response.Payload.Message = "Đã tồn tại tên tài khoản, xin vui lòng nhập lại";
+                response.Payload.Data = null;
+            }
+            else if (check != null)
+            {
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Đã tồn tại email, xin vui lòng nhập lại";
                 response.Payload.Data = null;
             }
             else

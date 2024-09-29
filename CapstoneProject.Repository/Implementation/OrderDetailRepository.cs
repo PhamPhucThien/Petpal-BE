@@ -35,5 +35,19 @@ namespace CapstoneProject.Repository.Repository
 
             return data;
         }
+
+        public async Task<int> CountByPetIdAsyncCustom(Guid petId)
+        {
+            using PetpalDbContext context = new(_contextOptions);
+
+            IQueryable<OrderDetail> query = context.Set<OrderDetail>().AsQueryable();
+
+            query = query.Where(x => x.Pet != null && x.Pet.Id == petId).
+                AsQueryable();
+
+            int data = await query.CountAsync();
+
+            return data;
+        }
     }
 }

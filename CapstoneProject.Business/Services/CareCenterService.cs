@@ -129,6 +129,7 @@ namespace CapstoneProject.Business.Services
                     AverageRating = item.AverageRating,
                     Description = item.Description,
                     Id = item.Id,
+                    Status = item.Status,
                     ListImages = item.ListImages
                 };
                 listModel.List.Add(model);
@@ -202,7 +203,7 @@ namespace CapstoneProject.Business.Services
             CareCenter? manager = await _careCenterRepository.GetByManagerId(userId);
             Tuple<List<CareCenter>, int> partner = await _careCenterRepository.GetByPartnerId(userId, paging);
 
-            if (manager != null && partner != null)
+            if (manager != null || partner != null)
             {
                 if (manager != null)
                 {
@@ -218,16 +219,14 @@ namespace CapstoneProject.Business.Services
                         AverageRating = manager.AverageRating
                     };
 
+                    data.List.Add(model);
                     response.Payload.Data = data;
                 }
                 else
                 {
-                    
-
-                    Tuple<List<CareCenter>, int> listItem = await _careCenterRepository.GetWithPaging(paging);
+                    Tuple<List<CareCenter>, int> listItem = partner;
 
                     List<CareCenter> list = _mapper.Map<List<CareCenter>>(listItem.Item1);
-
 
                     foreach (CareCenter item in list)
                     {
@@ -237,11 +236,13 @@ namespace CapstoneProject.Business.Services
                             CareCenterName = item.CareCenterName,
                             AverageRating = item.AverageRating,
                             Id = item.Id,
-                            ListImages = item.ListImages
+                            ListImages = item.ListImages,
+                            Status = item.Status
                         };
                         data.List.Add(model);
                     }
 
+                    response.Payload.Message = "Tìm thấy trung tâm cho đối tác";
                     data.Paging = paging;
                     data.Paging.MaxPage = listItem.Item2;
 
@@ -257,6 +258,78 @@ namespace CapstoneProject.Business.Services
             }
 
             
+
+            return response;
+        }
+
+        public async Task<ResponseObject<GetCareCenterListResponse>> GetPendingList(Guid userId, ListRequest request)
+        {
+            ResponseObject<GetCareCenterListResponse> response = new();
+
+            Paging paging = new()
+            {
+                Page = request.Page,
+                Size = request.Size,
+                Search = request.Search ?? string.Empty,
+                MaxPage = 1
+            };
+
+            Tuple<List<CareCenter>, int> list = await _careCenterRepository.GetPendingWithPagingCustom(paging);
+
+            GetCareCenterListResponse listModel = new();
+
+            foreach (CareCenter item in list.Item1)
+            {
+                CareCenterListModel model = new()
+                {
+                    Address = item.Address,
+                    CareCenterName = item.CareCenterName,
+                    AverageRating = item.AverageRating,
+                    Description = item.Description,
+                    Id = item.Id,
+                    Status = item.Status,
+                    ListImages = item.ListImages
+                };
+                listModel.List.Add(model);
+            }
+
+            listModel.Paging = paging;
+            listModel.Paging.MaxPage = list.Item2;
+
+            response.Status = StatusCode.OK;
+            response.Payload.Data = listModel;
+
+            return response;
+        }
+
+        public async Task<ResponseObject<CareCenterListModel>> GetById(Guid id)
+        {
+            ResponseObject<CareCenterListModel> response = new();
+        
+            CareCenter? careCenter = await _careCenterRepository.GetByIdAsync(id);
+
+            if (careCenter == null) 
+            {
+                response.Status = StatusCode.NotFound;
+                response.Payload.Data = null;
+                response.Payload.Message = "Id không tồn tại";
+                return response;
+            }
+
+            CareCenterListModel data = new()
+            {
+                Address = careCenter.Address,
+                CareCenterName = careCenter.CareCenterName,
+                AverageRating = careCenter.AverageRating,
+                Description = careCenter.Description,
+                Id = careCenter.Id,
+                Status = careCenter.Status,
+                ListImages = careCenter.ListImages
+            };
+
+            response.Status = StatusCode.OK;
+            response.Payload.Message = "Lấy thông tin thành công";
+            response.Payload.Data = data;
 
             return response;
         }

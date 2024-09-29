@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using CapstoneProject.Database.Model;
 using CapstoneProject.DTO.Response.Package;
 using CapstoneProject.Repository.Interface;
+using CapstoneProject.Business.Services;
+using CapstoneProject.DTO.Request.Package;
 
 namespace CapstoneProject.Controllers
 {
@@ -272,8 +274,9 @@ namespace CapstoneProject.Controllers
                 });
             }
         }
-        [HttpDelete("delete-package")]
-        public async Task<IActionResult> DeletePackage(Guid petId)
+
+        [HttpDelete("delete")]
+        public async Task<IActionResult> Delete(Guid petId)
         {
             ResponseObject<DeletePackageResponse> response = new();
             DeletePackageResponse data = new();
@@ -304,18 +307,131 @@ namespace CapstoneProject.Controllers
             return Ok(response);
         }
 
-        /* [HttpPut("update-pet")]
-         public async Task<IActionResult> UpdatePet(PetUpdateRequest request)
-         {
-             try
-             {
-                 var response = await _petService.UpdatePet(request);
-                 return Ok(response);
-             }
-             catch (Exception ex)
-             {
-                 return StatusCode(500, $"An error occurred: {ex.Message}");
-             }
-         }*/
+        [HttpPut("update-pet")]
+        public async Task<IActionResult> UpdatePet([FromForm] PetUpdateRequest request, IFormFile file)
+        {
+            try
+            {
+                Guid userId = Guid.Parse(HttpContext.GetName());
+
+                FileDetails filesDetail = new();
+
+                if (file != null && file.Length != 0)
+                {
+                    using var stream = new MemoryStream();
+                    await file.CopyToAsync(stream);
+                    filesDetail.FileName = Path.GetFileName(file.FileName);
+                    filesDetail.TempPath = Path.GetTempFileName();
+                    filesDetail.FileData = stream.ToArray();
+                }
+                else
+                {
+                    filesDetail.IsContain = false;
+                }
+
+                var response = await _petService.UpdatePet(userId, request, filesDetail);
+                return Ok(response);
+            }
+            catch (FormatException)
+            {
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
+            }
+        }
+
+        [HttpPost("set-check-list")]
+        [Authorize(Roles = "STAFF")]
+        public async Task<IActionResult> CheckPetService(CheckPetServiceRequest request)
+        {
+            try
+            {
+                Guid userId = Guid.Parse(HttpContext.GetName());
+                var response = await _petService.CheckPetService(userId, request);
+                return Ok(response);
+            }
+            catch (FormatException)
+            {
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
+            }
+        }
+
+        [HttpPost("get-check-list")]
+        [Authorize(Roles = "STAFF")]
+        public async Task<IActionResult> GetCheckPetService(GetCheckPetServiceRequest request)
+        {
+            try
+            {
+                Guid userId = Guid.Parse(HttpContext.GetName());
+                var response = await _petService.GetCheckPetServiceRequest(userId, request);
+                return Ok(response);
+            }
+            catch (FormatException)
+            {
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
+            }
+        }
+
+        /*[HttpGet("get-by-id")]
+        [Authorize(Roles = "MANAGER, CUSTOMER")]
+        public async Task<IActionResult> GetById([FromQuery] petId)
+        {
+            try
+            {
+                Guid userId = Guid.Parse(HttpContext.GetName());
+                var response = await _petService.GetById(userId, petId);
+                return Ok(response);
+            }
+            catch (FormatException)
+            {
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
+            }
+        }*/
     }
 }

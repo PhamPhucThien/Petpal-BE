@@ -1,4 +1,5 @@
 ﻿using CapstoneProject.Database.Model;
+using CapstoneProject.Database.Model.Meta;
 using CapstoneProject.DTO.Request;
 using System;
 using System.Collections.Generic;
@@ -23,5 +24,6 @@ namespace CapstoneProject.DTO.Response.CareCenters
         public string? Address { get; set; }
         public string? Description { get; set; }
         public double AverageRating { get; set; }
+        public CareCenterStatus Status { get; set; }
     }
 }

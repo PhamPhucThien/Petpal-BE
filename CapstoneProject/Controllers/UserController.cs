@@ -18,6 +18,7 @@ using CapstoneProject.Database.Model;
 using CapstoneProject.DTO.Response.Account;
 using CapstoneProject.Repository.Interface;
 using CapstoneProject.Repository.Generic;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CapstoneProject.Controllers
 {
@@ -384,5 +385,33 @@ namespace CapstoneProject.Controllers
             return Ok(response);
         }
 
+        [HttpPost("create-staff")]
+        [Authorize(Roles = "MANAGER")]
+        public async Task<IActionResult> CreateStaff([FromBody] CreateStaffRequest request)
+        {
+            try
+            {
+                Guid userId = Guid.Parse(HttpContext.GetName());
+                var response = await _userService.CreateStaff(userId, request);
+
+                return Ok(response);
+            }
+            catch (FormatException)
+            {
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
+            }
+        }
     }
 }

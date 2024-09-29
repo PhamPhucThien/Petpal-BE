@@ -18,5 +18,6 @@ namespace CapstoneProject.Repository.Interface
         Task<int> CountCustomerByPartnerId(Guid userId);
         public User GetUserByUsername(string username);
         Task<Tuple<List<User>, int>> GetWithPagingAndStatusAndRole(Paging paging, UserStatus? status, UserRole? role);
+        Task<bool> HasStaffWithCareCenterId(Guid userId, Guid careCenterId);
     }
 }

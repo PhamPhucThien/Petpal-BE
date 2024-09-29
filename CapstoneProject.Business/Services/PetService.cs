@@ -16,12 +16,13 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace CapstoneProject.Business.Services
 {
-    public class PetService(IPetRepository petRepository, IPackageRepository packageRepository, IMapper mapper, IUserRepository userRepository, IPetTypeRepository petTypeRepository, IOrderDetailRepository orderDetailRepository) : IPetService
+    public class PetService(IPackageItemRepository packageItemRepository, IPetRepository petRepository, IPackageRepository packageRepository, IMapper mapper, IUserRepository userRepository, IPetTypeRepository petTypeRepository, IOrderDetailRepository orderDetailRepository) : IPetService
     {
         private readonly IPetRepository _petRepository = petRepository;
         private readonly IUserRepository _userRepository = userRepository;
         private readonly IPetTypeRepository _petTypeRepository = petTypeRepository;
         private readonly IPackageRepository _packageRepository = packageRepository;
+        private readonly IPackageItemRepository _packageItemRepository = packageItemRepository;
         private readonly IOrderDetailRepository _orderDetailRepository = orderDetailRepository;
         private readonly IMapper _mapper = mapper;
         public UploadImageService uploadImage = new();
@@ -179,37 +180,6 @@ namespace CapstoneProject.Business.Services
             }
 
             return response;
-        }
-
-        public async Task<PetResponse?> UpdatePet(PetUpdateRequest request)
-        {
-            Pet? petCheck = await _petRepository.GetByIdAsync(Guid.Parse(request.Id));
-            if (petCheck == null)
-            {
-                throw new Exception("ID is invalid.");
-            }
-
-            User? userCheck = await _userRepository.GetByIdAsync(Guid.Parse(request.UserId));
-            if (userCheck == null)
-            {
-                throw new Exception("User id is invalid.");
-            }
-
-            PetType? petTypeCheck = await _petTypeRepository.GetByIdAsync(Guid.Parse(request.PetTypeId));
-            if (petTypeCheck == null)
-            {
-                throw new Exception("Pet type id is invalid.");
-            }
-
-            Pet petUpdate = _mapper.Map<Pet>(request);
-            petUpdate.CreatedAt = petCheck.CreatedAt;
-            petUpdate.CreatedBy = petCheck.CreatedBy;
-            petUpdate.UpdatedAt = DateTimeOffset.Now;
-            petUpdate.UpdatedBy = request.UpdatedBy;
-            bool result = await _petRepository.EditAsync(petUpdate);
-            petUpdate.User = petCheck.User;
-            petUpdate.PetType = petCheck.PetType;
-            return result ? _mapper.Map<PetResponse>(petUpdate) : null;
         }
 
         public async Task<ResponseObject<GetCareCenterPetListResponse>> GetCareCenterPetList(Guid userId, ListRequest request)
@@ -715,5 +685,203 @@ namespace CapstoneProject.Business.Services
 
             return response;
         }
+
+        public async Task<ResponseObject<UpdatePetResponse>> UpdatePet(Guid userId, PetUpdateRequest request, FileDetails filesDetail)
+        {
+            ResponseObject<UpdatePetResponse> response = new();
+            UpdatePetResponse data = new();
+
+            User? user = await _userRepository.GetByIdAsync(userId);
+            Pet? pet = await _petRepository.GetByIdAsync(request.PetId);
+            int orderCount = await _orderDetailRepository.CountByPetIdAsyncCustom(request.PetId);
+
+            if (user != null && user.Status == UserStatus.ACTIVE)
+            {
+                if (pet != null && pet.UserId != user.Id && orderCount == 0)
+                {
+                    pet.UpdatedBy = user.Username;
+                    pet.UpdatedAt = DateTime.UtcNow.AddHours(7);
+                    pet.Birthday = request.Birthday;
+                    pet.Breed = request.Breed;
+                    pet.FullName = request.Fullname;
+                    pet.Description = request.Description;
+                    pet.PetTypeId = request.PetTypeId;
+                    pet.Gender = request.Gender;
+                    pet.Weight = request.Weight;
+                    pet.Sterilise = request.Sterilise;
+
+                    await _petRepository.EditAsync(pet);
+
+                    data.IsSucceed = true;
+
+                    response.Status = StatusCode.OK;
+                    response.Payload.Message = "Thay đổi thông tin thú cưng thành công";
+                    response.Payload.Data = data;
+                } 
+                else
+                {
+                    response.Status = StatusCode.BadRequest;
+                    response.Payload.Message = "Không tìm thấy thú cưng";
+                }
+            }
+            else
+            {
+                response.Status = StatusCode.BadRequest;
+                response.Payload.Message = "Không tìm thấy người dùng";
+            }
+
+            return response;
+        }
+
+        public async Task<ResponseObject<CheckPetServiceResponse>> CheckPetService(Guid userId, CheckPetServiceRequest request)
+        {
+            ResponseObject<CheckPetServiceResponse> response = new();
+            CheckPetServiceResponse data = new();
+
+            User? staff = await _userRepository.GetByIdAsync(userId);
+            PackageItem? packageItem = await _packageItemRepository.GetByIdAsync(request.PackageItemId);
+
+            if (staff != null && packageItem != null && packageItem.PackageId != null)
+            {
+                Package? package = await _packageRepository.GetByStaffIdAndPackageId(userId, (Guid)packageItem.PackageId);
+
+                List<OrderDetail> orderDetail = [.. package?.OrderDetails.Where(x => request.PetIds.Any(y => y == x.Id))];
+
+                List<Task> tasks = new List<Task>();
+
+                int count = 0;
+
+                foreach (OrderDetail item in orderDetail)
+                {
+                    if (item.CheckList != null)
+                    {
+                        tasks.Add(Task.Run(async () =>
+                        {
+                            List<Dictionary<int, Dictionary<Guid, string>>> model = [];
+
+                            model = JsonConvert.DeserializeObject<List<Dictionary<int, Dictionary<Guid, string>>>>(item.CheckList) ?? [];
+
+                            int dayDif = (DateTimeOffset.UtcNow.AddHours(7) - item.FromDate).Days;
+
+                            if (model.Count > dayDif && model[dayDif][dayDif].ContainsKey(request.PackageItemId))
+                            {
+                                model[dayDif][dayDif][request.PackageItemId] = "1";
+                                count++;
+                            }
+
+                            string modelJson = JsonConvert.SerializeObject(model);
+
+                            item.CheckList = modelJson;
+
+                            await _orderDetailRepository.EditAsync(item);
+                        }));
+                    } 
+                }
+
+                Task.WaitAll(tasks.ToArray());
+
+                data.SuccessCount = count;
+
+                response.Status = StatusCode.OK;
+                response.Payload.Message = "Đã xác nhận dịch vụ thành công với " + count + "/" + request.PetIds.Count + " thú cưng";
+                response.Payload.Data = data;
+            }
+            else
+            {
+                if (staff == null)
+                {
+                    response.Status = StatusCode.NotFound;
+                    response.Payload.Message = "Không tìm thấy nhân viên";
+                }
+                else
+                {
+                    response.Status = StatusCode.NotFound;
+                    response.Payload.Message = "Không tìm thấy gói hàng";
+                }
+            }
+            return response;
+        }
+
+        public async Task<ResponseObject<GetCheckPetServiceResponse>> GetCheckPetServiceRequest(Guid userId, GetCheckPetServiceRequest request)
+        {
+            ResponseObject<GetCheckPetServiceResponse> response = new();
+            GetCheckPetServiceResponse data = new();
+            GetCheckPetServiceResponse temp = new();
+
+            User? staff = await _userRepository.GetByIdAsync(userId);
+            PackageItem? packageItem = await _packageItemRepository.GetByIdAsync(request.PackageItemId);
+
+            if (staff != null && packageItem != null && packageItem.PackageId != null)
+            {
+                Package? package = await _packageRepository.GetByStaffIdAndPackageId(userId, (Guid)packageItem.PackageId);
+                List<OrderDetail> orderDetail = new();
+
+                if (package != null)
+                {
+                    orderDetail = [.. package.OrderDetails];
+
+                    List<Task> tasks = new List<Task>();
+
+                    foreach (OrderDetail item in orderDetail)
+                    {
+                        if (item.CheckList != null)
+                        {
+                            tasks.Add(Task.Run(async() =>
+                            {
+                                List<Dictionary<int, Dictionary<Guid, string>>> model = [];
+
+                                model = JsonConvert.DeserializeObject<List<Dictionary<int, Dictionary<Guid, string>>>>(item.CheckList) ?? [];
+
+                                int dayDif = (DateTimeOffset.UtcNow.AddHours(7) - item.FromDate).Days;
+
+                                if (model.Count > dayDif && model[dayDif][dayDif].ContainsKey(request.PackageItemId))
+                                {
+                                    CheckPetModel item2 = new();
+                                    if (model[dayDif][dayDif][request.PackageItemId] == "0")
+                                    {
+                                        item2.IsChecked = false;
+                                    }
+                                    else
+                                    {
+                                        item2.IsChecked = true;
+                                    }
+                                    item2.Id = item.PetId;
+                                    item2.FullName = item.Pet?.FullName;
+
+                                    data.List.Add(item2);
+                                }
+                            }));
+                        }
+                    }
+
+                    Task.WhenAll(tasks).Wait();
+
+                    response.Status = StatusCode.OK;
+                    response.Payload.Message = "Lấy danh sách thành công";
+                    response.Payload.Data = data;
+                }
+                else
+                {
+                    response.Status = StatusCode.NotFound;
+                    response.Payload.Message = "Không tìm thấy gói hàng";
+                }
+            }
+            else
+            {
+                if (staff == null)
+                {
+                    response.Status = StatusCode.NotFound;
+                    response.Payload.Message = "Không tìm thấy nhân viên";
+                }
+                else
+                {
+                    response.Status = StatusCode.NotFound;
+                    response.Payload.Message = "Không tìm thấy gói hàng";
+                }
+            }
+            return response;
+        }
+
+        
     }
 }

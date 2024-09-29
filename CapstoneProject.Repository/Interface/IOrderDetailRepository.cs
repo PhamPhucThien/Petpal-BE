@@ -11,5 +11,6 @@ namespace CapstoneProject.Repository.Interface
     public interface IOrderDetailRepository : IRepository<OrderDetail>
     {
         Task<OrderDetail?> GetByIdAsyncCustom(Guid petId);
+        Task<int> CountByPetIdAsyncCustom(Guid petId);
     }
 }
