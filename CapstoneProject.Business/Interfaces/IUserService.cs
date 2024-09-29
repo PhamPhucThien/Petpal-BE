@@ -20,5 +20,6 @@ namespace CapstoneProject.Business.Interfaces
         Task<ResponseObject<LoginResponse>> RejestPartnerRegistration(EditPartnerRegistrationRequest request);
         Task<ResponseObject<ListUserResponse>> GetUser(ListRequest request, UserStatus? status, UserRole? role);
         Task<ResponseObject<UserDetailResponse>> GetPendingPartnerById(Guid userId);
+        Task<ResponseObject<LoginResponse>> CreateStaff(Guid userId, CreateStaffRequest request);
     }
 }

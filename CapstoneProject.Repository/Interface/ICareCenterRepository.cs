@@ -16,6 +16,7 @@ namespace CapstoneProject.Repository.Interface
         Task<CareCenter?> GetByManagerId(Guid managerId);
         Task<Tuple<List<CareCenter>, int>> GetByPartnerId(Guid partnerId, Paging paging);
         Task<CareCenter?> GetCareCenterByIdAsync(Guid careCenterId);
+        Task<Tuple<List<CareCenter>, int>> GetPendingWithPagingCustom(Paging paging);
         Task<Tuple<List<CareCenter>, int>> GetWithPagingCustom(Paging paging);
     }
 }

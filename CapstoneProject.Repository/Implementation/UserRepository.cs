@@ -5,6 +5,8 @@ using CapstoneProject.DTO.Request;
 using CapstoneProject.Repository.Generic;
 using CapstoneProject.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
+using System.Net.NetworkInformation;
 using System.Numerics;
 
 namespace CapstoneProject.Repository.Repository
@@ -128,6 +130,20 @@ namespace CapstoneProject.Repository.Repository
             Tuple<List<User>, int> data = new(users, count);
 
             return data;
+        }
+
+        public async Task<bool> HasStaffWithCareCenterId(Guid userId, Guid careCenterId)
+        {
+            using PetpalDbContext context = new(_contextOptions);
+            IQueryable<CareCenterStaff> query = context.Set<CareCenterStaff>().AsQueryable();
+
+            query = query.Where(o => o.UserId == userId && o.CareCenterId == careCenterId);
+
+            int count = await query.CountAsync();
+
+            if (count > 0) return true;
+
+            return false;
         }
     }
 }

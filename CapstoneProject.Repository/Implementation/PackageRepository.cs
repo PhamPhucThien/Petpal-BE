@@ -110,7 +110,7 @@ namespace CapstoneProject.Repository.Repository
                 ThenInclude(cc => cc!.Staffs).
                 Include(p => p.OrderDetails).
                 ThenInclude(or => or.Pet).
-                Where(x => x.CareCenter != null && x.CareCenter.Staffs != null && x.CareCenter.Staffs.Any(y => y.UserId == userId));
+                Where(x => x.Status == BaseStatus.ACTIVE && x.CareCenter != null && x.CareCenter.Staffs != null && x.CareCenter.Staffs.Any(y => y.UserId == userId));
 
             int count = await query.CountAsync();
 
@@ -122,6 +122,25 @@ namespace CapstoneProject.Repository.Repository
             List<Package> list = await query.ToListAsync();
 
             Tuple<List<Package>, int> data = new(list, count);
+
+            return data;
+        }
+
+        public async Task<Package?> GetByStaffIdAndPackageId(Guid userId, Guid packageId)
+        {
+            using PetpalDbContext context = new(_contextOptions);
+
+            IQueryable<Package> query = context.Set<Package>().AsQueryable();
+
+            query = query.
+                Include(p => p.CareCenter).
+                ThenInclude(cc => cc!.Staffs).
+                Include(p => p.OrderDetails).
+                ThenInclude(or => or.Pet).
+                Where(x => x.Id == packageId && x.Status == BaseStatus.ACTIVE && x.CareCenter != null && x.CareCenter.Staffs != null && x.CareCenter.Staffs.Any(y => y.UserId == userId));
+
+
+            Package? data = await query.FirstOrDefaultAsync();
 
             return data;
         }

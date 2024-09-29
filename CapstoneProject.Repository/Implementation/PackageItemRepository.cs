@@ -12,14 +12,10 @@ using CapstoneProject.DTO.Request;
 
 namespace CapstoneProject.Repository.Repository
 {
-    public class PackageItemRepository : RepositoryGeneric<PackageItem>, IPackageItemRepository
+    public class PackageItemRepository(DbContextOptions<PetpalDbContext> contextOptions) : RepositoryGeneric<PackageItem>(contextOptions), IPackageItemRepository
     {
-        private PetpalDbContext _dbContext;
-        
-        public PackageItemRepository(DbContextOptions<PetpalDbContext> contextOptions) : base(contextOptions)
-        {
-            _dbContext = new PetpalDbContext(contextOptions);
-        }
+        private PetpalDbContext _dbContext = new PetpalDbContext(contextOptions);
+        private readonly DbContextOptions<PetpalDbContext> _contextOptions = contextOptions;
 
         public async Task<PackageItem?> GetByIdAsync(Guid id)
         {
@@ -27,6 +23,19 @@ namespace CapstoneProject.Repository.Repository
                 .Include(o => o.Package)
                 .Include(o => o.Service)
                 .FirstOrDefault();
+        }
+
+        public async Task<List<PackageItem>> GetByPackageIdAsync(Guid packageId)
+        {
+            using PetpalDbContext context = new(_contextOptions);
+
+            IQueryable<PackageItem> query = context.Set<PackageItem>().AsQueryable();
+
+            query = query.Where(x => x.PackageId == packageId && x.Status == Database.Model.Meta.BaseStatus.ACTIVE);
+
+            List<PackageItem> data = await query.ToListAsync();
+
+            return data;
         }
 
         public async Task<List<PackageItem>> GetWithPaging(Paging paging)

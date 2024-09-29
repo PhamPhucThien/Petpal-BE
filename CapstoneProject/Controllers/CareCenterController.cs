@@ -50,13 +50,41 @@ namespace CapstoneProject.Controllers
             }
         }
 
+        [HttpPost("get-pending-list")]
+        [Authorize(Roles = "ADMIN")]
+        public async Task<IActionResult> GetPendingList(ListRequest request)
+        {
+            try
+            {
+                Guid userId = Guid.Parse(HttpContext.GetName());
+                var response = await _careCenterService.GetPendingList(userId, request);
+                return Ok(response);
+            }
+            catch (FormatException)
+            {
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
+            }
+        }
+
         [HttpPost("create-carecenter-and-manager")]
         [Authorize(Roles = "PARTNER")]
         public async Task<IActionResult> CreateCareCenterAndManager(
             [FromForm] CreateCareCenterRequest request,
             IFormFile front_identity,
             IFormFile back_identity,
-            IFormFile carecenter)
+            IFormFile carecenter_image)
         {
             try
             {
@@ -64,7 +92,7 @@ namespace CapstoneProject.Controllers
 
                 FileDetails front_image = new();
                 FileDetails back_image = new();
-                FileDetails carecenter_image = new();
+                FileDetails carecenter_image_file = new();
 
                 // Kiểm tra ảnh id phía trước
                 if (front_identity != null && front_identity.Length != 0)
@@ -95,20 +123,20 @@ namespace CapstoneProject.Controllers
                 }
 
                 // Kiểm tra ảnh carecenter
-                if (carecenter != null && carecenter.Length != 0)
+                if (carecenter_image != null && carecenter_image.Length != 0)
                 {
                     using var stream = new MemoryStream();
-                    await carecenter.CopyToAsync(stream);
-                    carecenter_image.FileName = Path.GetFileName(carecenter.FileName);
-                    carecenter_image.TempPath = Path.GetTempFileName();
-                    carecenter_image.FileData = stream.ToArray();
+                    await carecenter_image.CopyToAsync(stream);
+                    carecenter_image_file.FileName = Path.GetFileName(carecenter_image.FileName);
+                    carecenter_image_file.TempPath = Path.GetTempFileName();
+                    carecenter_image_file.FileData = stream.ToArray();
                 }
                 else
                 {
-                    carecenter_image.IsContain = false;
-                }                
+                    carecenter_image_file.IsContain = false;
+                }
 
-                var response = await _careCenterService.CreateCareCenterAndManager(userId, request, front_image, back_image, carecenter_image);
+                var response = await _careCenterService.CreateCareCenterAndManager(userId, request, front_image, back_image, carecenter_image_file);
                 return Ok(response);
             }
             catch (FormatException)
@@ -191,6 +219,32 @@ namespace CapstoneProject.Controllers
             {
                 Guid userId = Guid.Parse(HttpContext.GetName());
                 var response = await _careCenterService.GetCareCenterByRole(userId, request);
+                return Ok(response);
+            }
+            catch (FormatException)
+            {
+                return Unauthorized(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Bạn chưa đăng nhập"),
+                    Status = StatusCode.Unauthorized
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new ResponseObject<string>()
+                {
+                    Payload = new Payload<string>(string.Empty, "Lỗi hệ thống"),
+                    Status = StatusCode.BadRequest
+                });
+            }
+        }
+
+        [HttpGet("get-by-id")]
+        public async Task<IActionResult> GetById([FromQuery] Guid id)
+        {
+            try
+            {
+                var response = await _careCenterService.GetById(id);
                 return Ok(response);
             }
             catch (FormatException)

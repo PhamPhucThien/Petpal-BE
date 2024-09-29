@@ -10,5 +10,6 @@ namespace CapstoneProject.Repository.Interface
 {
     public interface IPackageItemRepository : IRepository<PackageItem>
     {
+        Task<List<PackageItem>> GetByPackageIdAsync(Guid packageId);
     }
 }

@@ -138,6 +138,12 @@ namespace CapstoneProject.Controllers
                 Guid userId = Guid.Parse(HttpContext.GetName());
                 var baseUrl = $"{Request.Scheme}://{Request.Host}{Request.PathBase}";
                 var response = await _orderService.GetTransactionStatusVNPay(orderId, userId, baseUrl);
+
+                if (response.Status == StatusCode.OK && response.Payload != null && response.Payload.Data != null)
+                {
+                    Redirect(response.Payload.Data);
+                }
+
                 return Ok(response);
             }
             catch (FormatException)
@@ -236,7 +242,7 @@ namespace CapstoneProject.Controllers
 
                 if (paymentStatus.IsSucceed && paymentStatus.Text != null)
                 {
-                    Redirect(paymentStatus.Text);
+                    return Redirect(paymentStatus.Text);
                 }
 
                 return Ok(paymentStatus);
@@ -289,7 +295,7 @@ namespace CapstoneProject.Controllers
 
         [HttpPost("get-pending-request")]
         [Authorize(Roles = "MANAGER")]
-        public async Task<IActionResult> GetPedingRequest(GetListOrderById request)
+        public async Task<IActionResult> GetPendingRequest(GetListOrderById request)
         {
             try
             {

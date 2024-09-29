@@ -28,6 +28,8 @@ namespace CapstoneProject.Database.Model
         public DateTimeOffset? EndedAt { get; set; }
         [Column("attendance_list")]
         public string? AttendanceList { get; set; }
+        [Column("check_list")]
+        public string? CheckList { get; set; }
         [Column("receive_time")]
         public TimeSpan? ReceiveTime { get; set; }
         [Column("return_time")]

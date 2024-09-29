@@ -21,7 +21,7 @@ using static Google.Apis.Requests.BatchRequest;
 
 namespace CapstoneProject.Business.Services
 {
-    public class OrderService(IOrderRepository orderRepository, IUserRepository userRepository, IPetRepository petRepository, IPackageRepository packageRepository, IOrderDetailRepository orderDetailRepository, IInvoiceRepository invoiceRepository) : IOrderService
+    public class OrderService(IPackageItemRepository packageItemRepository, IOrderRepository orderRepository, IUserRepository userRepository, IPetRepository petRepository, IPackageRepository packageRepository, IOrderDetailRepository orderDetailRepository, IInvoiceRepository invoiceRepository) : IOrderService
     {
         private readonly IOrderRepository _orderRepository = orderRepository;
         private readonly IUserRepository _userRepository = userRepository;
@@ -29,6 +29,7 @@ namespace CapstoneProject.Business.Services
         private readonly IPackageRepository _packageRepository = packageRepository;
         private readonly IOrderDetailRepository _orderDetailRepository = orderDetailRepository;
         private readonly IInvoiceRepository _invoiceRepository = invoiceRepository;
+        private readonly IPackageItemRepository _packageItemRepository = packageItemRepository;
 
         public string vnp_PayUrl = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
         public string vnp_ReturnUrl = "/api/Order/vnpay-payment";
@@ -110,6 +111,7 @@ namespace CapstoneProject.Business.Services
             User? user = await _userRepository.GetByIdAsync(userId);
             Pet? pet = await _petRepository.GetByIdAsync(request.PetId);
             Package? package = await _packageRepository.GetByIdAsync(request.PackageId);
+            List<PackageItem> packageItems = await _packageItemRepository.GetByPackageIdAsync(request.PackageId);
 
             if (user == null)
             {
@@ -123,16 +125,28 @@ namespace CapstoneProject.Business.Services
                 response.Payload.Message = "Không tìm thấy thú cưng";
                 return response;
             }
+            if (pet != null && pet.Status != PetStatus.ACTIVE)
+            {
+                response.Status = StatusCode.NotFound;
+                response.Payload.Message = "Thú cưng đang chờ hoặc sử dụng dịch vụ khác, không thể chọn thêm dịch vụ";
+                return response;
+            }
             if (package == null)
             {
                 response.Status = StatusCode.NotFound;
-                response.Payload.Message = "    ";
+                response.Payload.Message = "Không tìm thấy gói dịch vụ";
                 return response;
             }
             if (pet != null && pet.Status != PetStatus.ACTIVE)
             {
                 response.Status = StatusCode.NotFound;
                 response.Payload.Message = "Thú cưng đang sử dụng dịch vụ khác";
+                return response;
+            }
+            if (packageItems == null || packageItems.Count == 0)
+            {
+                response.Status = StatusCode.NotFound;
+                response.Payload.Message = "Không tìm thấy gói dịch vụ";
                 return response;
             }
 
@@ -156,13 +170,30 @@ namespace CapstoneProject.Business.Services
 
                 for (int i = 0; i < request.TotalWeek*7; i++)
                 {
-                    Dictionary<int, List<string>> key = new();
-                    List<string> fields = ["None", "None"];
+                    Dictionary<int, List<string>> key = [];
+                    List<string> fields = ["0", "0"];
                     key.Add(i, fields);
                     model.Add(key);
                 }
 
                 string modelJson = JsonConvert.SerializeObject(model);
+
+                List<Dictionary<int, Dictionary<Guid, string>>> modelCheckList = [];
+                Dictionary<Guid, string> keyItem = [];
+
+                foreach (PackageItem item in packageItems)
+                {
+                    keyItem.Add(item.Id, "0");
+                }
+
+                for (int i = 0; i < request.TotalWeek * 7; i++)
+                {
+                    Dictionary<int, Dictionary<Guid, string>> key = [];
+                    key.Add(i, keyItem);
+                    modelCheckList.Add(key);
+                }
+
+                string modelCheckListJson = JsonConvert.SerializeObject(modelCheckList);
 
                 OrderDetail detail = new()
                 {
@@ -172,6 +203,7 @@ namespace CapstoneProject.Business.Services
                     FromDate = request.FromDate,
                     ToDate = request.FromDate.AddDays(7*request.TotalWeek - 1),
                     AttendanceList = modelJson,
+                    CheckList = modelCheckListJson,
                     ReceiveTime = request.ReceiveTime,
                     ReturnTime = request.ReturnTime,
                     PackageId = request.PackageId,
@@ -517,7 +549,7 @@ namespace CapstoneProject.Business.Services
             }
 
             var amount = double.Parse(totalPrice) / 100;
-            var returnUrl = $"https://petpal.up.railway.app/get-order/{orderInfo}";
+            var returnUrl = $"https://petpal-website.io.vn/user/order-history/{orderInfo}";
 
             Order? order = await _orderRepository.GetByIdAsync(Guid.Parse(orderInfo));
 

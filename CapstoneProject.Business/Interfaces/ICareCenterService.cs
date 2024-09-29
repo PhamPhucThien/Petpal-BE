@@ -13,5 +13,7 @@ namespace CapstoneProject.Business.Interfaces
         Task<ResponseObject<CreateCareCenterAndManagerResponse>> CreateCareCenterAndManager(Guid userId, CreateCareCenterRequest request, FileDetails front_image, FileDetails back_image, FileDetails carecenter_image);
         Task<ResponseObject<GetCareCenterListResponse>> GetList(ListRequest request);
         Task<ResponseObject<GetCareCenterListResponse>> GetCareCenterByRole(Guid userId, ListRequest request);
+        Task<ResponseObject<GetCareCenterListResponse>> GetPendingList(Guid userId, ListRequest request);
+        Task<ResponseObject<CareCenterListModel>> GetById(Guid id);
     }
 }
